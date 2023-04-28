@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name ${SERVERNAME};
+    root /usr/share/nginx/html;
+
+    location /api/ {
+        proxy_pass http://${BACKENDNAME}/api/;
+        proxy_redirect off;
+    }
+    
+    location /hub {
+        proxy_pass http://${BACKENDNAME}/hub/;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        access_log /var/log/nginxaccess.log;
+        error_log /var/log/nginxerror.log;
+    }
+
+    location / {
+        try_files $uri $uri/ $uri/index.html /index.html =404;
+    }
+}

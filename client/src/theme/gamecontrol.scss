@@ -1,0 +1,278 @@
+.navbar {
+    padding: 0 1rem;
+    font-size: 16pt;
+}
+
+.nav-link {
+    margin: 0 10px;
+}
+.navbar-collapse {
+    justify-content: center;
+}
+
+.eventName {
+    font-size: 18pt;
+}
+.userInfo {
+    font-size: 10pt;
+}
+
+.staffGridCell {
+    min-width: 75px;
+    
+}
+.staffGridCellTime {
+    font-size: 11pt;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.truncated {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.staffGridUnreachable {
+    color: #bbb;
+}
+
+.staffGridPuzzleTitle {
+    @extend .align-text-bottom;
+    @extend .truncated;
+    max-width: 125px;
+    line-height: 1.2;
+
+}
+
+.staffGridTable th {
+    border-top: hidden;
+}
+
+.staffGridTeamName {
+    @extend .truncated;
+    max-width: 150px;
+}
+
+ /* from https://css-tricks.com/rotated-table-column-headers/ */
+ th.rotate {
+    /* Something you can count on */
+    height: 170px;
+    white-space: nowrap;
+    border-left: hidden;
+    border-top: hidden;
+    border-right: hidden;
+    padding: 0px;
+  }
+
+  th.rotate>div {
+    transform:
+      /* Magic Numbers */
+      translate(25px, 60px)
+      /* 45 is really 360 - 45 */
+      rotate(315deg);
+    width: 30px;
+  }
+
+  th.rotate>div>span {
+    padding: 5px 10px;
+  }
+
+  th .badge-pill {
+      padding: 3px 5px !important;
+      margin: 0px 5px 0px 5px !important;
+      border-width: 1px;
+      border-style: solid;
+  }
+
+  .actionCenterNotes
+  {
+    max-height: 5.4rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .actionCenterCard {
+      min-width: 250px;
+      max-width: 250px;
+      width: 250px;
+  }
+
+  .actionCenterCard .btn {
+      margin: 10px 0px;
+      display: block;
+  }
+
+  .actionCenterCardActionRequired {
+    background: salmon;
+}
+
+.actionCenterCardInCall {
+  background: #bbb;
+}
+
+  .App {
+    text-align: center;
+  }
+  
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 80px;
+  }
+  
+  .App-header {
+    background-color: #fff;
+    padding:10px;
+    color: black;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    margin-top: -15px;
+  }
+  
+  .App-header-toggle {
+      margin-top: -105px;
+  }
+  .App-header-staff {
+      @extend .App-header
+
+  }
+  .App-header-logo {
+    flex: 1;
+    align-self: center;
+    max-width: 60vw;
+    min-width: 300px;
+    max-height: 15vh;
+    margin-top: 15px;
+  }
+
+  .App-header-logo-staff {
+      @extend .App-header-logo;
+      max-height: 8vh;
+      min-width: 150px;
+  }
+  
+  .App-header-userInfo {
+    min-width: 150px;
+    flex: 1;
+    align-self: center;
+    margin-top: 15px;
+    margin-right: 50px;
+  }
+  
+  .App-title {
+    font-size: 1.5em;
+  }
+  
+  .App-intro {
+    font-size: large;
+  }
+  
+  @keyframes App-logo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .jumpToNewButton {
+    margin: 10px;
+  }
+
+  .jumpToNewButtonIcon svg {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-left: 0px;
+    margin-right: 20px;
+    text-align: center;
+    height: 2em;
+    width: 2em;
+  }
+
+  .playerCallButton {
+      margin: 10px;
+  }
+
+  .playerCallButtonIcon svg {
+      margin-bottom: 20px;
+      margin-top: 20px;
+      margin-left: 0px;
+      margin-right: 0px;
+      text-align: center;
+      height: 2em;
+      width: 2em;
+  }
+
+  .formCard {    
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  
+.playerSubmitAnswer
+{
+    @extend .formCard;
+}
+
+.playerPulseForm
+{
+    @extend .formCard;
+}
+.playerChallengeForm
+{
+    @extend .formCard;
+}
+
+.playerPuzzleRatingCard
+{
+  @extend .formCard;
+}
+
+.contentCard
+{
+  @extend .formCard;
+  max-width: 800px;
+}
+
+.clickable > .list-group-item:hover {
+  cursor: pointer;
+  background-color: #ebebeb;
+}
+
+.clickable > .list-group-item:active {
+  background-color: cornflowerblue;
+}
+
+.list-group-item a {
+  color: black;
+}
+
+.web-content {
+  text-align: left;
+}
+
+.instance-available{
+  background-color: #a2e9a2;
+}
+
+
+.instance-active
+  {
+    background-color: #e9a2a2;
+  }
+
+.instance-needsreset {
+  background-color: #888;
+}
+
+.time-footer {
+  justify-content: flex-end;
+}
+
+.status-team-name {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px;  
+}

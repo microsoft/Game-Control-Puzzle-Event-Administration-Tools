@@ -1,0 +1,6 @@
+export const PLAYER_FEED_FETCHING  = 'player/feed/PLAYER_FEED_FETCHING';
+export const PLAYER_FEED_FETCHED   = 'player/feed/PLAYER_FEED_FETCHED';
+export const PLAYER_FEED_FAILED    = 'player/feed/PLAYER_FEED_FAILED';
+
+export const PLAYER_FEED_PULSE_SUBMITTING = "player/feed/PLAYER_FEED_PULSE_SUBMITTING";
+export const PLAYER_FEED_PULSE_COMPLETED  = "player/feed/PLAYER_FEED_PULSE_COMPLETED";

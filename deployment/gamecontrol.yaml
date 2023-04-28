@@ -1,0 +1,38 @@
+additional_properties: {}
+apiVersion: '2018-10-01'
+identity: null
+location: westus2
+name: gamecontrol
+properties:
+  containers:
+  - name: gamecontrol
+    properties:
+      environmentVariables:
+      - name: SERVERNAME
+        value: gamecontrol.westus2.azurecontainer.io
+      - name: BACKENDNAME
+        value: gamecontrolserver.westus2.azurecontainer.io
+      image: interngame.azurecr.io/gamecontrol-client:dev
+      ports:
+      - port: 80
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 0.5
+  imageRegistryCredentials:
+  - server: interngame.azurecr.io
+    username: interngame
+    password: REPLACEME
+  ipAddress:
+    dnsNameLabel: gamecontrol
+    fqdn: gamecontrol.westus2.azurecontainer.io
+    ip: 20.83.82.151
+    ports:
+    - port: 80
+      protocol: TCP
+    type: Public
+  osType: Linux
+  restartPolicy: OnFailure
+tags: {}
+type: Microsoft.ContainerInstance/containerGroups

@@ -1,0 +1,5 @@
+export const PLAYER_MESSAGES_FETCHING = "player/messages/PLAYER_MESSAGES_FETCHING";
+export const PLAYER_MESSAGES_FETCHED  = "player/messages/PLAYER_MESSAGES_FETCHED";
+export const PLAYER_MESSAGES_FAILED   = "player/messages/PLAYER_MESSAGES_FAILED";
+
+export const PLAYER_MESSAGES_DISMISS  = "player/messages/PLAYER_MESSAGES_DISMISS";
