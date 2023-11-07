@@ -29,7 +29,7 @@ extends:
     - stage: stage
       displayName: Build
       jobs:
-      - job: job
+      - job: client
         displayName: Build Spiderdog Client
         steps:
         # npm v1
@@ -48,7 +48,7 @@ extends:
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
-      - job: job
+      - job: server
         displayName: Build Spiderdog Server
         steps:
         - task: NuGetAuthenticate@1
