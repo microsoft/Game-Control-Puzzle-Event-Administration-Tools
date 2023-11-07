@@ -1,0 +1,51 @@
+# This pipeline demonstrates how to build directly in a Windows VM
+name: GCBotBuild
+trigger: none
+
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      name: MicrosoftInternGame-1ESPT-HostedPool
+      image: MicrosoftInternGame-1ESPTImage
+      os: windows
+    stages:
+    - stage: stage
+      displayName: Build
+      jobs:
+      - job: job
+        displayName: Job
+        templateContext:
+          authenticatedContainerRegistries:
+          - registry: gcbotacr.azurecr.io
+            identity: ManagedIdentity
+        steps:
+        - checkout: self
+        - task: NuGetAuthenticate@1
+          displayName: 'NuGet Authenticate'
+        # npm v1
+        # Install and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Azure Artifacts.
+        - task: Npm@1
+          displayName: 'npm ci'
+          inputs:
+            command: 'ci' # 'ci' | 'install' | 'publish' | 'custom'. Required. Command. Default: install.
+            #workingDir: # string. Working folder that contains package.json. 
+            #customCommand: # string. Required when command = custom. Command and arguments. 
+          # Advanced
+            #verbose: # boolean. Optional. Use when command = install || command = ci || command = publish. Verbose logging. 
+            #publishPackageMetadata: true # boolean. Optional. Use when command = publish && publishRegistry = useFeed && command = install || command = ci || command = publish. Publish pipeline metadata. Default: true.
+          # Custom registries and authentication
+            customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
+            #customFeed: # string. Required when customRegistry = useFeed && command = install || command = ci || command = custom. Use packages from this Azure Artifacts/TFS registry. 
+            #customEndpoint: # string. Optional. Use when customRegistry = useNpmrc && command = install || command = ci || command = custom. Credentials for registries outside this organization/collection. 
+          # Destination registry and authentication
+            #publishRegistry: 'useExternalRegistry' # 'useExternalRegistry' | 'useFeed'. Optional. Use when command = publish. Registry location. Default: useExternalRegistry.
+            #publishFeed: # string. Required when publishRegistry = useFeed && command = publish. Target registry. 
+            #publishEndpoint: # string. Required when publishRegistry = useExternalRegistry && command = publish. External Registry.
