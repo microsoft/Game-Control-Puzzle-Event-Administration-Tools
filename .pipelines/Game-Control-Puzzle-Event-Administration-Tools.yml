@@ -32,22 +32,34 @@ extends:
       - job: job
         displayName: Build Spiderdog Client
         steps:
-        - checkout: self
-        - task: NuGetAuthenticate@1
-          displayName: 'NuGet Authenticate'
         # npm v1
         # Install and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Azure Artifacts.
         - task: Npm@1
-          displayName: 'Install NPM packages'
+          displayName: 'npm ci'
           inputs:
             command: 'custom'
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'ci --legacy-peer-deps'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
         - task: Npm@1
-          displayName: 'Build Client'
+          displayName: 'npm run build'
           inputs:
             command: 'custom'
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
+      - job: job
+        displayName: Build Spiderdog Server
+        steps:
+        - task: NuGetAuthenticate@1
+          displayName: 'NuGet Authenticate'
+        - task: DotNetCoreCLI@2
+          displayName: 'dotnet restore'
+          inputs:
+            command: 'restore' # 'build' | 'push' | 'pack' | 'publish' | 'restore' | 'run' | 'test' | 'custom'. Required. Command. Default: build.
+            projects: $(Build.SourcesDirectory)/server/GameControl.Server.sln
+        - task: DotNetCoreCLI@2
+          displayName: 'dotnet build'
+          inputs:
+            command: 'build' # 'build' | 'push' | 'pack' | 'publish' | 'restore' | 'run' | 'test' | 'custom'. Required. Command. Default: build.
+            projects: $(Build.SourcesDirectory)/server/GameControl.Server.sln
