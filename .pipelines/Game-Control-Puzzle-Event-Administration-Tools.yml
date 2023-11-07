@@ -14,8 +14,17 @@ extends:
   parameters:
     pool:
       name: MicrosoftInternGame-1ESPT-HostedPool
-      image: MicrosoftInternGame-1ESPTImage
-      os: windows
+      image: MicrosoftInternGame-1ESPTImage-Linux
+      os: linux
+    sdl:
+      baseline:
+        baselineFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnbaselines
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnsuppress
+      sourceAnalysisPool:
+        name: MicrosoftInternGame-1ESPT-HostedPool  # Name of your hosted pool
+        image: MicrosoftInternGame-1ESPTImage  # Name of the image in your pool. If not specified, first image of the pool is used
+        os: windows  # OS of the image. Allowed values: windows, linux, macOS
     stages:
     - stage: stage
       displayName: Build
