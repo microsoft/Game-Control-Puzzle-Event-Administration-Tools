@@ -36,7 +36,7 @@ extends:
           displayName: 'npm ci'
           inputs:
             command: 'ci' # 'ci' | 'install' | 'publish' | 'custom'. Required. Command. Default: install.
-            #workingDir: # string. Working folder that contains package.json. 
+            workingDir: $(Build.SourcesDirectory)/client
             #customCommand: # string. Required when command = custom. Command and arguments. 
           # Advanced
             #verbose: # boolean. Optional. Use when command = install || command = ci || command = publish. Verbose logging. 
