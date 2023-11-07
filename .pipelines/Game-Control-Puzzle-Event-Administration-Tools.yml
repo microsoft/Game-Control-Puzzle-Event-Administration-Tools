@@ -35,9 +35,9 @@ extends:
         - task: Npm@1
           displayName: 'npm ci'
           inputs:
-            command: 'ci' # 'ci' | 'install' | 'publish' | 'custom'. Required. Command. Default: install.
+            command: 'custom' # 'ci' | 'install' | 'publish' | 'custom'. Required. Command. Default: install.
             workingDir: $(Build.SourcesDirectory)/client
-            #customCommand: # string. Required when command = custom. Command and arguments. 
+            customCommand: 'ci --legacy-peer-deps'
           # Advanced
             #verbose: # boolean. Optional. Use when command = install || command = ci || command = publish. Verbose logging. 
             #publishPackageMetadata: true # boolean. Optional. Use when command = publish && publishRegistry = useFeed && command = install || command = ci || command = publish. Publish pipeline metadata. Default: true.
