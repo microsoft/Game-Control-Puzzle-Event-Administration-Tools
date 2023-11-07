@@ -1,5 +1,5 @@
 # This pipeline demonstrates how to build directly in a Windows VM
-name: GCBotBuild
+name: GameControlBuild
 trigger: none
 
 resources:
