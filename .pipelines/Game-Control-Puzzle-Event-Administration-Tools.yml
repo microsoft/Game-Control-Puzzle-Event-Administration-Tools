@@ -30,11 +30,7 @@ extends:
       displayName: Build
       jobs:
       - job: job
-        displayName: Job
-        templateContext:
-          authenticatedContainerRegistries:
-          - registry: gcbotacr.azurecr.io
-            identity: ManagedIdentity
+        displayName: Build Spiderdog Client
         steps:
         - checkout: self
         - task: NuGetAuthenticate@1
@@ -42,19 +38,16 @@ extends:
         # npm v1
         # Install and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Azure Artifacts.
         - task: Npm@1
-          displayName: 'npm ci'
+          displayName: 'Install NPM packages'
           inputs:
-            command: 'custom' # 'ci' | 'install' | 'publish' | 'custom'. Required. Command. Default: install.
+            command: 'custom'
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'ci --legacy-peer-deps'
-          # Advanced
-            #verbose: # boolean. Optional. Use when command = install || command = ci || command = publish. Verbose logging. 
-            #publishPackageMetadata: true # boolean. Optional. Use when command = publish && publishRegistry = useFeed && command = install || command = ci || command = publish. Publish pipeline metadata. Default: true.
-          # Custom registries and authentication
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
-            #customFeed: # string. Required when customRegistry = useFeed && command = install || command = ci || command = custom. Use packages from this Azure Artifacts/TFS registry. 
-            #customEndpoint: # string. Optional. Use when customRegistry = useNpmrc && command = install || command = ci || command = custom. Credentials for registries outside this organization/collection. 
-          # Destination registry and authentication
-            #publishRegistry: 'useExternalRegistry' # 'useExternalRegistry' | 'useFeed'. Optional. Use when command = publish. Registry location. Default: useExternalRegistry.
-            #publishFeed: # string. Required when publishRegistry = useFeed && command = publish. Target registry. 
-            #publishEndpoint: # string. Required when publishRegistry = useExternalRegistry && command = publish. External Registry.
+        - task: Npm@1
+          displayName: 'Build Client'
+          inputs:
+            command: 'custom'
+            workingDir: $(Build.SourcesDirectory)/client
+            customCommand: 'run build'
+            customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
