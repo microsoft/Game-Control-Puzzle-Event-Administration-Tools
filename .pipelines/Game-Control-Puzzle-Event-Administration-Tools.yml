@@ -48,31 +48,15 @@ extends:
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
-
-        - task: AzurePowerShell@5
+        - task: AzureCLI@2
           inputs:
             azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
-            ScriptType: 'InlineScript'
-            Inline: |
-              $RestMethodParameters = @{
-                  SubscriptionId = ((Get-AzContext).subscription.id)
-                  ResourceGroupName = 'igshared'
-                  ResourceProviderName = 'Microsoft.Web'
-                  ResourceType = 'staticSites'
-                  Name = "spiderdoggo2/listsecrets"
-                  ApiVersion = '2019-08-01'
-                  Method = 'POST'
-              }
-              
-              $ApiKey = Invoke-AzRestMethod @RestMethodParameters | 
-                  Select-Object -ExpandProperty Content | 
-                  ConvertFrom-Json | 
-                  Select-Object -ExpandProperty properties | 
-                  Select-Object -ExpandProperty ApiKey
-              
-              Write-Host "##vso[task.setvariable variable=staticappstoken;issecret=true]$ApiKey"
-            azurePowerShellVersion: 'LatestVersion'
-            pwsh: true
+            scriptType: 'pscore'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              $subscriptionId = az account show | ConvertFrom-Json | Select-Object -ExpandProperty id;           
+              $apiKey = az rest --method post --uri /subscriptions/$subscriptionId/resourceGroups/igshared/providers/Microsoft.Web/staticSites/spiderdoggo2/listSecrets?api-version=2019-08-01 | ConvertFrom-Json | Select-Object -ExpandProperty properties | Select-Object -ExpandProperty apiKey;             
+              Write-Host "##vso[task.setvariable variable=webapptoken;issecret=true]$apiKey"
 
         - task: AzureStaticWebApp@0
           inputs:
@@ -80,7 +64,7 @@ extends:
             skip_app_build: true
             skip_api_build: true
             verbose: true
-            azure_static_web_apps_api_token: '$(staticappstoken)'
+            azure_static_web_apps_api_token: '$(webapptoken)'
             
       - job: server
         displayName: Build Spiderdog Server
