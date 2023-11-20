@@ -49,13 +49,38 @@ extends:
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
 
-        - task: AzureRmWebAppDeployment@4
+        - task: AzurePowerShell@5
           inputs:
-            ConnectionType: 'AzureRM'
             azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
-            appType: 'webAppLinux'
-            WebAppName: 'spiderdoggo2'
-            packageForLinux: '$(Build.SourcesDirectory)/client/build'
+            ScriptType: 'InlineScript'
+            Inline: |
+              $RestMethodParameters = @{
+                  SubscriptionId = ((Get-AzContext).subscription.id)
+                  ResourceGroupName = 'igshared'
+                  ResourceProviderName = 'Microsoft.Web'
+                  ResourceType = 'staticSites'
+                  Name = "spiderdoggo2/listsecrets"
+                  ApiVersion = '2019-08-01'
+                  Method = 'POST'
+              }
+              
+              $ApiKey = Invoke-AzRestMethod @RestMethodParameters | 
+                  Select-Object -ExpandProperty Content | 
+                  ConvertFrom-Json | 
+                  Select-Object -ExpandProperty properties | 
+                  Select-Object -ExpandProperty ApiKey
+              
+              Write-Host "##vso[task.setvariable variable=staticappstoken;issecret=true]$ApiKey"
+            azurePowerShellVersion: 'LatestVersion'
+            pwsh: true
+
+        - task: AzureStaticWebApp@0
+          inputs:
+            output_location: '/client/build/'
+            skip_app_build: true
+            skip_api_build: true
+            verbose: true
+            azure_static_web_apps_api_token: '$(staticappstoken)'
             
       - job: server
         displayName: Build Spiderdog Server
