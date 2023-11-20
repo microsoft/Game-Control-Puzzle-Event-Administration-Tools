@@ -48,6 +48,15 @@ extends:
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
+
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
+            appType: 'webAppLinux'
+            WebAppName: 'spiderdoggo2'
+            packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+            
       - job: server
         displayName: Build Spiderdog Server
         steps:
