@@ -55,7 +55,7 @@ extends:
             azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
             appType: 'webAppLinux'
             WebAppName: 'spiderdoggo2'
-            packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+            packageForLinux: '$(Build.SourcesDirectory)/client/build'
             
       - job: server
         displayName: Build Spiderdog Server
