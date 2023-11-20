@@ -60,7 +60,7 @@ extends:
 
         - task: AzureStaticWebApp@0
           inputs:
-            output_location: '/client/build/'
+            app_location: '/client/build/'
             skip_app_build: true
             skip_api_build: true
             verbose: true
