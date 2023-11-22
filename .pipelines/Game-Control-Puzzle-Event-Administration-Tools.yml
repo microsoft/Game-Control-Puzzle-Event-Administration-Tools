@@ -48,6 +48,24 @@ extends:
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
+            scriptType: 'pscore'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              $subscriptionId = az account show | ConvertFrom-Json | Select-Object -ExpandProperty id;           
+              $apiKey = az rest --method post --uri /subscriptions/$subscriptionId/resourceGroups/igshared/providers/Microsoft.Web/staticSites/spiderdoggo2/listSecrets?api-version=2019-08-01 | ConvertFrom-Json | Select-Object -ExpandProperty properties | Select-Object -ExpandProperty apiKey;             
+              Write-Host "##vso[task.setvariable variable=webapptoken;issecret=true]$apiKey"
+
+        - task: AzureStaticWebApp@0
+          inputs:
+            app_location: '/client/build/'
+            skip_app_build: true
+            skip_api_build: true
+            verbose: true
+            azure_static_web_apps_api_token: '$(webapptoken)'
+            
       - job: server
         displayName: Build Spiderdog Server
         steps:
@@ -63,3 +81,9 @@ extends:
           inputs:
             command: 'build' # 'build' | 'push' | 'pack' | 'publish' | 'restore' | 'run' | 'test' | 'custom'. Required. Command. Default: build.
             projects: $(Build.SourcesDirectory)/server/GameControl.Server.sln
+
+        - task: 1ES.BuildContainerImage@1
+          inputs:
+            image: interngameacr.azurecr.io/spiderdog-api:$(Build.BuildNumber)
+            path: $(Build.SourcesDirectory)/server
+            dockerfile: $(Build.SourcesDirectory)/server/Dockerfile
