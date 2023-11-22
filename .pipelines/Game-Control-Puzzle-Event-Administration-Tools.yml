@@ -81,9 +81,3 @@ extends:
           inputs:
             command: 'build' # 'build' | 'push' | 'pack' | 'publish' | 'restore' | 'run' | 'test' | 'custom'. Required. Command. Default: build.
             projects: $(Build.SourcesDirectory)/server/GameControl.Server.sln
-
-        - task: 1ES.BuildContainerImage@1
-          inputs:
-            image: interngameacr.azurecr.io/spiderdog-api:$(Build.BuildNumber)
-            path: $(Build.SourcesDirectory)/server
-            dockerfile: $(Build.SourcesDirectory)/server/Dockerfile
