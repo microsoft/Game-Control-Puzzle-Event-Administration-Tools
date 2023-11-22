@@ -55,7 +55,7 @@ extends:
             scriptLocation: 'inlineScript'
             inlineScript: |
               $subscriptionId = az account show | ConvertFrom-Json | Select-Object -ExpandProperty id;           
-              $apiKey = az rest --method post --uri /subscriptions/$subscriptionId/resourceGroups/igshared/providers/Microsoft.Web/staticSites/spiderdoggo2/listSecrets?api-version=2019-08-01 | ConvertFrom-Json | Select-Object -ExpandProperty properties | Select-Object -ExpandProperty apiKey;             
+              $apiKey = az rest --method post --uri /subscriptions/$subscriptionId/resourceGroups/igevent/providers/Microsoft.Web/staticSites/spiderdoggo2/listSecrets?api-version=2019-08-01 | ConvertFrom-Json | Select-Object -ExpandProperty properties | Select-Object -ExpandProperty apiKey;             
               Write-Host "##vso[task.setvariable variable=webapptoken;issecret=true]$apiKey"
 
         - task: AzureStaticWebApp@0
