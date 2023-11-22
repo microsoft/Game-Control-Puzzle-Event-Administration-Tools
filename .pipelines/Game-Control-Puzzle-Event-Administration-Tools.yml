@@ -69,6 +69,11 @@ extends:
       - job: server
         displayName: Build Spiderdog Server
         steps:
+        
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            version: '8.0.x'
         - task: NuGetAuthenticate@1
           displayName: 'NuGet Authenticate'
         - task: DotNetCoreCLI@2
