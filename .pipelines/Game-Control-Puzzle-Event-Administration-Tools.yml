@@ -19,6 +19,8 @@ extends:
     sdl:
       baseline:
         baselineFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnbaselines
+      componentgovernance:
+        enabled: true
       suppression:
         suppressionFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnsuppress
       sourceAnalysisPool:
