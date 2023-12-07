@@ -1,13 +1,13 @@
 version: '3'
 services:
-  database:
-    build: ./database 
-    ports:
-      - "1433:1433"
-    volumes:
-      - db:/var/opt/mssql
-    env_file:
-      - database.env
+  # database:
+  #   build: ./database 
+  #   ports:
+  #     - "1433:1433"
+  #   volumes:
+  #    - db:/var/opt/mssql
+  #  env_file:
+  #    - database.env
   client:
     build: ./client 
     ports:
@@ -19,7 +19,7 @@ services:
   server:
     build: ./server
     ports:
-      - "80"
+      - "5000"
     env_file:
       - server.env
 volumes:

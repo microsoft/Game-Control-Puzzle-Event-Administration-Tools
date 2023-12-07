@@ -1,5 +1,5 @@
 # The build stage uses a Node image to get all the NPM goodies preinstalled that we need.
-FROM node:12-alpine3.12 as builder
+FROM node:20 as builder
 WORKDIR /client
 
 # Start by copying just the package files.  Then, we use 'npm ci' to restore the packages.
@@ -9,8 +9,8 @@ WORKDIR /client
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN JOBS=MAX cd /client && \
-        npm ci --unsafe-perm && \
+RUN     cd /client && \
+        npm ci --legacy-peer-deps && \
         npm cache clean --force && \
         rm -rf /tmp/*
 
@@ -29,4 +29,4 @@ COPY --from=builder /client/build /usr/share/nginx/html
 COPY default.conf.template /etc/nginx/templates/default.conf.template
 ENV NGINX_PORT 80
 ENV SERVERNAME localhost
-ENV BACKENDNAME server
+ENV BACKENDNAME server:5000
