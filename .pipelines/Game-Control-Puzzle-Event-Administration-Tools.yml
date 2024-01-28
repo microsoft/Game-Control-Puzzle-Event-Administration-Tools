@@ -84,7 +84,16 @@ extends:
             command: 'restore' # 'build' | 'push' | 'pack' | 'publish' | 'restore' | 'run' | 'test' | 'custom'. Required. Command. Default: build.
             projects: $(Build.SourcesDirectory)/server/GameControl.Server.sln
         - task: DotNetCoreCLI@2
-          displayName: 'dotnet build'
+          displayName: 'dotnet publish'
           inputs:
-            command: 'build' # 'build' | 'push' | 'pack' | 'publish' | 'restore' | 'run' | 'test' | 'custom'. Required. Command. Default: build.
-            projects: $(Build.SourcesDirectory)/server/GameControl.Server.sln
+            command: 'publish'
+            publishWebProjects: true
+            arguments: '-c Release -o $(Build.ArtifactStagingDirectory)'
+
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
+            appType: 'webAppLinux'
+            WebAppName: 'spiderdog-api-v2'
+            packageForLinux: '$(Build.ArtifactStagingDirectory)'
