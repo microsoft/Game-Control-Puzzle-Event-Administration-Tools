@@ -96,4 +96,4 @@ extends:
             azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
             appType: 'webAppLinux'
             WebAppName: 'spiderdog-api-v2'
-            packageForLinux: '$(Build.ArtifactStagingDirectory)'
+            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
