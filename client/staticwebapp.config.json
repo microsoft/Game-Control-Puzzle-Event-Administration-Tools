@@ -1,4 +1,0 @@
-{
-    "route": "/api/*",
-    "rewrite": "https://spiderdog-api-v2.azurewebsites.net/api/"
-}

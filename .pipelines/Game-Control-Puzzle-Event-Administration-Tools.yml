@@ -51,11 +51,6 @@ extends:
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
 
-        - task: CopyFiles@2
-          inputs:
-            SourceFolder: '$(Build.SourcesDirectory)/client'
-            Contents: 'staticwebapp.config.json'
-            TargetFolder: '$(Build.SourcesDirectory)/client/build'
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
