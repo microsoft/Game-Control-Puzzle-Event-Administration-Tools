@@ -31,7 +31,7 @@ const doLoginRequest = async (dispatch: any, request: Promise<any>, errorContext
 export const loginUserName = (userName: string, password: string) => (dispatch: any) => {
     doLoginRequest(
         dispatch,
-        Axios.post('api/Authentication/jwt', { 'UserName': userName, 'Password': password }),
+        Axios.post('/api/Authentication/jwt', { 'UserName': userName, 'Password': password }),
         `(Local username: ${userName})`
     );
 };
@@ -39,7 +39,7 @@ export const loginUserName = (userName: string, password: string) => (dispatch: 
 export const loginMsaToken = (msaToken: { token: string, preferred_username?: string, oid?: string }) => (dispatch: any) => {
     doLoginRequest(
         dispatch,
-        Axios.put('api/Authentication/jwtMsa', { token: msaToken.token }),
+        Axios.put('/api/Authentication/jwtMsa', { token: msaToken.token }),
         `(Microsoft Account: ${msaToken?.preferred_username ?? "Invalid Token"} [${msaToken?.oid ?? "Invalid ID"}]`
     );
 }

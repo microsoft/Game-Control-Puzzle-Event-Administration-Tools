@@ -9,7 +9,7 @@ import { ApiKeyTemplate, EventTemplate, EventInstanceTemplate } from './models';
 export const getAdminEvents = () => (dispatch: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/admin/events`),
+        () => Axios.get(`/api/admin/events`),
         actions.ADMIN_EVENTS_LOADING,
         actions.ADMIN_EVENTS_SUCCEEDED,
         actions.ADMIN_EVENTS_FAILED
@@ -19,7 +19,7 @@ export const getAdminEvents = () => (dispatch: any) => {
 export const addAdminEvent = (event: EventTemplate) => (dispatch: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/admin/events`, event),
+        () => Axios.put(`/api/admin/events`, event),
         actions.ADMIN_EVENTS_LOADING,
         actions.ADMIN_EVENTS_SUCCEEDED,
         actions.ADMIN_EVENTS_FAILED
@@ -29,7 +29,7 @@ export const addAdminEvent = (event: EventTemplate) => (dispatch: any) => {
 export const getApiKeysForEvent = (eventInstanceId: string) => (dispatch: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/admin/events/${eventInstanceId}/keys`),
+        () => Axios.get(`/api/admin/events/${eventInstanceId}/keys`),
         actions.ADMIN_EVENTS_KEYS_LOADING,
         actions.ADMIN_EVENTS_KEYS_SUCCEEDED,
         actions.ADMIN_EVENTS_KEYS_FAILED
@@ -39,7 +39,7 @@ export const getApiKeysForEvent = (eventInstanceId: string) => (dispatch: any) =
 export const updateApiKey = (eventInstanceId: string, apiKey: ApiKeyTemplate) => (dispatch: any, getState: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/admin/events/${eventInstanceId}/keys`, apiKey),
+        () => Axios.put(`/api/admin/events/${eventInstanceId}/keys`, apiKey),
         actions.ADMIN_EVENTS_KEYS_LOADING,
         actions.ADMIN_EVENTS_KEYS_SUCCEEDED,
         actions.ADMIN_EVENTS_KEYS_FAILED
@@ -49,7 +49,7 @@ export const updateApiKey = (eventInstanceId: string, apiKey: ApiKeyTemplate) =>
 export const addEventInstance = (eventId: string, eventInstanceTemplate: EventInstanceTemplate) => (dispatch: any, getState: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/admin/events/${eventId}`, eventInstanceTemplate),
+        () => Axios.put(`/api/admin/events/${eventId}`, eventInstanceTemplate),
         actions.ADMIN_EVENTS_INSTANCE_ADDING,
         actions.ADMIN_EVENTS_INSTANCE_ADDED,
         actions.ADMIN_EVENTS_INSTANCE_FAILED
@@ -59,7 +59,7 @@ export const addEventInstance = (eventId: string, eventInstanceTemplate: EventIn
 export const cloneEventInstance = (eventId: string, sourceEventInstanceId: string, eventInstanceTemplate: EventInstanceTemplate) => (dispatch: any, getState: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/admin/events/${eventId}/clone/${sourceEventInstanceId}`, eventInstanceTemplate),
+        () => Axios.put(`/api/admin/events/${eventId}/clone/${sourceEventInstanceId}`, eventInstanceTemplate),
         actions.ADMIN_EVENTS_INSTANCE_ADDING,
         actions.ADMIN_EVENTS_INSTANCE_ADDED,
         actions.ADMIN_EVENTS_INSTANCE_FAILED
@@ -70,7 +70,7 @@ export const forceRefreshStaff = () => async (dispatch: any, getState: any) => {
     const eventInstanceId = getEventInstanceId(getState());
 
     try {
-        await Axios.get(`api/admin/events/${eventInstanceId}/refreshstaff`);
+        await Axios.get(`/api/admin/events/${eventInstanceId}/refreshstaff`);
     } catch (e) {
         if (e?.response?.status === 401) {
             localStorage.removeItem('userToken');
@@ -83,7 +83,7 @@ export const forceRefreshPlayers = () => async (dispatch: any, getState: any) =>
     const eventInstanceId = getEventInstanceId(getState());
 
     try {
-        await Axios.get(`api/admin/events/${eventInstanceId}/refreshplayers`);
+        await Axios.get(`/api/admin/events/${eventInstanceId}/refreshplayers`);
     } catch (e) {
         if (e?.response?.status === 401) {
             localStorage.removeItem('userToken');

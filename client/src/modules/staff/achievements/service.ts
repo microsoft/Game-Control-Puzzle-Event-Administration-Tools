@@ -12,7 +12,7 @@ export const fetchStaffAchievements = () => async (dispatch: any, getState: any)
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/puzzles/${eventInstanceId}/achievements`),
+        () => Axios.get(`/api/staff/puzzles/${eventInstanceId}/achievements`),
         actions.STAFF_ACHIEVEMENTS_FETCHING,
         actions.STAFF_ACHIEVEMENTS_FETCHED,
         actions.STAFF_ACHIEVEMENTS_FAILED
@@ -33,7 +33,7 @@ export const putStaffAchievement = (achievement: AchievementTemplate) => async (
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/achievements`, body),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/achievements`, body),
         actions.STAFF_ACHIEVEMENTS_ADDING,
         actions.STAFF_ACHIEVEMENTS_ADDED,
         actions.STAFF_ACHIEVEMENTS_ADD_FAILED
@@ -45,7 +45,7 @@ export const addAchievementUnlockToAnswer = (answerId: string, achievementId: st
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/answers/${answerId}/achievements/${achievementId}`),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/achievements/${achievementId}`),
         puzzleActions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
         puzzleActions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
         puzzleActions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
@@ -57,7 +57,7 @@ export const deleteAchievementUnlockFromAnswer = (answerId: string, achievementI
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/answers/${answerId}/achievements/${achievementId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/achievements/${achievementId}`),
         puzzleActions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
         puzzleActions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
         puzzleActions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
@@ -69,7 +69,7 @@ export const fetchUnlockedAchievements = (teamId: string) => (dispatch: any, get
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements`),
+        () => Axios.get(`/api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements`),
         actions.STAFF_ACHIEVEMENTS_TEAMS_LOADING,
         actions.STAFF_ACHIEVEMENTS_TEAMS_SUCCEEDED,
         actions.STAFF_ACHIEVEMENTS_TEAMS_FAILED,
@@ -83,7 +83,7 @@ export const grantAchievementToTeam = (teamId: string, achievementId: string) =>
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements/${achievementId}`),
+        () => Axios.put(`/api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements/${achievementId}`),
         actions.STAFF_ACHIEVEMENTS_TEAMS_LOADING,
         actions.STAFF_ACHIEVEMENTS_TEAMS_SUCCEEDED,
         actions.STAFF_ACHIEVEMENTS_TEAMS_FAILED,
@@ -97,7 +97,7 @@ export const revokeAchievementForTeam = (teamId: string, achievementId: string) 
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements/${achievementId}`),
+        () => Axios.delete(`/api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements/${achievementId}`),
         actions.STAFF_ACHIEVEMENTS_TEAMS_LOADING,
         actions.STAFF_ACHIEVEMENTS_TEAMS_SUCCEEDED,
         actions.STAFF_ACHIEVEMENTS_TEAMS_FAILED,

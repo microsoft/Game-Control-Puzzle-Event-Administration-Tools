@@ -10,7 +10,7 @@ export const fetchPlayerCalls = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/playerPuzzles/${eventInstanceId}/calls`),
+        () => Axios.get(`/api/playerPuzzles/${eventInstanceId}/calls`),
         actions.PLAYER_CALLS_FETCHING,
         actions.PLAYER_CALLS_FETCHED,
         actions.PLAYER_CALLS_FAILED
@@ -22,7 +22,7 @@ export const updatePlayerCall = (callTemplate: CallTemplate) => (dispatch: any, 
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/playerPuzzles/${eventInstanceId}/calls`, callTemplate),
+        () => Axios.put(`/api/playerPuzzles/${eventInstanceId}/calls`, callTemplate),
         actions.PLAYER_CALLS_FETCHING,
         actions.PLAYER_CALLS_FETCHED,
         actions.PLAYER_CALLS_FAILED

@@ -12,7 +12,7 @@ export const fetchStaffClues = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/puzzles/${eventInstanceId}`),
+        () => Axios.get(`/api/staff/puzzles/${eventInstanceId}`),
         constants.STAFFCLUES_FETCHING,
         constants.STAFFCLUES_FETCHED,
         constants.STAFFCLUES_FAILED
@@ -24,7 +24,7 @@ export const fetchStaffClueDetails = (tableOfContentsId: string) => (dispatch: a
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentsId}`),
+        () => Axios.get(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentsId}`),
         constants.STAFFDETAILS_FETCHING,
         constants.STAFFDETAILS_FETCHED,
         constants.STAFFDETAILS_FAILED
@@ -36,7 +36,7 @@ export const createClue = (clueTemplate: StaffClueTemplate) => (dispatch: any, g
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/toc`, clueTemplate),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc`, clueTemplate),
         constants.STAFFCREATECLUE_PUTTING,
         constants.STAFFCREATECLUE_FETCHED,
         constants.STAFFCREATECLUE_FAILED
@@ -48,7 +48,7 @@ export const deleteClue = (tableOfContentId: string) => (dispatch: any, getState
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}`),
         constants.STAFFCLUES_FETCHING,
         constants.STAFFCLUES_FETCHED,
         constants.STAFFCLUES_FAILED
@@ -60,7 +60,7 @@ export const addAnswerToClue = (tableOfContentId: string, answerTemplate: Answer
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers`, answerTemplate),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers`, answerTemplate),
         constants.ADD_ANSWER_STARTED,
         constants.ADD_ANSWER_FINISHED,
         constants.ADD_ANSWER_FAILED
@@ -72,7 +72,7 @@ export const deleteClueAnswer = (tableOfContentId: string, answerId: string) => 
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}`),
         constants.ADD_ANSWER_STARTED,
         constants.ADD_ANSWER_FINISHED,
         constants.ADD_ANSWER_FAILED
@@ -84,7 +84,7 @@ export const unlockClueForTeam = (teamId: string, tableOfContentId: string, reas
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/teams/${teamId}/tocs/${tableOfContentId}?unlockReason=${reason}`),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/teams/${teamId}/tocs/${tableOfContentId}?unlockReason=${reason}`),
         actions.STAFF_PUZZLES_UNLOCKING,
         actions.STAFF_PUZZLES_UNLOCKED,
         actions.STAFF_PUZZLES_UNLOCK_FAILED
@@ -96,7 +96,7 @@ export const relockClueForTeam = (teamId: string, tableOfContentId: string) => (
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/teams/${teamId}/tocs/${tableOfContentId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/teams/${teamId}/tocs/${tableOfContentId}`),
         actions.STAFF_PUZZLES_UNLOCKING,
         actions.STAFF_PUZZLES_UNLOCKED,
         actions.STAFF_PUZZLES_UNLOCK_FAILED
@@ -116,7 +116,7 @@ export const addContentToClue = (tableOfContentId: string, contentTemplate: Cont
 
     doServiceRequest(
         dispatch,
-        () => Axios.post(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/content`, body),
+        () => Axios.post(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/content`, body),
         constants.ADD_ANSWER_STARTED,
         constants.ADD_ANSWER_FINISHED,
         constants.ADD_ANSWER_FAILED
@@ -128,7 +128,7 @@ export const addLocationToClue = (tableOfContentId: string, locationTemplate: Lo
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/locations`, locationTemplate),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/locations`, locationTemplate),
         constants.ADD_ANSWER_STARTED,
         constants.ADD_ANSWER_FINISHED,
         constants.ADD_ANSWER_FAILED
@@ -140,7 +140,7 @@ export const deleteContent = (tableOfContentId: string, contentId: string) => (d
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/content/${contentId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/content/${contentId}`),
         constants.STAFFDETAILS_FETCHING,
         constants.STAFFDETAILS_FETCHED,
         constants.STAFFDETAILS_FAILED
@@ -160,7 +160,7 @@ export const addContentToAnswer = (tableOfContentId: string, answerId: string, c
 
     doServiceRequest(
         dispatch,
-        () => Axios.post(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}/content`, body),
+        () => Axios.post(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}/content`, body),
         constants.ADD_ANSWER_STARTED,
         constants.ADD_ANSWER_FINISHED,
         constants.ADD_ANSWER_FAILED
@@ -172,7 +172,7 @@ export const deleteContentFromAnswer = (tableOfContentId: string, answerId: stri
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}/content`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}/content`),
         constants.ADD_ANSWER_STARTED,
         constants.ADD_ANSWER_FINISHED,
         constants.ADD_ANSWER_FAILED
@@ -184,7 +184,7 @@ export const updateClueInstance = (tableOfContentId: string, instanceTemplate: C
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/instances`, instanceTemplate),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/instances`, instanceTemplate),
         actions.ADD_INSTANCE_STARTED,
         actions.ADD_INSTANCE_FINISHED,
         actions.ADD_INSTANCE_FAILED
@@ -196,7 +196,7 @@ export const deleteClueInstance = (tableOfContentId: string, instanceId: string)
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/instances/${instanceId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/instances/${instanceId}`),
         actions.DELETE_INSTANCE_STARTED,
         actions.DELETE_INSTANCE_FINISHED,
         actions.DELETE_INSTANCE_FAILED
@@ -208,7 +208,7 @@ export const addPuzzleUnlock = (answerId: string, tableOfContentId: string, team
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/puzzles/${eventInstanceId}/answers/${answerId}/unlocks/${tableOfContentId}${( teamId !== null ? '?appliesToTeam=' + teamId : '' )}`),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/unlocks/${tableOfContentId}${( teamId !== null ? '?appliesToTeam=' + teamId : '' )}`),
         actions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
@@ -220,7 +220,7 @@ export const deletePuzzleUnlock = (answerId: string, tableOfContentId: string) =
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/puzzles/${eventInstanceId}/answers/${answerId}/unlocks/${tableOfContentId}`),
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/unlocks/${tableOfContentId}`),
         actions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED

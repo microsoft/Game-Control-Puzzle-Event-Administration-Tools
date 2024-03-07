@@ -10,7 +10,7 @@ export const fetchPlayerClues = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/playerPuzzles/${eventInstanceId}`),
+        () => Axios.get(`/api/playerPuzzles/${eventInstanceId}`),
         actions.PLAYER_CLUES_FETCHING,
         actions.PLAYER_CLUES_FETCHED,
         actions.PLAYER_CLUES_FAILED
@@ -20,7 +20,7 @@ export const fetchPlayerClues = () => (dispatch: any, getState: any) => {
 export const submitAnswer = (tableOfContentId: string, submission: SubmissionTemplate) => (dispatch: any, getState: any) => {
     doServiceRequest(
         dispatch,
-        () => Axios.post(`api/playerPuzzles/${tableOfContentId}/submitAnswer`, submission),
+        () => Axios.post(`/api/playerPuzzles/${tableOfContentId}/submitAnswer`, submission),
         actions.PLAYER_CLUES_ANSWER_SUBMITTING,
         actions.PLAYER_CLUES_ANSWER_SUBMITTED,
         actions.PLAYER_CLUES_ANSWER_FAILED
@@ -32,7 +32,7 @@ export const rateClue = (tableOfContentId: string, ratingTemplate: RatingTemplat
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/playerPuzzles/${eventInstanceId}/toc/${tableOfContentId}/rating`, ratingTemplate),
+        () => Axios.put(`/api/playerPuzzles/${eventInstanceId}/toc/${tableOfContentId}/rating`, ratingTemplate),
         actions.PLAYER_CLUES_RATING_SUBMITTING,
         actions.PLAYER_CLUES_RATING_SUBMITTED,
         actions.PLAYER_CLUES_RATING_FAILED

@@ -9,7 +9,7 @@ export const fetchPlayerAchievements = () => async (dispatch: any, getState: any
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/playerPuzzles/${eventInstanceId}/achievements`),
+        () => Axios.get(`/api/playerPuzzles/${eventInstanceId}/achievements`),
         actions.PLAYER_ACHIEVEMENTS_FETCHING,
         actions.PLAYER_ACHIEVEMENTS_FETCHED,
         actions.PLAYER_ACHIEVEMENTS_FAILED

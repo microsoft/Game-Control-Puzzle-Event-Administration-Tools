@@ -10,7 +10,7 @@ export const getGcMessages = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/teams/${eventInstanceId}/messages`),
+        () => Axios.get(`/api/staff/teams/${eventInstanceId}/messages`),
         actions.STAFF_MESSAGES_FETCHING,
         actions.STAFF_MESSAGES_FETCHED,
         actions.STAFF_MESSAGES_FAILED
@@ -22,7 +22,7 @@ export const sendGcMessage = (messageTemplate: MessageTemplate) => (dispatch: an
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/teams/${eventInstanceId}/teams/messages`, messageTemplate),
+        () => Axios.put(`/api/staff/teams/${eventInstanceId}/teams/messages`, messageTemplate),
         actions.STAFF_MESSAGES_SENDING,
         actions.STAFF_MESSAGES_SENT,
         actions.STAFF_MESSAGES_FAILED
