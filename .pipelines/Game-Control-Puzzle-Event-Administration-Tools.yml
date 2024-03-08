@@ -43,6 +43,13 @@ extends:
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'ci --legacy-peer-deps'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
+
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              Copy-Item -path $(Build.SourcesDirectory)/client.env -Destination $(Build.SourcesDirectory)/client/.env
+            
         - task: Npm@1
           displayName: 'npm run build'
           inputs:
@@ -50,6 +57,12 @@ extends:
             workingDir: $(Build.SourcesDirectory)/client
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
+
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              Copy-Item -path $(Build.SourcesDirectory)/.pipelines/staticwebapp.config.json -Destination $(Build.SourcesDirectory)/client/build/staticwebapp.config.json
 
         - task: AzureCLI@2
           inputs:
@@ -61,9 +74,16 @@ extends:
               $apiKey = az rest --method post --uri /subscriptions/$subscriptionId/resourceGroups/igevent/providers/Microsoft.Web/staticSites/spiderdoggo2/listSecrets?api-version=2019-08-01 | ConvertFrom-Json | Select-Object -ExpandProperty properties | Select-Object -ExpandProperty apiKey;             
               Write-Host "##vso[task.setvariable variable=webapptoken;issecret=true]$apiKey"
 
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              Get-ChildItem -path $(Build.SourcesDirectory)/.pipelines/
+
         - task: AzureStaticWebApp@0
           inputs:
             app_location: '/client/build/'
+            config_file_location: '/client/build/'
             skip_app_build: true
             skip_api_build: true
             verbose: true
