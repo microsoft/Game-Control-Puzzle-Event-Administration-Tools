@@ -44,11 +44,11 @@ extends:
             customCommand: 'ci --legacy-peer-deps'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
 
-        - task: CopyFiles@2
+        - task: PowerShell@2
           inputs:
-            SourceFolder: '$(Build.SourcesDirectory)'
-            Contents: 'client.env'
-            TargetFolder: '$(Build.SourcesDirectory)\client'
+            targetType: 'inline'
+            script: |
+              Copy-Item -path $(Build.SourcesDirectory)/client.env -Destination $(Build.SourcesDirectory)/client/.env
             
         - task: Npm@1
           displayName: 'npm run build'
