@@ -74,6 +74,12 @@ extends:
               $apiKey = az rest --method post --uri /subscriptions/$subscriptionId/resourceGroups/igevent/providers/Microsoft.Web/staticSites/spiderdoggo2/listSecrets?api-version=2019-08-01 | ConvertFrom-Json | Select-Object -ExpandProperty properties | Select-Object -ExpandProperty apiKey;             
               Write-Host "##vso[task.setvariable variable=webapptoken;issecret=true]$apiKey"
 
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              Get-ChildItem -path $(Build.SourcesDirectory)/.pipelines/
+
         - task: AzureStaticWebApp@0
           inputs:
             app_location: '/client/build/'
