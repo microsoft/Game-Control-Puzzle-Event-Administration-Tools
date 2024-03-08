@@ -83,7 +83,7 @@ extends:
         - task: AzureStaticWebApp@0
           inputs:
             app_location: '/client/build/'
-            config_file_location: '$(Build.SourcesDirectory)/client/build'
+            config_file_location: '/client/build/'
             skip_app_build: true
             skip_api_build: true
             verbose: true
