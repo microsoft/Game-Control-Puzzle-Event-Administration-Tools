@@ -58,6 +58,12 @@ extends:
             customCommand: 'run build'
             customRegistry: $(Build.SourcesDirectory)/.pipelines/.npmrc
 
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              Copy-Item -path $(Build.SourcesDirectory)/.pipelines/staticwebapp.config.json -Destination $(Build.SourcesDirectory)/client/build/staticwebapp.config.json
+
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'Microsoft Intern Game(61f6dc5a-d24e-44f7-9c93-be9307ee3602)'
