@@ -6,6 +6,8 @@
 # env files
 database.env
 server.env
+client.env
+.env
 
 # User-specific files
 *.rsuser
