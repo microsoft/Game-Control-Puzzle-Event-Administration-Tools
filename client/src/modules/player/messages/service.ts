@@ -9,7 +9,7 @@ export const fetchPlayerMessages = () => async (dispatch: any, getState: any) =>
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/playerPuzzles/${eventInstanceId}/messages`),
+        () => Axios.get(`/api/playerPuzzles/${eventInstanceId}/messages`),
         actions.PLAYER_MESSAGES_FETCHING,
         actions.PLAYER_MESSAGES_FETCHED,
         actions.PLAYER_MESSAGES_FAILED

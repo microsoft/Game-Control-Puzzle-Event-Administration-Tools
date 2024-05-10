@@ -10,7 +10,7 @@ export const deletePlayerSubmission = (submissionId: string) => (dispatch: any, 
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/admin/player/${eventInstanceId}/submissions/${submissionId}`),
+        () => Axios.delete(`/api/admin/player/${eventInstanceId}/submissions/${submissionId}`),
         actions.ADMIN_PLAYER_SUBMISSION_DELETING,
         actions.ADMIN_PLAYER_SUBMISSION_DELETED,
         actions.ADMIN_PLAYER_SUBMISSION_FAILED,

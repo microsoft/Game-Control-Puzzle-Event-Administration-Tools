@@ -12,7 +12,7 @@ export const addOrUpdateTeam = (teamTemplate: TeamTemplate) => (dispatch: any, g
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/teams/${eventInstanceId}`, teamTemplate),
+        () => Axios.put(`/api/staff/teams/${eventInstanceId}`, teamTemplate),
         actions.STAFF_TEAMS_ADDING,
         actions.STAFF_TEAMS_ADDED,
         actions.STAFF_TEAMS_FAILED
@@ -26,7 +26,7 @@ export const fetchStaffTeams = () => (dispatch: any, getState: any) => {
     if (!teamsModule.isLoading) {
         doServiceRequest(
             dispatch,
-            () => Axios.get(`api/staff/teams/${eventInstanceId}`),
+            () => Axios.get(`/api/staff/teams/${eventInstanceId}`),
             actions.STAFF_TEAMS_FETCHING,
             actions.STAFF_TEAMS_FETCHED,
             actions.STAFF_TEAMS_FAILED
@@ -39,7 +39,7 @@ export const deleteTeam = (teamId: string) => (dispatch: any, getState: any) => 
 
     doServiceRequest(
         dispatch,
-        () => Axios.delete(`api/staff/teams/${eventInstanceId}/teams/${teamId}`),
+        () => Axios.delete(`/api/staff/teams/${eventInstanceId}/teams/${teamId}`),
         actions.STAFF_TEAMS_FETCHING,
         actions.STAFF_TEAMS_FETCHED,
         actions.STAFF_TEAMS_FAILED
@@ -51,7 +51,7 @@ export const updateCallForTeam = (teamId: string, callTemplate: CallTemplate, ca
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/teams/${eventInstanceId}/teams/${teamId}/call`, callTemplate),
+        () => Axios.put(`/api/staff/teams/${eventInstanceId}/teams/${teamId}/call`, callTemplate),
         actions.STAFF_TEAMS_CALL_START,
         actions.STAFF_TEAMS_CALL_STARTED,
         actions.STAFF_TEAMS_CALL_FAILED,
@@ -66,7 +66,7 @@ export const updatePoints = (teamId: string, pointsTemplate: PointsTemplate) => 
     
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/teams/${eventInstanceId}/teams/${teamId}/points`, pointsTemplate),
+        () => Axios.put(`/api/staff/teams/${eventInstanceId}/teams/${teamId}/points`, pointsTemplate),
         actions.STAFF_TEAMS_POINTS_GRANTING,
         actions.STAFF_TEAMS_FETCHED,
         actions.STAFF_TEAMS_FAILED
@@ -78,7 +78,7 @@ export const updateTeamAdditionalData = (teamId: string, additionalData: TeamAdd
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/staff/teams/${eventInstanceId}/teams/${teamId}/data`, additionalData),
+        () => Axios.put(`/api/staff/teams/${eventInstanceId}/teams/${teamId}/data`, additionalData),
         actions.STAFF_TEAMS_DATA_UPDATING,
         actions.STAFF_TEAMS_DATA_UPDATED,
         actions.STAFF_TEAMS_DATA_FAILED

@@ -193,8 +193,8 @@ namespace GameControl.Server.Controllers
                 {
                     EventId = p.EventId,
                     Name = p.EventName,
-                    EventInstances = allEventInstances.Where(q => q.Event == p.EventId).OrderBy(s => s.StartTime)
-                });
+                    EventInstances = allEventInstances.Where(q => q.Event == p.EventId).OrderBy(s => s.StartTime).ToList()
+                }).ToList();
 
                 return Ok(allEvents);
             }

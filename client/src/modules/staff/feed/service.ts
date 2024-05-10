@@ -9,7 +9,7 @@ export const getStaffFeed = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/teams/${eventInstanceId}/feed`),
+        () => Axios.get(`/api/staff/teams/${eventInstanceId}/feed`),
         actions.STAFF_FEED_FETCHING,
         actions.STAFF_FEED_FETCHED,
         actions.STAFF_FEED_FAILED

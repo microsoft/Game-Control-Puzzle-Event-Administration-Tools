@@ -10,7 +10,7 @@ export const getPlayerFeed = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/playerPuzzles/${eventInstanceId}/feed`),
+        () => Axios.get(`/api/playerPuzzles/${eventInstanceId}/feed`),
         actions.PLAYER_FEED_FETCHING,
         actions.PLAYER_FEED_FETCHED,
         actions.PLAYER_FEED_FAILED
@@ -22,7 +22,7 @@ export const submitPulse = (pulseTemplate: PulseTemplate) => (dispatch: any, get
 
     doServiceRequest(
         dispatch,
-        () => Axios.post(`api/playerPuzzles/${eventInstanceId}/pulse`, pulseTemplate),
+        () => Axios.post(`/api/playerPuzzles/${eventInstanceId}/pulse`, pulseTemplate),
         actions.PLAYER_FEED_PULSE_SUBMITTING,
         actions.PLAYER_FEED_PULSE_COMPLETED,
         actions.PLAYER_FEED_PULSE_COMPLETED
@@ -39,7 +39,7 @@ export const submitPhotoPulse = (pulseTemplate: PulseTemplate) => (dispatch: any
 
     doServiceRequest(
         dispatch,
-        () => Axios.post(`api/playerPuzzles/${eventInstanceId}/photoPulse`, body),
+        () => Axios.post(`/api/playerPuzzles/${eventInstanceId}/photoPulse`, body),
         actions.PLAYER_FEED_PULSE_SUBMITTING,
         actions.PLAYER_FEED_PULSE_COMPLETED,
         actions.PLAYER_FEED_PULSE_COMPLETED

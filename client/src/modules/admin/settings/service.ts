@@ -9,7 +9,7 @@ export const fetchEventSettings = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/admin/events/${eventInstanceId}/settings`),
+        () => Axios.get(`/api/admin/events/${eventInstanceId}/settings`),
         actions.ADMIN_EVENT_SETTINGS_LOADING,
         actions.ADMIN_EVENT_SETTINGS_SUCCEEDED,
         actions.ADMIN_EVENT_SETTINGS_FAILED
@@ -21,7 +21,7 @@ export const updateStringSetting = (settingType: string, name: string, value: st
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`api/admin/events/${eventInstanceId}/settings/${name}`, { settingType, value }),
+        () => Axios.put(`/api/admin/events/${eventInstanceId}/settings/${name}`, { settingType, value }),
         actions.ADMIN_EVENT_SETTINGS_LOADING,
         actions.ADMIN_EVENT_SETTINGS_SUCCEEDED,
         actions.ADMIN_EVENT_SETTINGS_FAILED

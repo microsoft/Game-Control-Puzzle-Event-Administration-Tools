@@ -9,7 +9,7 @@ export const getStaffGrid = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/staff/grid/${eventInstanceId}`),
+        () => Axios.get(`/api/staff/grid/${eventInstanceId}`),
         actions.STAFF_GRID_FETCHING,
         actions.STAFF_GRID_FETCHED,
         actions.STAFF_GRID_FAILED

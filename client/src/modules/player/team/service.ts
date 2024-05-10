@@ -9,7 +9,7 @@ export const fetchTeamData = () => (dispatch: any, getState: any) => {
 
     doServiceRequest(
         dispatch,
-        () => Axios.get(`api/player/team/${eventInstanceId}`),
+        () => Axios.get(`/api/player/team/${eventInstanceId}`),
         actions.PLAYER_TEAM_FETCHING,
         actions.PLAYER_TEAM_FETCHED,
         actions.PLAYER_TEAM_FAILED
