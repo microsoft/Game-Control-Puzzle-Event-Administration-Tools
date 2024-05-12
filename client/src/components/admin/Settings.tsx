@@ -101,21 +101,20 @@ const StringConfigurationButton = ({ title, label, settingName, previousValue, u
     );
 };
 
-const ToggleConfigurationButton = ({ settingName, previousValue, updateStringSetting } : { settingName: string, previousValue?: string, updateStringSetting: updateStringSettingFunction }) => {
-    const [settingValue, setSettingValue] = useState(previousValue ?? "");
+const ToggleConfigurationButton = ({ settingName, previousValue, updateStringSetting } : { settingName: string, previousValue?: EventSetting, updateStringSetting: updateStringSettingFunction }) => {
+    const [settingValue, setSettingValue] = useState<EventSetting | undefined>(previousValue);
 
     // The control may have been realized before the backing setting was loaded, so if previousValue ever changes
     // we'll update the component state to reflect that.
     useEffect(() => {
-        setSettingValue(previousValue ?? "");
+        setSettingValue(previousValue);
     }, [previousValue]);
     
     return (
         <Button
             onClick={() => {
-                const newSettingValue = (!(settingValue === "true")).toString();
-                setSettingValue(newSettingValue);
-                updateStringSetting("String", settingName, newSettingValue);
+                const newSettingStringValue = (!(settingValue?.stringValue === "true")).toString();
+                updateStringSetting("String", settingName, newSettingStringValue);
             }}>
             Toggle
         </Button>
