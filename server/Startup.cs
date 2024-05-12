@@ -20,6 +20,7 @@ using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 
 namespace GameControl.Server
 {
@@ -90,7 +91,12 @@ namespace GameControl.Server
                 };
             });
 
+            // Logging
             services.AddLogging();
+
+            // Telemetry
+            services.AddOpenTelemetry().UseAzureMonitor();
+
             services.AddControllers().AddNewtonsoftJson();
             services.AddControllersWithViews().AddControllersAsServices();
             services.AddSignalR();
