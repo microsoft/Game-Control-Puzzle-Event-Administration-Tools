@@ -2,12 +2,18 @@ import { Nav, NavDropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector } from "react-redux";
 
-import { getChallengePluralNameSetting, getIsUserAdmin, getIsUserSignedIn, getIsUserStaff } from "modules";
+import { getChallengePluralNameSetting, getIsUserAdmin, getIsUserSignedIn, getIsUserStaff, getShowAchievementsSetting, getShowActivitySetting, getShowChallengesSetting, getShowInboxSetting, getShowPulseSetting } from "modules";
 
 export const NavigationTabs = () => {
     const isUserSignedIn = useSelector(getIsUserSignedIn);
     const isUserStaff = useSelector(getIsUserStaff);
     const isUserAdmin = useSelector(getIsUserAdmin);
+
+    const showPulse = useSelector(getShowPulseSetting);
+    const showInbox = useSelector(getShowInboxSetting);
+    const showAchievements = useSelector(getShowAchievementsSetting);
+    const showActivity = useSelector(getShowActivitySetting);
+    const showChallenges = useSelector(getShowChallengesSetting); 
 
     const challengesPluralName = useSelector(getChallengePluralNameSetting);
 
@@ -84,21 +90,36 @@ export const NavigationTabs = () => {
                 <LinkContainer to="/player/clues">
                     <Nav.Link eventKey={2}>Puzzles</Nav.Link>
                 </LinkContainer>
-                <LinkContainer to="/player/pulse">
-                    <Nav.Link eventKey={3}>Pulse</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/player/messages">
-                    <Nav.Link eventKey={4}>Inbox</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/player/feed">
-                    <Nav.Link eventKey={5}>Activity</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/player/achievements">
-                    <Nav.Link eventKey={6}>Achievements</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/player/challenges">
-                    <Nav.Link eventKey={7}>{challengesPluralName}</Nav.Link>
-                </LinkContainer>
+                {
+                    showPulse &&
+                    <LinkContainer to="/player/pulse">
+                        <Nav.Link eventKey={3}>Pulse</Nav.Link>
+                    </LinkContainer>
+                }
+                {
+                    showInbox &&
+                    <LinkContainer to="/player/messages">
+                        <Nav.Link eventKey={4}>Inbox</Nav.Link>
+                    </LinkContainer>
+                }
+                {
+                    showActivity &&
+                    <LinkContainer to="/player/feed">
+                        <Nav.Link eventKey={5}>Activity</Nav.Link>
+                    </LinkContainer>
+                }
+                {
+                    showAchievements &&
+                    <LinkContainer to="/player/achievements">
+                        <Nav.Link eventKey={6}>Achievements</Nav.Link>
+                    </LinkContainer>
+                }
+                {
+                    showChallenges &&
+                    <LinkContainer to="/player/challenges">
+                        <Nav.Link eventKey={7}>{challengesPluralName}</Nav.Link>
+                    </LinkContainer>
+                }
                 <LinkContainer to="/logout">
                     <Nav.Link eventKey={8}>Log out</Nav.Link>
                 </LinkContainer>

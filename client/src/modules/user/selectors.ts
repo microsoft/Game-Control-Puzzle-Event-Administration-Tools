@@ -1,4 +1,4 @@
-import { ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting } from "modules/types/constants";
+import { ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting, ShowAchievementsSetting, ShowActivitySetting, ShowCallManagerSetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from "modules/types/constants";
 
 export const getUser = (state: any) => state.user;
 
@@ -28,3 +28,24 @@ export const getChallengePluralNameSetting = (state: any) =>
 
 export const getPointsNameSetting = (state: any) => 
     getUser(state).eventSettings.find((x: any) => x.name === PointsNameSetting)?.stringValue || "Points";
+
+export const getShowPulseSetting = (state:any) => getBooleanSetting(state, ShowPulseSetting);
+export const getShowInboxSetting = (state:any) => getBooleanSetting(state, ShowInboxSetting);
+export const getShowActivitySetting = (state:any) => getBooleanSetting(state, ShowActivitySetting);
+export const getShowAchievementsSetting = (state:any) => getBooleanSetting(state, ShowAchievementsSetting);
+export const getShowChallengesSetting = (state:any) => getBooleanSetting(state, ShowChallengesSetting);
+export const getShowCallManagerSetting = (state:any) => getBooleanSetting(state, ShowCallManagerSetting);
+
+function getBooleanSetting (state: any, settingName: string)
+{
+    const setting = getUser(state).eventSettings.find((x: any) => x.name === settingName);
+    
+    const stringValue = setting?.stringValue;
+    
+    if (stringValue === null || stringValue === undefined)
+    {
+        return true;
+    }
+    
+    return (stringValue === "true");
+};

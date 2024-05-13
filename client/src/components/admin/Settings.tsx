@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, FormGroup } from 'react-bootstrap';
+import { Button, Form, FormGroup, ToggleButton } from 'react-bootstrap';
 import BootstrapTable, { ColumnDescription } from 'react-bootstrap-table-next';
 import { FaPlus } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { EventSetting, getEventSettingsModule } from 'modules/admin';
 import { fetchEventSettings, updateStringSetting as putStringSetting } from "modules/admin/settings/service";
 import { useStaffAchievements } from 'modules/staff/achievements';
-import { Achievement, ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting } from "modules/types";
+import { Achievement, ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting, ShowAchievementsSetting, ShowActivitySetting, ShowCallManagerSetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from "modules/types";
 
 import DialogRenderProp from '../staff/dialogs/DialogRenderProp';
 import SimpleListForm from '../staff/dialogs/SimpleListForm';
@@ -98,6 +98,26 @@ const StringConfigurationButton = ({ title, label, settingName, previousValue, u
                 </div>
             }
         />
+    );
+};
+
+const ToggleConfigurationButton = ({ settingName, previousValue, updateStringSetting } : { settingName: string, previousValue?: EventSetting, updateStringSetting: updateStringSettingFunction }) => {
+    const [settingValue, setSettingValue] = useState<EventSetting | undefined>(previousValue);
+
+    // The control may have been realized before the backing setting was loaded, so if previousValue ever changes
+    // we'll update the component state to reflect that.
+    useEffect(() => {
+        setSettingValue(previousValue);
+    }, [previousValue]);
+    
+    return (
+        <Button
+            onClick={() => {
+                const newSettingStringValue = (!(settingValue?.stringValue === "true")).toString();
+                updateStringSetting("UserString", settingName, newSettingStringValue);
+            }}>
+            Toggle
+        </Button>
     );
 };
 
@@ -208,6 +228,74 @@ export const Settings = () => {
         }
     ];
 
+    const navTabColumns: ColumnDescription[] = [
+        {
+            dataField: 'settingLabel',
+            text: 'Show Column',
+        },
+        {
+            dataField: 'settingValue',
+            text: 'Value',
+            formatter: (cell, row) => {
+                if (!cell) {
+                    return <div>{row.defaultValue.toString()}</div>
+                }
+
+                return <div>{cell.stringValue}</div>
+            }
+        },
+        {
+            dataField: 'button',
+            text: 'Configure',
+            formatter: (cell, row) => {
+                return <ToggleConfigurationButton 
+                    settingName={row.settingName}
+                    previousValue={row.settingValue}
+                    updateStringSetting={updateStringSetting}    
+                />        
+            }
+        }
+    ];
+
+    const navTabData = [
+        {
+            settingName: ShowPulseSetting,
+            settingLabel: "Pulse",
+            settingValue: settingsModule.data.find(x => x.name === ShowPulseSetting),
+            defaultValue: "true"
+        },
+        {
+            settingName: ShowInboxSetting,
+            settingLabel: "Inbox",
+            settingValue: settingsModule.data.find(x => x.name === ShowInboxSetting),
+            defaultValue: "true"
+        },
+        {
+            settingName: ShowActivitySetting,
+            settingLabel: "Activity",
+            settingValue: settingsModule.data.find(x => x.name === ShowActivitySetting),
+            defaultValue: "true"
+        },
+        {
+            settingName: ShowAchievementsSetting,
+            settingLabel: "Achievement",
+            settingValue: settingsModule.data.find(x => x.name === ShowAchievementsSetting),
+            defaultValue: "true"
+        },
+        {
+            settingName: ShowChallengesSetting,
+            settingLabel: "Challenges",
+            settingValue: settingsModule.data.find(x => x.name === ShowChallengesSetting),
+            defaultValue: "true"
+        },
+        {
+            settingName: ShowCallManagerSetting,
+            settingLabel: "Call Manager",
+            settingValue: settingsModule.data.find(x => x.name === ShowCallManagerSetting),
+            defaultValue: "true"
+        }
+    ]
+
     return (
         <div>
             <br/>
@@ -224,6 +312,13 @@ export const Settings = () => {
             <BootstrapTable
                 columns={brandingColumns}
                 data={brandingData}
+                keyField="settingName"
+            />
+
+            <h5>Show UI Elements</h5>
+            <BootstrapTable 
+                columns={navTabColumns}
+                data={navTabData}
                 keyField="settingName"
             />
         </div>
