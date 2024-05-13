@@ -114,7 +114,7 @@ const ToggleConfigurationButton = ({ settingName, previousValue, updateStringSet
         <Button
             onClick={() => {
                 const newSettingStringValue = (!(settingValue?.stringValue === "true")).toString();
-                updateStringSetting("String", settingName, newSettingStringValue);
+                updateStringSetting("UserString", settingName, newSettingStringValue);
             }}>
             Toggle
         </Button>
