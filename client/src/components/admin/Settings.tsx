@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { EventSetting, getEventSettingsModule } from 'modules/admin';
 import { fetchEventSettings, updateStringSetting as putStringSetting } from "modules/admin/settings/service";
 import { useStaffAchievements } from 'modules/staff/achievements';
-import { Achievement, ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting, ShowAchievementsSetting, ShowActivitySetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from "modules/types";
+import { Achievement, ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting, ShowAchievementsSetting, ShowActivitySetting, ShowCallManagerSetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from "modules/types";
 
 import DialogRenderProp from '../staff/dialogs/DialogRenderProp';
 import SimpleListForm from '../staff/dialogs/SimpleListForm';
@@ -287,6 +287,12 @@ export const Settings = () => {
             settingLabel: "Challenges",
             settingValue: settingsModule.data.find(x => x.name === ShowChallengesSetting),
             defaultValue: "true"
+        },
+        {
+            settingName: ShowCallManagerSetting,
+            settingLabel: "Call Manager",
+            settingValue: settingsModule.data.find(x => x.name === ShowCallManagerSetting),
+            defaultValue: "true"
         }
     ]
 
@@ -309,7 +315,7 @@ export const Settings = () => {
                 keyField="settingName"
             />
 
-            <h5>Show Player Navigation Tabs</h5>
+            <h5>Show UI Elements</h5>
             <BootstrapTable 
                 columns={navTabColumns}
                 data={navTabData}

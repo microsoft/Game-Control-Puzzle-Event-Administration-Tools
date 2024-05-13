@@ -7,3 +7,4 @@ export const ShowInboxSetting = "ShowInbox";
 export const ShowActivitySetting = "ShowActivity";
 export const ShowAchievementsSetting = "ShowAchievements";
 export const ShowChallengesSetting = "ShowChallenges";
+export const ShowCallManagerSetting = "ShowCallManager";

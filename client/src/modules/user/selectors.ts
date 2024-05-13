@@ -1,4 +1,4 @@
-import { ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting, ShowAchievementsSetting, ShowActivitySetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from "modules/types/constants";
+import { ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting, ShowAchievementsSetting, ShowActivitySetting, ShowCallManagerSetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from "modules/types/constants";
 
 export const getUser = (state: any) => state.user;
 
@@ -34,6 +34,7 @@ export const getShowInboxSetting = (state:any) => getBooleanSetting(state, ShowI
 export const getShowActivitySetting = (state:any) => getBooleanSetting(state, ShowActivitySetting);
 export const getShowAchievementsSetting = (state:any) => getBooleanSetting(state, ShowAchievementsSetting);
 export const getShowChallengesSetting = (state:any) => getBooleanSetting(state, ShowChallengesSetting);
+export const getShowCallManagerSetting = (state:any) => getBooleanSetting(state, ShowCallManagerSetting);
 
 function getBooleanSetting (state: any, settingName: string)
 {
