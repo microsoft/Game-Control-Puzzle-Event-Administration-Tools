@@ -98,7 +98,7 @@ export default class Routes extends React.Component {
         return <div>
             <Route exact path="/" component={Home} />
             <Route path="/login" component={LoginComponent} />
-            <Route path="/legacyLogin" component={LegacyLoginComponent} />
+            <Route path="/nativeLogin" component={LegacyLoginComponent} />
             <Route path="/logout" component={Logout} />
 
             <Route path="/account" component={UserAccountComponent} />

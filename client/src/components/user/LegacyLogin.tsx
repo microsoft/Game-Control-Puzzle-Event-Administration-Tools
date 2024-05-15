@@ -28,7 +28,7 @@ export const LegacyLogin = () => {
             <div className="d-flex w-100 justify-content-center">
                 <Card className="" style={{ maxWidth: '650px', flex: 1 }}>
                     <Card.Body>
-                        <Card.Title>Legacy Log In</Card.Title>
+                        <Card.Title>Log In</Card.Title>
 
                         <Form
                             onSubmit={handleSubmit}>
