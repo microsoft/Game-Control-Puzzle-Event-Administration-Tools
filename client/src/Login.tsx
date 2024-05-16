@@ -41,13 +41,14 @@ export const Login = () => {
                     <small>Please provide this information to Game Control to help us get you connected:<br/> {user.additionalInformation}</small>
                 </Alert>
             }
-            <Button variant="outline-dark" disabled={user.isLoading} onClick={doMSALogin}><img src={MicrosoftLoginLogo} alt="Log in with a Microsoft Account"/></Button>
 
             <p>
-                <LinkContainer to="/legacyLogin">
-                    <Button variant="link">Log in with legacy account</Button>
+                <LinkContainer to="/nativeLogin">
+                    <Button size="lg" variant="link"><h2>Click here to login</h2></Button>
                 </LinkContainer>
             </p>
+
+            <Button variant="outline-dark" disabled={user.isLoading} onClick={doMSALogin}>GC only - Microsoft login</Button>
         </div>
     );
 };
