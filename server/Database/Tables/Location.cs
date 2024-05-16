@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +24,10 @@ namespace GameControl.Server.Database.Tables
 
         public string Address { get; set; }
 
+        [Column(TypeName = "decimal(16, 13)")]
         public decimal Latitude { get; set; }
 
+        [Column(TypeName = "decimal(16, 13)")]
         public decimal Longitude { get; set; }
 
         public int LocationFlag { get; set; }
