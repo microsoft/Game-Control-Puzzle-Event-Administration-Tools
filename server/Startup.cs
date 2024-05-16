@@ -95,7 +95,9 @@ namespace GameControl.Server
             services.AddLogging();
 
             // Telemetry
+#if !DEBUG
             services.AddOpenTelemetry().UseAzureMonitor();
+#endif
 
             services.AddControllers().AddNewtonsoftJson();
             services.AddControllersWithViews().AddControllersAsServices();

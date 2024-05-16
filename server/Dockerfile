@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 as builder
 WORKDIR /source
 COPY . .  
 RUN dotnet restore
-RUN dotnet publish -c Release -o /out GameControl.Server.csproj
+RUN dotnet publish -c Debug -o /out GameControl.Server.csproj
 
 # the final app uses the runtime image:
 FROM mcr.microsoft.com/dotnet/aspnet:8.0  
