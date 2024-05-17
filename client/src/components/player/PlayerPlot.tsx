@@ -5,7 +5,7 @@ import {AdditionalContent} from "components/staff/presentation/AdditionalContent
 import {CallManager} from "./CallManager";
 import {PlayerClue, usePlayerClues} from "modules/player";
 import {SolvedPlot, UnsolvedPlot} from "modules/types";
-import {FaPuzzlePiece, FaChevronDown} from "react-icons/fa";
+import {FaPuzzlePiece, FaChevronDown, FaLocationArrow} from "react-icons/fa";
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -39,7 +39,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
                                 </Row>
                                 <Row style={{justifyContent: 'center', display: 'flex'}}>
                                     <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
-                                        <Button><FaPuzzlePiece /> Puzzle</Button>
+                                        <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
                                     </LinkContainer>
                                 </Row>
                             </ListGroup.Item>
@@ -67,7 +67,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
                         </Row>
                         <Row style={{justifyContent: 'center', display: 'flex'}}>
                             <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
-                                <Button><FaPuzzlePiece /> Puzzle</Button>
+                                <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
                             </LinkContainer>
                         </Row>
                     </ListGroup.Item>
@@ -77,7 +77,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
             return (
                 <Container fluid style={{marginBottom: '37px'}}>
                     <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
-                        <Button><FaPuzzlePiece />{clue.submittableTitle}</Button>
+                        <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
                     </LinkContainer>
                 </Container>
             );
