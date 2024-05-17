@@ -76,7 +76,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
         } else {
             return (
                 <Container fluid>
-                    No plot for <em>{clue.submittableTitle}</em>
+                    <em>{clue.submittableTitle}</em>
                 </Container>
             );
         }
@@ -105,7 +105,12 @@ export const PlayerPlot = () => {
                 </Button>}
             <ListGroup>
                 {sortedClues.map(clue =>
-                    <PlotItem key={clue.tableOfContentId} clue={clue} />
+                    <div>
+                        <PlotItem key={clue.tableOfContentId} clue={clue} />
+                        <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
+                            <Button><FaPuzzlePiece />{clue.submittableTitle}</Button>
+                        </LinkContainer>
+                    </div>
                 )}
             </ListGroup>
         </div>
