@@ -20,7 +20,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
         if (solvedPlot.length > 0) {
             if (clue.submittableType === 'Plot') {
                 return (
-                        <Container fluid>
+                        <Container fluid style={{marginBottom: '37px'}}>
                             <ListGroup.Item>
                                 {clueSolveTimeAnchor}
                                 <Row style={{justifyContent: 'center', display: 'flex'}}>
@@ -31,7 +31,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
                 );
             } else {
                 return (
-                        <Container fluid>
+                        <Container fluid style={{marginBottom: '37px'}}>
                             <ListGroup.Item>
                                 {clueSolveTimeAnchor}
                                 <Row style={{justifyContent: 'center', display: 'flex'}}>                                
@@ -59,7 +59,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
             // color of the LinkContainer here. If we ever configure site-wide themes this will need to
             // get pulled into that.
             return (
-                <Container fluid>
+                <Container fluid style={{marginBottom: '37px'}}>
                     <ListGroup.Item>
                         {clueSolveTimeAnchor}
                         <Row style={{justifyContent: 'center', display: 'flex'}}>
@@ -75,7 +75,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
             );
         } else {
             return (
-                <Container fluid>
+                <Container fluid style={{marginBottom: '37px'}}>
                     <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
                         <Button><FaPuzzlePiece />{clue.submittableTitle}</Button>
                     </LinkContainer>
@@ -107,7 +107,7 @@ export const PlayerPlot = () => {
                 </Button>}
             <ListGroup>
                 {sortedClues.map(clue =>
-                    <div style={{marginBottom: '37px'}}>
+                    <div>
                         <PlotItem key={clue.tableOfContentId} clue={clue} />
                     </div>
                 )}
