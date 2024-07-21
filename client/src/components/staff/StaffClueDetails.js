@@ -9,6 +9,7 @@ import { getStaffPuzzleDetails } from 'modules'
 import { getStaffTeams, shouldRefreshTeams, shouldRefreshClues } from 'modules/staff';
 import { addAnswerToClue, addContentToClue, addLocationToClue, createClue, deleteClue, deleteContent, fetchStaffClueDetails, fetchStaffClues, relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
 import { fetchStaffTeams } from "modules/staff/teams/service";
+import { fetchStaffAchievements, getAchievementsModule, shouldRefreshAchievements } from 'modules/staff/achievements';
 
 import { AnswerForm, ClueForm, ContentForm, LocationForm } from './dialogs';
 import DialogRenderProp from './dialogs/DialogRenderProp';
@@ -69,6 +70,11 @@ class StaffClueDetails extends React.Component {
         // We'll only fetch if the teams have never been loaded.
         if (shouldRefreshTeams(this.props.teams)) {
             this.props.fetchTeams();
+        }
+
+        // Need the list of achievements for achievement-specific content unlocks
+        if (shouldRefreshAchievements(this.props.achievements)) {
+            this.props.fetchStaffAchievements();
         }
     }
 
@@ -163,6 +169,7 @@ class StaffClueDetails extends React.Component {
                                 renderButton={() => <><FaImages/> Add Content</>}
                                 renderBody={onComplete =>
                                     <ContentForm
+                                        achievements={this.props.achievements.data}
                                         onSubmit={content => {
                                             this.props.addContentToClue(foundClue.tableOfContentId, content);
                                             onComplete();
@@ -186,6 +193,7 @@ class StaffClueDetails extends React.Component {
                             />
                             <StaffClueContent
                                 content={foundClue.content}
+                                achievements={this.props.achievements.data}
                                 tableOfContentId={foundClue.tableOfContentId}
                                 addContentToClue={this.props.addContentToClue}
                                 addLocationToClue={this.props.addLocationToClue}
@@ -240,6 +248,7 @@ class StaffClueDetails extends React.Component {
 const mapStateToProps = (state, initProps) => ({
     user: state.user,
     clues: getStaffClues(state),
+    achievements: getAchievementsModule(state),
     currentClue: getStaffPuzzleDetails(state, initProps.match.params.id),
     teams: getStaffTeams(state)
 })
@@ -256,6 +265,7 @@ const mapDispatchToProps = (dispatch) => ({
     deleteContent: (tableOfContentId, contentId) => dispatch(deleteContent(tableOfContentId, contentId)),
     unlockClueForTeam: (teamId, tableOfContentId, reason) => dispatch(unlockClueForTeam(teamId, tableOfContentId, reason)),
     relockClueForTeam: (teamId, tableOfContentId) => dispatch(relockClueForTeam(teamId, tableOfContentId)),
+    fetchStaffAchievements: () => dispatch(fetchStaffAchievements())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(StaffClueDetails);

@@ -1,6 +1,7 @@
 ﻿using GameControl.Server.Database.SprocTypes;
 using GameControl.Server.Database.Tables;
 using GameControl.Server.Util;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 
 namespace GameControl.Server.ViewModel
@@ -18,6 +19,7 @@ namespace GameControl.Server.ViewModel
             this.ContentType = source.ContentType.Trim();
             this.Name = source.Name;
             this.LastUpdated = source.LastUpdate;
+            this.AchievementUnlockId = source.AchievementUnlockId;
 
             if (source.ContentType.Trim().Equals("PlainText", StringComparison.InvariantCultureIgnoreCase) ||
                 source.ContentType.Trim().Equals("RichText", StringComparison.InvariantCultureIgnoreCase) ||
@@ -51,6 +53,7 @@ namespace GameControl.Server.ViewModel
                 this.ContentType = source.ContentType.Trim();
                 this.Name = source.ContentName;
                 this.LastUpdated = source.ContentLastUpdated.Value;
+                this.AchievementUnlockId = source.AchievementUnlockId;
 
                 if (source.ContentType.Trim().Equals("PlainText", StringComparison.InvariantCultureIgnoreCase) ||
                     source.ContentType.Trim().Equals("RichText", StringComparison.InvariantCultureIgnoreCase) ||
@@ -96,6 +99,7 @@ namespace GameControl.Server.ViewModel
                 this.ContentType = source.ContentType.Trim();
                 this.Name = source.ContentName;
                 this.LastUpdated = source.ContentLastUpdated.Value;
+                this.AchievementUnlockId = source.AchievementUnlockId;
 
                 if (source.ContentType.Trim().Equals("PlainText", StringComparison.InvariantCultureIgnoreCase) ||
                     source.ContentType.Trim().Equals("RichText", StringComparison.InvariantCultureIgnoreCase) ||
@@ -151,5 +155,7 @@ namespace GameControl.Server.ViewModel
         public int LocationFlags { get; set; }
 
         public DateTime LastUpdated { get; set; }
+
+        public Guid? AchievementUnlockId { get; set; }
     }
 }

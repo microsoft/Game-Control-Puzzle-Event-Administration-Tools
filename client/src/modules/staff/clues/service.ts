@@ -113,6 +113,7 @@ export const addContentToClue = (tableOfContentId: string, contentTemplate: Cont
     body.append("contentName", contentTemplate.contentName);
     body.append("contentType", contentTemplate.contentType);
     body.append("binaryContent", contentTemplate.binaryContent);
+    contentTemplate.achievementUnlockId && body.append("achievementUnlockId", contentTemplate.achievementUnlockId);
 
     doServiceRequest(
         dispatch,

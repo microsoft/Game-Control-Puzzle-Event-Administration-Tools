@@ -51,6 +51,7 @@ export type ContentTemplate = Readonly<{
     contentName: string;
     stringContent?: string;
     binaryContent?: any;
+    achievementUnlockId?: string;
 }>;
 
 export type LocationTemplate = Readonly<{

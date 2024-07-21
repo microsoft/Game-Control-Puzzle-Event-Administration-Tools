@@ -24,6 +24,6 @@ namespace GameControl.Server.Database.Tables
 
         public byte[] EncryptionKey { get; set; }
 
-        public Guid? UnlockedByAchievement { get; set; }
+        public Guid? AchievementUnlockId { get; set; }
     }
 }

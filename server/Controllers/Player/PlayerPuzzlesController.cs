@@ -90,7 +90,7 @@ namespace GameControl.Server.Controllers.Player
                     {
 
                         IEnumerable<AdditionalContentForTeam> contentUnlockedByAchievements = contentDictionary[clue.TableOfContentId]
-                            .Where(p => !p.UnlockedByAchievement.HasValue || achievementIds.Contains(p.UnlockedByAchievement.Value));
+                            .Where(p => !p.AchievementUnlockId.HasValue || achievementIds.Contains(p.AchievementUnlockId.Value));
 
                         if (clue.IsSolved)
                         {

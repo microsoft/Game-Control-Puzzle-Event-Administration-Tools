@@ -124,7 +124,8 @@ export const ContentForm = ({ content, achievements, onSubmit }: Props) => {
                     contentName,
                     contentType,
                     binaryContent: contentType === 'Image' ? binaryContent : undefined,
-                    stringContent: contentName !== 'Image' ? stringContent : undefined
+                    stringContent: contentName !== 'Image' ? stringContent : undefined,
+                    achievementUnlockId
                 });
             }}>
                 {content ? 'Update' : 'Add'}
