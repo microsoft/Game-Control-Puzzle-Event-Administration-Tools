@@ -731,6 +731,7 @@ CREATE TABLE [dbo].[AdditionalContent](
 	[LastUpdate] [datetime] NOT NULL,
 	[EncryptionKey] [varbinary](max) NULL,
 	[ContentText] [nvarchar](max) NULL,
+    [UnlockedByAchievement] [uniqueidentifier] NULL,
  CONSTRAINT [PK_AdditionalContent] PRIMARY KEY CLUSTERED 
 (
 	[ContentId] ASC
@@ -3120,6 +3121,7 @@ BEGIN
 		AdditionalContent.LastUpdate as ContentLastUpdated,
 		AdditionalContent.EncryptionKey,
 		AdditionalContent.ContentText,
+        AdditionalContent.UnlockedByAchievement,
 		Location.LocationId,
 		Location.Name AS LocationName,
 		Location.LastUpdate as LocationLastUpdated,
@@ -3159,6 +3161,7 @@ BEGIN
         AdditionalContent.LastUpdate as ContentLastUpdated,
         AdditionalContent.EncryptionKey,
         AdditionalContent.ContentText,
+        AdditionalContent.UnlockedByAchievement,
         Location.LocationId,
         Location.Name AS LocationName,
         Location.LastUpdate as LocationLastUpdated,

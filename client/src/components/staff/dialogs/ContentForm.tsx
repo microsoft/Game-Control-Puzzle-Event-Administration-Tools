@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button,  Form, FormGroup } from 'react-bootstrap'
 import CodeMirror from 'react-codemirror';
 
-import { Content } from 'modules/types';
+import { Achievement, Content } from 'modules/types';
 import { ContentTemplate } from 'modules/staff/clues/models';
 
 require('codemirror/mode/htmlmixed/htmlmixed');
@@ -10,15 +10,17 @@ require('codemirror/lib/codemirror.css');
 
 type Props = Readonly<{
     content?: Content;
+    achievements?: Array<Achievement>
     onSubmit: (contentTemplate: ContentTemplate) => void;
 }>;
 
-export const ContentForm = ({ content, onSubmit }: Props) => {
+export const ContentForm = ({ content, achievements, onSubmit }: Props) => {
     const [contentId] = useState(content?.contentId ?? undefined);
     const [contentName, setContentName] = useState(content?.name ?? '');
     const [contentType, setContentType] = useState(content?.contentType ?? 'PlainText');
     const [stringContent, setStringContent] = useState(content?.stringContent ?? '');
     const [binaryContent, setBinaryContent] = useState(null);
+    const [achievementUnlockId, setAchievementUnlockId] = useState(content?.achievementUnlockId ?? undefined);
     
     const codeMirror = useRef<ReactCodeMirror.ReactCodeMirror | null>(null);
 
@@ -102,6 +104,19 @@ export const ContentForm = ({ content, onSubmit }: Props) => {
                     <Form.Control.Feedback type="invalid">Content must not be empty, and if a youtube URL must include embed in the URL</Form.Control.Feedback>
                 </FormGroup>
             }
+
+            <FormGroup>
+                <Form.Label>Unlocked by Achievement</Form.Label>
+                <Form.Control as="select"
+                                disabled={!!content || !achievements}
+                                value={achievementUnlockId}
+                                onChange={event => setAchievementUnlockId(event.target.value)}>
+                    <option value="" selected>None</option>
+                {              
+                    achievements?.map((achievement) => <option value={achievement.achievementId}>{achievement.name}</option>)
+                }
+                </Form.Control>
+            </FormGroup>
             
             <Button onClick={() => {
                 onSubmit({

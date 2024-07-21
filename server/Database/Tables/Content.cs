@@ -23,5 +23,7 @@ namespace GameControl.Server.Database.Tables
         public DateTime LastUpdate { get; set; }
 
         public byte[] EncryptionKey { get; set; }
+
+        public Guid? UnlockedByAchievement { get; set; }
     }
 }

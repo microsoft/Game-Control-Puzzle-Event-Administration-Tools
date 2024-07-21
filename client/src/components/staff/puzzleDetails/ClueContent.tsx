@@ -91,10 +91,21 @@ const ContentCard = ({ title, description, contentList, tableOfContentId, addCon
                 <Card.Text>
                     <Container fluid>
                         {contentList.map(content =>
+                        {
+                            let unlockedByAchievementElement = <></>;
+                            if (!!content.achievementUnlockId)
+                            {
+                                unlockedByAchievementElement = <>
+                                    <h6>Unlocked By Achievement:</h6>
+                                    <p>{content.achievementUnlockId}</p>
+                                </>
+                            }
+
                             <>
                                 <Row style={{ margin: "15px" }}>
                                     <AdditionalContent content={content}/>
                                 </Row>
+                                {unlockedByAchievementElement}
                                 <ContentActions
                                     addContentToClue={addContentToClue}
                                     addLocationToClue={addLocationToClue} 
@@ -102,7 +113,7 @@ const ContentCard = ({ title, description, contentList, tableOfContentId, addCon
                                     tableOfContentId={tableOfContentId}
                                     contentItem={content} />
                             </>
-                        )}
+                        })}
                     </Container>
                 </Card.Text>
             </Card>
