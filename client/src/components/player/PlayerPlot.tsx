@@ -5,7 +5,7 @@ import {AdditionalContent} from "components/staff/presentation/AdditionalContent
 import {CallManager} from "./CallManager";
 import {PlayerClue, usePlayerClues} from "modules/player";
 import {SolvedPlot, UnsolvedPlot} from "modules/types";
-import {FaPuzzlePiece, FaChevronDown} from "react-icons/fa";
+import {FaPuzzlePiece, FaChevronDown, FaLocationArrow} from "react-icons/fa";
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -20,7 +20,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
         if (solvedPlot.length > 0) {
             if (clue.submittableType === 'Plot') {
                 return (
-                        <Container fluid>
+                        <Container fluid style={{marginBottom: '37px'}}>
                             <ListGroup.Item>
                                 {clueSolveTimeAnchor}
                                 <Row style={{justifyContent: 'center', display: 'flex'}}>
@@ -31,7 +31,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
                 );
             } else {
                 return (
-                        <Container fluid>
+                        <Container fluid style={{marginBottom: '37px'}}>
                             <ListGroup.Item>
                                 {clueSolveTimeAnchor}
                                 <Row style={{justifyContent: 'center', display: 'flex'}}>                                
@@ -39,7 +39,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
                                 </Row>
                                 <Row style={{justifyContent: 'center', display: 'flex'}}>
                                     <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
-                                        <Button><FaPuzzlePiece /> Puzzle</Button>
+                                        <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
                                     </LinkContainer>
                                 </Row>
                             </ListGroup.Item>
@@ -59,7 +59,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
             // color of the LinkContainer here. If we ever configure site-wide themes this will need to
             // get pulled into that.
             return (
-                <Container fluid>
+                <Container fluid style={{marginBottom: '37px'}}>
                     <ListGroup.Item>
                         {clueSolveTimeAnchor}
                         <Row style={{justifyContent: 'center', display: 'flex'}}>
@@ -67,7 +67,7 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
                         </Row>
                         <Row style={{justifyContent: 'center', display: 'flex'}}>
                             <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
-                                <Button><FaPuzzlePiece /> Puzzle</Button>
+                                <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
                             </LinkContainer>
                         </Row>
                     </ListGroup.Item>
@@ -75,8 +75,10 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
             );
         } else {
             return (
-                <Container fluid>
-                    No plot for <em>{clue.submittableTitle}</em>
+                <Container fluid style={{marginBottom: '37px'}}>
+                    <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
+                        <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
+                    </LinkContainer>
                 </Container>
             );
         }
@@ -105,7 +107,9 @@ export const PlayerPlot = () => {
                 </Button>}
             <ListGroup>
                 {sortedClues.map(clue =>
-                    <PlotItem key={clue.tableOfContentId} clue={clue} />
+                    <div>
+                        <PlotItem key={clue.tableOfContentId} clue={clue} />
+                    </div>
                 )}
             </ListGroup>
         </div>
