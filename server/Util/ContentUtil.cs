@@ -31,7 +31,8 @@ namespace GameControl.Server.Util
                     ContentType = content.ContentType,
                     Name = content.ContentName,
                     ContentText = content.StringContent,
-                    LastUpdate = DateTime.UtcNow
+                    LastUpdate = DateTime.UtcNow,
+                    AchievementUnlockId = content.AchievementUnlockId,
                 };
 
                 dbContext.AdditionalContent.Add(newContent);
@@ -48,6 +49,7 @@ namespace GameControl.Server.Util
                         ContentType = content.ContentType,
                         Name = content.ContentName,
                         LastUpdate = DateTime.UtcNow,
+                        AchievementUnlockId = content.AchievementUnlockId,
                     };
 
                     var targetPath =

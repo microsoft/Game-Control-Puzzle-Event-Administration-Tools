@@ -1,5 +1,7 @@
 USE [gamecontrol]
 GO
+SET QUOTED_IDENTIFIER ON
+GO
 INSERT INTO [dbo].[Event] ([EventId], [EventName])
 VALUES (
         '88888888-8888-8888-8888-888888888888',

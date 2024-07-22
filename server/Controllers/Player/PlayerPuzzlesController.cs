@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -50,6 +51,7 @@ namespace GameControl.Server.Controllers.Player
                 var eventSubmissions = this.dbContext.GetValidSubmissions(eventInstanceId).ToList();
                 var sortOverridesRow = this.dbContext.TeamAdditionalData.AsNoTracking().FirstOrDefault(p => p.Team == participation.Team.Value && p.DataKey == TeamSortOverrideViewModel.AdditionalDataKey);
 
+                var achievementIds = this.dbContext.GetAchievementsForTeam(participation.Team.Value).Select(a => a.AchievementId).ToImmutableHashSet();
                 var overrides = new List<TeamSortOverrideViewModel>();
 
                 Dictionary<Guid, List<AdditionalContentForTeam>> contentDictionary = new Dictionary<Guid, List<AdditionalContentForTeam>>();
@@ -86,13 +88,21 @@ namespace GameControl.Server.Controllers.Player
                     clue.Content = new List<ContentViewModel>();
                     if (contentDictionary.ContainsKey(clue.TableOfContentId))
                     {
+
+                        IEnumerable<AdditionalContentForTeam> contentUnlockedByAchievements = contentDictionary[clue.TableOfContentId]
+                            .Where(p => !p.AchievementUnlockId.HasValue || achievementIds.Contains(p.AchievementUnlockId.Value));
+
                         if (clue.IsSolved)
                         {
-                            clue.Content = contentDictionary[clue.TableOfContentId].Where(p => p.ContentName != ContentViewModel.UnsolvedPlot && p.ContentName != ContentViewModel.SkipPlot).Select(p => new ContentViewModel(p));
+                            clue.Content = contentUnlockedByAchievements
+                                .Where(p => p.ContentName != ContentViewModel.UnsolvedPlot && p.ContentName != ContentViewModel.SkipPlot)
+                                .Select(p => new ContentViewModel(p));
                         }
                         else
                         {
-                            clue.Content = contentDictionary[clue.TableOfContentId].Where(p => p.ContentName != ContentViewModel.SolvedPlot && p.ContentName != ContentViewModel.SkipPlot).Select(p => new ContentViewModel(p));
+                            clue.Content = contentUnlockedByAchievements
+                                .Where(p => p.ContentName != ContentViewModel.SolvedPlot && p.ContentName != ContentViewModel.SkipPlot)
+                                .Select(p => new ContentViewModel(p));
                         }
                     }
 

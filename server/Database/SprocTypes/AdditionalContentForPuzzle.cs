@@ -20,6 +20,8 @@ namespace GameControl.Server.Database.SprocTypes
         
         public string ContentText { get; set; }
 
+        public Guid? AchievementUnlockId { get; set; }
+
         public string ShortName { get; set; }
 
         public string FileName { get; set; }

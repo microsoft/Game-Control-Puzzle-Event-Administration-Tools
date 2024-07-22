@@ -3,7 +3,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 
-import { Content } from "modules/types";
+import { Achievement, Content } from "modules/types";
 
 type ContentProps = Readonly<{
     content: Content;
@@ -83,9 +83,10 @@ type AdditionalContentProps = Readonly<{
     content: Content;
     teamId?: string;
     playerId?: string;
+    achievements?: Achievement[]
 }>;
 
-export const AdditionalContent = ({ content, teamId, playerId }: AdditionalContentProps) => {
+export const AdditionalContent = ({ content, teamId, playerId, achievements }: AdditionalContentProps) => {
     let tokenReplacedContent = { ...content };
     let teamShortName = useSelector(store => _.get(store, "user.teamShortName"));
 
@@ -100,19 +101,38 @@ export const AdditionalContent = ({ content, teamId, playerId }: AdditionalConte
         tokenReplacedContent.stringContent = tokenReplacedContent.stringContent.replace(/\[\[shortName\]\]/g, teamShortName.trim());
     }
 
+    let returnContent = <></>;
     if (content.contentType.trim() === "PlainText") {
-        return <TextContent content={tokenReplacedContent} />
+        returnContent = <TextContent content={tokenReplacedContent} />
     } else if (content.contentType.trim() === "RichText") {
-        return <HtmlContent content={tokenReplacedContent} />
+        returnContent = <HtmlContent content={tokenReplacedContent} />
     } else if (content.contentType.trim() === "Location") {
-        return <LocationContent content={tokenReplacedContent} />
+        returnContent = <LocationContent content={tokenReplacedContent} />
     } else if (content.contentType.trim() === "Hyperlink") {
-        return <HyperlinkContent content={tokenReplacedContent} />
+        returnContent = <HyperlinkContent content={tokenReplacedContent} />
     } else if (content.contentType.trim() === "Image") {
-        return <ImageContent content={tokenReplacedContent} />
+        returnContent = <ImageContent content={tokenReplacedContent} />
     } else if (content.contentType.trim() === "YoutubeUrl") {
-        return <YoutubeContent content={tokenReplacedContent} />
+        returnContent = <YoutubeContent content={tokenReplacedContent} />
     }
-    
-    return <></>;
+
+    let matchingAchievement = undefined;
+    if (content.achievementUnlockId && achievements)
+    {
+        matchingAchievement = achievements.find(achievement => achievement.achievementId === content.achievementUnlockId);
+    }
+
+    if (matchingAchievement)
+    {
+        return <div>
+            {returnContent}
+            <br />
+            <b>NOTE: The above content is unlocked by achievement:</b>
+            <p>{matchingAchievement.name}</p>
+        </div>
+    }
+    else
+    {
+        return returnContent;
+    }
 };

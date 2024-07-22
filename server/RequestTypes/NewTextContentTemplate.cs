@@ -14,5 +14,7 @@ namespace GameControl.Server.RequestTypes
         public string StringContent { get; set; }
 
         public IFormFile BinaryContent { get; set; }
+
+        public Guid? AchievementUnlockId { get; set; }
     }
 }

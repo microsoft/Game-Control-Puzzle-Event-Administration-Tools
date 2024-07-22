@@ -2,7 +2,7 @@ import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { FaEdit, FaTrashAlt, FaAngleDoubleUp } from 'react-icons/fa';
 import moment from "moment";
 
-import { Content, SkipPlot, SolvedPlot, UnsolvedPlot } from "modules/types";
+import { Achievement, Content, SkipPlot, SolvedPlot, UnsolvedPlot } from "modules/types";
 import { ContentTemplate, LocationTemplate } from "modules/staff/clues";
 
 import DialogRenderProp from '../dialogs/DialogRenderProp';
@@ -11,6 +11,7 @@ import { AdditionalContent } from "../presentation/AdditionalContent";
 
 type Props = Readonly<{
     content: Content[];
+    achievements: Achievement[];
     tableOfContentId: string;
     addContentToClue: (tableOfContentId: string, contentTemplate: ContentTemplate) => void;
     addLocationToClue: (tableOfContentId: string, locationTemplate: LocationTemplate) => void;
@@ -19,13 +20,14 @@ type Props = Readonly<{
 
 type ActionProps = Readonly<{
     contentItem: Content;
+    achievements: Achievement[]
     tableOfContentId: string;
     addContentToClue: (tableOfContentId: string, contentTemplate: ContentTemplate) => void;
     addLocationToClue: (tableOfContentId: string, locationTemplate: LocationTemplate) => void;
     deleteContent: (tableOfContentId: string, contentId: string) => void;
 }>;
 
-const ContentActions = ({ addContentToClue, addLocationToClue, deleteContent, tableOfContentId, contentItem }: ActionProps) => {
+const ContentActions = ({ addContentToClue, addLocationToClue, deleteContent, tableOfContentId, contentItem, achievements }: ActionProps) => {
     return (
         <Row>
             <Col style={{ alignContent: 'center' }}>
@@ -49,6 +51,7 @@ const ContentActions = ({ addContentToClue, addLocationToClue, deleteContent, ta
                                 return (
                                     <ContentForm
                                         content={contentItem}
+                                        achievements={achievements}
                                         onSubmit={content => {
                                             addContentToClue(tableOfContentId, content);
                                             onComplete();
@@ -74,13 +77,14 @@ type ContentCardProps = Readonly<{
     title: string;
     description: JSX.Element;
     contentList: Content[];
+    achievements: Achievement[];
     tableOfContentId: string;
     addContentToClue: (tableOfContentId: string, contentTemplate: ContentTemplate) => void;
     addLocationToClue: (tableOfContentId: string, locationTemplate: LocationTemplate) => void;
     deleteContent: (tableOfContentId: string, contentId: string) => void;
 }>;
 
-const ContentCard = ({ title, description, contentList, tableOfContentId, addContentToClue, addLocationToClue, deleteContent }: ContentCardProps) => {
+const ContentCard = ({ title, description, contentList, achievements, tableOfContentId, addContentToClue, addLocationToClue, deleteContent }: ContentCardProps) => {
     if (contentList.length > 0) {
         return (
             <Card style={{ justifySelf: "center", margin: "40px" }}>
@@ -90,17 +94,18 @@ const ContentCard = ({ title, description, contentList, tableOfContentId, addCon
                 </Card.Header>
                 <Card.Text>
                     <Container fluid>
-                        {contentList.map(content =>
+                        {contentList.map(content =>                     
                             <>
                                 <Row style={{ margin: "15px" }}>
-                                    <AdditionalContent content={content}/>
+                                    <AdditionalContent content={content} achievements={achievements}/>
                                 </Row>
                                 <ContentActions
                                     addContentToClue={addContentToClue}
                                     addLocationToClue={addLocationToClue} 
                                     deleteContent={deleteContent}
                                     tableOfContentId={tableOfContentId}
-                                    contentItem={content} />
+                                    contentItem={content}
+                                    achievements={achievements} />
                             </>
                         )}
                     </Container>
@@ -112,7 +117,7 @@ const ContentCard = ({ title, description, contentList, tableOfContentId, addCon
     }
 };
 
-export const StaffClueContent = ({ content, tableOfContentId, addContentToClue, addLocationToClue, deleteContent }: Props) => {
+export const StaffClueContent = ({ content, achievements, tableOfContentId, addContentToClue, addLocationToClue, deleteContent }: Props) => {
     const sortedContent = content.sort((a, b) => moment.utc(b.lastUpdated).diff(moment.utc(a.lastUpdated)));
 
     if (content.length > 0) {
@@ -125,6 +130,7 @@ export const StaffClueContent = ({ content, tableOfContentId, addContentToClue, 
             <>
                 <ContentCard
                     title="Unsolved Plot"
+                    achievements={achievements}
                     description={<em>Teams will see this on both the home page and puzzle page, but only when the puzzle is <strong>unsolved</strong>.</em>}
                     contentList={unsolvedPlotContent}
                     tableOfContentId={tableOfContentId}
@@ -135,6 +141,7 @@ export const StaffClueContent = ({ content, tableOfContentId, addContentToClue, 
 
                 <ContentCard
                     title="Solved Plot"
+                    achievements={achievements}
                     description={<em>Teams will see this on both the home page and puzzle page, but only when the puzzle is <strong>solved</strong>.</em>}
                     contentList={solvedPlotContent}
                     tableOfContentId={tableOfContentId}
@@ -145,6 +152,7 @@ export const StaffClueContent = ({ content, tableOfContentId, addContentToClue, 
 
                 <ContentCard
                     title="Skip Plot"
+                    achievements={achievements}
                     description={<em>If a team is <strong>skipped</strong> over this clue, they will see this on the home page, but this clue will not show up on all clues.</em>}
                     contentList={skippedPlotContent}
                     tableOfContentId={tableOfContentId}
@@ -155,6 +163,7 @@ export const StaffClueContent = ({ content, tableOfContentId, addContentToClue, 
 
                 <ContentCard
                     title="Other Content"
+                    achievements={achievements}
                     description={<em>Teams will only see this on the puzzle page, regardless of solve status</em>}
                     contentList={otherContent}
                     tableOfContentId={tableOfContentId}

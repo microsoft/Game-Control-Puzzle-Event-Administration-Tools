@@ -50,6 +50,7 @@ export type Content = Readonly<{
     latitude?: number;
     longitude?: number;
     locationFlags?: number;
+    achievementUnlockId?: string;
 }>;
 
 export type PlayerSubmission = Readonly<{
