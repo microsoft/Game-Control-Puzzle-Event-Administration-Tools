@@ -120,7 +120,8 @@ const UnlockedAchievements = ({ achievements }: { achievements: Achievement[]}) 
                     {achievements.map(achievement => {
                         return (
                             <ListGroupItem key={achievement.achievementId}>
-                                <AchievementItem achievement={achievement} dateText="Unlocked"/>
+                                <p>{achievement.name}</p>
+                                {/* <AchievementItem achievement={achievement} dateText="Unlocked"/> */}
                             </ListGroupItem>
                         );
                     })}
