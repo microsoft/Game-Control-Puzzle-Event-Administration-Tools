@@ -115,17 +115,16 @@ const UnlockedAchievements = ({ achievements }: { achievements: Achievement[]}) 
     if (achievements?.length > 0) {
         return (
             <div>
-                <div><small><em>Unlocked Achievements</em></small></div>
+                {/* <div><small><em>Unlocked Achievements</em></small></div>
                 <ListGroup>
                     {achievements.map(achievement => {
                         return (
                             <ListGroupItem key={achievement.achievementId}>
-                                <p>{achievement.name}</p>
-                                {/* <AchievementItem achievement={achievement} dateText="Unlocked"/> */}
+                                <AchievementItem achievement={achievement} dateText="Unlocked"/>
                             </ListGroupItem>
                         );
                     })}
-                </ListGroup>
+                </ListGroup> */}
             </div>
         );
     } else {
