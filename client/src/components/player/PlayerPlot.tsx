@@ -18,34 +18,16 @@ const PlotItem = ({clue}: {clue: PlayerClue}) => {
         const solvedPlot = clue.content.filter(content => content.name === SolvedPlot);
 
         if (solvedPlot.length > 0) {
-            if (clue.submittableType === 'Plot') {
-                return (
-                        <Container fluid style={{marginBottom: '37px'}}>
-                            <ListGroup.Item>
-                                {clueSolveTimeAnchor}
-                                <Row style={{justifyContent: 'center', display: 'flex'}}>
-                                    {solvedPlot.map(content => <AdditionalContent key={content.contentId} content={content} />)}
-                                </Row>
-                            </ListGroup.Item>
-                        </Container>
-                );
-            } else {
-                return (
-                        <Container fluid style={{marginBottom: '37px'}}>
-                            <ListGroup.Item>
-                                {clueSolveTimeAnchor}
-                                <Row style={{justifyContent: 'center', display: 'flex'}}>                                
-                                    {solvedPlot.map(content => <AdditionalContent key={content.contentId} content={content} />)}
-                                </Row>
-                                <Row style={{justifyContent: 'center', display: 'flex'}}>
-                                    <LinkContainer to={`/player/clue/${clue.tableOfContentId}`} style={{ color: "#FFFFFF" }}>
-                                        <Button>{(clue.submittableType === "Puzzle") && <FaPuzzlePiece />}{(clue.submittableType === "LocUnlock") && <FaLocationArrow />}{clue.submittableTitle}</Button>
-                                    </LinkContainer>
-                                </Row>
-                            </ListGroup.Item>
-                        </Container>
-                );
-            }
+            return (
+                    <Container fluid style={{marginBottom: '37px'}}>
+                        <ListGroup.Item>
+                            {clueSolveTimeAnchor}
+                            <Row style={{justifyContent: 'center', display: 'flex'}}>
+                                {solvedPlot.map(content => <AdditionalContent key={content.contentId} content={content} />)}
+                            </Row>
+                        </ListGroup.Item>
+                    </Container>
+            )
         } else {
             return null;
         }
