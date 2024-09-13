@@ -1,0 +1,307 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{34D49A2B-7D02-463A-9F62-EED6CC313444}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>ConsoleApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>GameControl.UI</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".eslintrc.json" />
+    <None Include="default.conf.template" />
+    <None Include="package-lock.json" />
+    <None Include="package.json" />
+    <None Include="public\manifest.json" />
+    <None Include="public\web.config" />
+    <None Include="src\theme\gamecontrol.scss" />
+    <None Include="src\theme\theme.scss" />
+    <None Include="src\theme\_variables.scss" />
+    <None Include="tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="public\index.html" />
+    <Content Include="src\actions\staff\gridDataHooks.js" />
+    <Content Include="src\App.css" />
+    <Content Include="src\App.test.js" />
+    <Content Include="src\components\account\UserAccount.js" />
+    <Content Include="src\components\admin\Settings.css" />
+    <Content Include="src\components\brand\logo.svg" />
+    <Content Include="src\components\errors\Forbidden.js" />
+    <Content Include="src\components\player\CallManager.js" />
+    <Content Include="src\components\player\fragments\ChallengeSubmissionFragment.js" />
+    <Content Include="src\components\player\PlayerActiveCall.js" />
+    <Content Include="src\components\Routes.js" />
+    <Content Include="src\components\shared\LiveTimerControl.js" />
+    <Content Include="src\components\shared\RatePuzzle.js" />
+    <Content Include="src\components\staff\dialogs\DialogRenderProp.js" />
+    <Content Include="src\components\staff\dialogs\SimpleListForm.js" />
+    <Content Include="src\components\staff\dialogs\SimpleListFormGroupApply.js" />
+    <Content Include="src\components\staff\dialogs\TeamCallForm.js" />
+    <Content Include="src\components\staff\presentation\PuzzleAnswersList.js" />
+    <Content Include="src\components\staff\presentation\PuzzleRatingList.js" />
+    <Content Include="src\components\staff\StaffActionCenter.js" />
+    <Content Include="src\components\staff\StaffClueDetails.js" />
+    <Content Include="src\components\staff\StaffJoinEventInstance.js" />
+    <Content Include="src\components\staff\StaffTeamDetails.js" />
+    <Content Include="src\components\staff\teamDetails\CallHistory.js" />
+    <Content Include="src\components\staff\teamDetails\TeamChallenges.js" />
+    <Content Include="src\components\staff\teamDetails\TeamRoster.js" />
+    <Content Include="src\components\user\mslogin.svg" />
+    <Content Include="src\constants\index.js" />
+    <Content Include="src\Home.js" />
+    <Content Include="src\index.css" />
+    <Content Include="src\index.js" />
+    <Content Include="src\MicrosoftAuthService.js" />
+    <Content Include="src\modules\index.js" />
+    <Content Include="src\modules\signalr\middleware.js" />
+    <Content Include="src\modules\signalr\redux-signalr\helpers.js" />
+    <Content Include="src\modules\signalr\redux-signalr\index.js" />
+    <Content Include="src\modules\signalr\redux-signalr\signalr-middleware.js" />
+    <Content Include="src\modules\staff\index.js" />
+    <Content Include="src\modules\staff\staffCluesModule.js" />
+    <Content Include="src\modules\staff\staffCluesModule.test.js" />
+    <Content Include="src\modules\user\index.js" />
+    <Content Include="src\registerServiceWorker.js" />
+    <Content Include="src\store.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\components\admin\AdminEventDetails.tsx" />
+    <TypeScriptCompile Include="src\components\admin\AdminEvents.tsx" />
+    <TypeScriptCompile Include="src\components\admin\AdminEventSummary.tsx" />
+    <TypeScriptCompile Include="src\components\admin\AdminRefreshPlayers.tsx" />
+    <TypeScriptCompile Include="src\components\admin\AdminUsers.tsx" />
+    <TypeScriptCompile Include="src\components\admin\ApiKeys.tsx" />
+    <TypeScriptCompile Include="src\components\admin\dialogs\AddParticipantForm.tsx" />
+    <TypeScriptCompile Include="src\components\admin\dialogs\EditParticipantForm.tsx" />
+    <TypeScriptCompile Include="src\components\admin\dialogs\EditParticipationForm.tsx" />
+    <TypeScriptCompile Include="src\components\admin\dialogs\EventForm.tsx" />
+    <TypeScriptCompile Include="src\components\admin\dialogs\EventInstanceForm.tsx" />
+    <TypeScriptCompile Include="src\components\admin\dialogs\index.ts" />
+    <TypeScriptCompile Include="src\components\admin\Settings.tsx" />
+    <TypeScriptCompile Include="src\components\App.tsx" />
+    <TypeScriptCompile Include="src\components\errors\Logout.tsx" />
+    <TypeScriptCompile Include="src\components\NavigationTabs.tsx" />
+    <TypeScriptCompile Include="src\components\player\AvailableClues.tsx" />
+    <TypeScriptCompile Include="src\components\player\ChallengeDetails.tsx" />
+    <TypeScriptCompile Include="src\components\player\Challenges.tsx" />
+    <TypeScriptCompile Include="src\components\player\PlayerAchievements.tsx" />
+    <TypeScriptCompile Include="src\components\player\PlayerClueDetails.tsx" />
+    <TypeScriptCompile Include="src\components\player\PlayerFeed.tsx" />
+    <TypeScriptCompile Include="src\components\player\PlayerInbox.tsx" />
+    <TypeScriptCompile Include="src\components\player\PlayerPlot.tsx" />
+    <TypeScriptCompile Include="src\components\player\PlayerPulse.tsx" />
+    <TypeScriptCompile Include="src\components\shared\AchievementItem.tsx" />
+    <TypeScriptCompile Include="src\components\shared\PulseControl.tsx" />
+    <TypeScriptCompile Include="src\components\shared\SubmitAnswer.tsx" />
+    <TypeScriptCompile Include="src\components\staff\Challenges.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\AchievementForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\AnswerForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\ChallengeApprovalForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\ChallengeForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\ClueForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\ContentForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\GrantPointsForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\index.ts" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\LocationForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\PuzzleInstanceForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\SendGcMessageForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\SortOrderForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\dialogs\TeamForm.tsx" />
+    <TypeScriptCompile Include="src\components\staff\grid\GridCell.tsx" />
+    <TypeScriptCompile Include="src\components\staff\grid\GridColumns.tsx" />
+    <TypeScriptCompile Include="src\components\staff\grid\GridPopups.tsx" />
+    <TypeScriptCompile Include="src\components\staff\presentation\AdditionalContent.tsx" />
+    <TypeScriptCompile Include="src\components\staff\presentation\ClueIcon.tsx" />
+    <TypeScriptCompile Include="src\components\staff\presentation\PuzzlesList.tsx" />
+    <TypeScriptCompile Include="src\components\staff\presentation\TeamStatusList.tsx" />
+    <TypeScriptCompile Include="src\components\staff\presentation\UnlockedAchievement.tsx" />
+    <TypeScriptCompile Include="src\components\staff\presentation\UnlockedPuzzle.tsx" />
+    <TypeScriptCompile Include="src\components\staff\puzzleDetails\ClueContent.tsx" />
+    <TypeScriptCompile Include="src\components\staff\puzzleDetails\index.ts" />
+    <TypeScriptCompile Include="src\components\staff\puzzleDetails\PuzzleInstances.tsx" />
+    <TypeScriptCompile Include="src\components\staff\puzzleDetails\PuzzlePlayerManifest.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffAchievements.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffChallengeDetails.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffClues.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffFeed.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffGrid.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffSendMessage.tsx" />
+    <TypeScriptCompile Include="src\components\staff\StaffTeams.tsx" />
+    <TypeScriptCompile Include="src\components\staff\teamDetails\index.ts" />
+    <TypeScriptCompile Include="src\components\staff\teamDetails\TeamAchievements.tsx" />
+    <TypeScriptCompile Include="src\components\staff\teamDetails\TeamState.tsx" />
+    <TypeScriptCompile Include="src\components\user\LegacyLogin.tsx" />
+    <TypeScriptCompile Include="src\Login.tsx" />
+    <TypeScriptCompile Include="src\modules\admin\events\actions.ts" />
+    <TypeScriptCompile Include="src\modules\admin\events\adminEventsModule.test.ts" />
+    <TypeScriptCompile Include="src\modules\admin\events\adminEventsModule.ts" />
+    <TypeScriptCompile Include="src\modules\admin\events\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\admin\events\index.ts" />
+    <TypeScriptCompile Include="src\modules\admin\events\models.ts" />
+    <TypeScriptCompile Include="src\modules\admin\events\service.ts" />
+    <TypeScriptCompile Include="src\modules\admin\index.ts" />
+    <TypeScriptCompile Include="src\modules\admin\models.ts" />
+    <TypeScriptCompile Include="src\modules\admin\player\actions.ts" />
+    <TypeScriptCompile Include="src\modules\admin\player\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\admin\player\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\admin\player\service.ts" />
+    <TypeScriptCompile Include="src\modules\admin\settings\actions.ts" />
+    <TypeScriptCompile Include="src\modules\admin\settings\index.ts" />
+    <TypeScriptCompile Include="src\modules\admin\settings\models.ts" />
+    <TypeScriptCompile Include="src\modules\admin\settings\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\admin\settings\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\admin\settings\service.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\actions.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\adminUsersModule.test.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\adminUsersModule.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\index.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\models.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\admin\users\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\player\achievements\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\calls\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\calls\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\player\calls\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\calls\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\calls\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\calls\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\player\challenges\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\reducer.test.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\player\clues\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\reducer.test.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\player\feed\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\index.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\reducer.test.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\player\messages\service.ts" />
+    <TypeScriptCompile Include="src\modules\player\team\actions.ts" />
+    <TypeScriptCompile Include="src\modules\player\team\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\player\team\models.ts" />
+    <TypeScriptCompile Include="src\modules\player\team\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\player\team\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\player\team\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\index.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\models.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\staff\achievements\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\challenges\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\challenges\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\staff\challenges\index.ts" />
+    <TypeScriptCompile Include="src\modules\staff\challenges\models.ts" />
+    <TypeScriptCompile Include="src\modules\staff\challenges\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\staff\challenges\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\clues\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\clues\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\staff\clues\index.ts" />
+    <TypeScriptCompile Include="src\modules\staff\clues\models.ts" />
+    <TypeScriptCompile Include="src\modules\staff\clues\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\staff\clues\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\feed\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\feed\reducer.test.ts" />
+    <TypeScriptCompile Include="src\modules\staff\feed\reducer.ts" />
+    <TypeScriptCompile Include="src\modules\staff\feed\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\index.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\models.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\grid\staffGridModule.ts" />
+    <TypeScriptCompile Include="src\modules\staff\messages\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\messages\index.ts" />
+    <TypeScriptCompile Include="src\modules\staff\messages\messagesModule.ts" />
+    <TypeScriptCompile Include="src\modules\staff\messages\models.ts" />
+    <TypeScriptCompile Include="src\modules\staff\messages\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\staff\messages\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\actions.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\hooks.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\index.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\models.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\service.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\staffTeamsModule.test.ts" />
+    <TypeScriptCompile Include="src\modules\staff\teams\staffTeamsModule.ts" />
+    <TypeScriptCompile Include="src\modules\types\constants.ts" />
+    <TypeScriptCompile Include="src\modules\types\index.ts" />
+    <TypeScriptCompile Include="src\modules\types\models.ts" />
+    <TypeScriptCompile Include="src\modules\types\serviceCommon.ts" />
+    <TypeScriptCompile Include="src\modules\user\actions.ts" />
+    <TypeScriptCompile Include="src\modules\user\selectors.ts" />
+    <TypeScriptCompile Include="src\modules\user\service.ts" />
+    <TypeScriptCompile Include="src\react-app-env.d.ts" />
+    <TypeScriptCompile Include="src\utils\hooks.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".vs\GameControl.UI\v17\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>
