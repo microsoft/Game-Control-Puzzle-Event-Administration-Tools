@@ -128,11 +128,11 @@ const StaffActionCenter = (props) => {
 
     const tanColumns = [
         {
-            id: 'team-status',
+            id: 'teamStatus',
             header: () => <span>All Teams</span>,
             columns: [
                 {
-                    id: 'team-status',
+                    id: 'status',
                     header: () => <span>Status</span>,
                     accessorFn: (row) => row,
                     cell: (cell) => {
@@ -156,7 +156,7 @@ const StaffActionCenter = (props) => {
                     },
                 },
                 {
-                    id: 'team-name',
+                    id: 'teamName',
                     header: () => <span>Team Name</span>,
                     accessorFn: (row) => row,
                     cell: (cell) => (
@@ -166,18 +166,18 @@ const StaffActionCenter = (props) => {
                     ),
                 },
                 {
-                    id: 'current-puzzle',
+                    id: 'currentPuzzle',
                     header: () => <span>Current Puzzle</span>,
                     accessorFn: (row) => row.currentPuzzleName,
                 },
                 {
-                    id: 'time-on-puzzle',
+                    id: 'timeOnPuzzle',
                     header: () => <span>Time Working On Puzzle</span>,
                     accessorFn: (row) => row.solveStartTime,
                     cell: (cell) => (cell.getValue() ? <LiveTimerControl timestamp={cell.getValue()} /> : ''),
                 },
                 {
-                    id: 'most-recent-call',
+                    id: 'mostRecentCall',
                     header: () => <span>Time Since Last Call</span>,
                     accessorFn: (row) => row,
                     cell: (cell) =>
@@ -190,7 +190,7 @@ const StaffActionCenter = (props) => {
                         ),
                 },
                 {
-                    id: 'gc-notes',
+                    id: 'gcNotes',
                     header: () => <span>GC Notes</span>,
                     accessorFn: (row) => row.gcNotes,
                     cell: (cell) => <div title={cell.getValue()}>{cell.getValue().length > 128 ? cell.getValue().substring(0, 128) + '...' : cell.getValue()}</div>,

@@ -1,25 +1,19 @@
 import { FaPlus } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
 
 import DialogRenderProp from 'components/staff/dialogs/DialogRenderProp';
 import SimpleListForm from 'components/staff/dialogs/SimpleListForm';
-import { updateStringSetting as putStringSetting } from 'modules/admin/settings/service';
 import { useStaffAchievements } from 'modules/staff/achievements';
 import { Achievement } from 'modules/types';
 
 import { updateStringSettingFunction } from '../../types';
 
-export const AchievementConfigurationButton = ({
-    achievementName,
-    settingName,
-}: {
+type Props = Readonly<{
     achievementName: string;
     settingName: string;
     updateStringSetting: updateStringSettingFunction;
-}) => {
-    const dispatch = useDispatch();
-    const updateStringSetting = (settingType: string, settingName: string, settingValue: string) => dispatch(putStringSetting(settingType, settingName, settingValue));
+}>;
 
+export const AchievementConfigurationButton = ({ achievementName, settingName, updateStringSetting }: Props) => {
     const { staffAchievementsModule } = useStaffAchievements();
 
     return (
