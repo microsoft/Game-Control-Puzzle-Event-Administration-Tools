@@ -3,5 +3,6 @@
     ],
     "ignorePatterns": [
         "node_modules/"
-    ]
+    ],
+    "parser": "@babel/eslint-parser"
 }
