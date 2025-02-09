@@ -1,3 +1,4 @@
+import Axios from 'axios';
 import { Breadcrumb, Card } from 'react-bootstrap';
 import { FaPlus } from 'react-icons/fa';
 
@@ -5,10 +6,13 @@ import DialogRenderProp from './dialogs/DialogRenderProp';
 import { ClueForm } from './dialogs';
 import { PuzzlesList } from './presentation/PuzzlesList';
 import { useStaffClues } from 'modules/staff/clues';
+import * as constants from '../../constants';
+
+Axios.defaults.baseURL = constants.APPLICATION_URL;
 
 export const StaffClues = () => {
-    document.title = "Game Control - Puzzles";
-    const { cluesModule, addClue } = useStaffClues();
+    document.title = 'Game Control - Puzzles';
+    const { addClue } = useStaffClues();
 
     return (
         <div>
@@ -20,18 +24,17 @@ export const StaffClues = () => {
                     <h4>All Clues</h4>
                     <DialogRenderProp
                         variant="outline-primary"
-                        renderTitle={() => "Add New Puzzle"}
-                        renderButton={() => <><FaPlus/> Add</>}
-                        renderBody={(onComplete: any) =>
-                            <ClueForm
-                                onSubmit={addClue}
-                                onComplete={onComplete}
-                            />
-                        }
+                        renderTitle={() => 'Add New Puzzle'}
+                        renderButton={() => (
+                            <>
+                                <FaPlus /> Add
+                            </>
+                        )}
+                        renderBody={(onComplete: any) => <ClueForm onSubmit={addClue} onComplete={onComplete} />}
                     />
                 </Card.Header>
             </Card>
-            <PuzzlesList clues={cluesModule} />
+            <PuzzlesList />
         </div>
     );
 };
