@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 
 type Props = Readonly<{
     renderTitle: () => string;
-    renderButton: () => JSX.Element;
+    renderButton: () => string | JSX.Element;
     renderBody: (onComplete: () => void) => JSX.Element;
     variant?: 'default' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
     disabled?: boolean;

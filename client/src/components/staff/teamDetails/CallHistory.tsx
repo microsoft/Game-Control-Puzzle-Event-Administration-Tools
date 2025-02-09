@@ -6,9 +6,8 @@ import _ from 'lodash';
 import { CallTemplate } from 'modules/types';
 import { StaffTeam } from 'modules/staff';
 
-const getFriendlyNameForCallType = (call: CallTemplate) => {
-    const ctype = call.callType ?? '';
-    switch (ctype.toLowerCase().trim()) {
+const getFriendlyNameForCallType = (callType: string) => {
+    switch (callType.toLowerCase().trim()) {
         case 'checkin':
             return 'Routine Check-In';
         case 'teamfree':
@@ -45,7 +44,7 @@ const CallList = ({ currentTeam }: { currentTeam: StaffTeam }) => {
                                     <Row>
                                         <Col xs={8} md={8} style={{ textAlign: 'left' }}>
                                             <div>Call with {participant ? participant.displayName : 'Unknown participant'}</div>
-                                            <div>{getFriendlyNameForCallType(call)}</div>
+                                            <div>{getFriendlyNameForCallType(call.callType ?? '')}</div>
                                             {call.notes && (
                                                 <div>
                                                     <small>GC Internal Notes: {call.notes}</small>

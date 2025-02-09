@@ -1,35 +1,30 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import humanizeDuration from 'humanize-duration';
 import moment from 'moment';
+import { useCallback, useEffect, useState } from 'react';
 
-export const LiveTimerControl = ({ timestamp }) => {
-    const [displayTime, setDisplayTime] = useState();
-    const [minutes, setMinutes] = useState();
+export const LiveTimerControl = ({ timestamp }: { timestamp: string }) => {
+    const [displayTime, setDisplayTime] = useState<string>('');
+    const [minutes, setMinutes] = useState<number | undefined>();
 
     const updateTime = useCallback(() => {
         const delta = timestamp ? moment.duration(moment.utc().diff(moment.utc(timestamp))) : undefined;
-        setMinutes((delta !== undefined && delta !== null) ? Math.round(delta.asMinutes()) : undefined);
+        setMinutes(delta !== undefined && delta !== null ? Math.round(delta.asMinutes()) : undefined);
 
         if (!delta) {
-            setDisplayTime("Unknown");
-        }
-        else {
+            setDisplayTime('Unknown');
+        } else {
             setDisplayTime(humanizeDuration(delta.asMilliseconds(), { largest: 2, round: true }));
         }
     }, [timestamp]);
 
     useEffect(() => {
         updateTime();
-        
-        if (minutes)
-        {
+
+        if (minutes) {
             let interval = 15000;
-            if (minutes < 5)
-            {
+            if (minutes < 5) {
                 interval = 500;
-            }
-            else if (minutes < 60)
-            {
+            } else if (minutes < 60) {
                 interval = 1000;
             }
 
@@ -38,5 +33,5 @@ export const LiveTimerControl = ({ timestamp }) => {
         }
     }, [minutes, timestamp, updateTime]);
 
-    return (<>{displayTime}</>);
-}
+    return <>{displayTime}</>;
+};
