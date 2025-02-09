@@ -3,7 +3,7 @@ export const withCallbacks = () => {
 
     const moduleReducer = () => {};
 
-    const add = (name, callback) => {
+    const add = (name: string, callback: any) => {
         callbackMap.set(name, callback);
         return moduleReducer;
     };
