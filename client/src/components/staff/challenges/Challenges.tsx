@@ -33,7 +33,7 @@ export const Challenges = () => {
 
             {!!challengesModule.isLoading && <Alert variant="info">Loading...</Alert>}
 
-            <TanstackList challengesModule={challengesModule} addChallenge={addChallenge} />
+            <TanstackList challengesModule={challengesModule} />
         </div>
     );
 };

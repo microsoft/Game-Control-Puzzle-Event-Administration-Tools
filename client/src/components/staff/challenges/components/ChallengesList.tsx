@@ -1,10 +1,7 @@
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import moment from 'moment';
-import { FaPlus } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
-import { ChallengeForm } from 'components/staff/dialogs';
-import DialogRenderProp from 'components/staff/dialogs/DialogRenderProp';
 import { getChallengePluralNameSetting, getChallengeSingularNameSetting, getPointsNameSetting } from 'modules';
 import { Challenge, ChallengeTemplate } from 'modules/staff/challenges';
 import { Module } from 'modules/types';
@@ -13,28 +10,14 @@ import { TanstackTable } from 'components/shared/TanstackTable';
 
 type Props = Readonly<{
     challengesModule: Module<Challenge[]>;
-    addChallenge: (challenge: ChallengeTemplate) => void;
 }>;
 
-const ChallengesListTable = ({ addChallenge, challengesModule }: Props) => {
-    const challengePluralName = useSelector(getChallengePluralNameSetting);
+const ChallengesListTable = ({ challengesModule }: Props) => {
     const challengeSingularName = useSelector(getChallengeSingularNameSetting);
-    const pointsNameSetting = useSelector(getPointsNameSetting);
 
     const columns: ColumnDef<any>[] = [
         {
             id: 'challenges',
-            header: () => (
-                <h5>
-                    {challengePluralName}
-                    &nbsp;
-                    <DialogRenderProp
-                        renderTitle={() => `Add New ${challengeSingularName}`}
-                        renderButton={() => <FaPlus />}
-                        renderBody={(onComplete: any) => <ChallengeForm pointsName={pointsNameSetting} onSubmit={addChallenge} onComplete={onComplete} />}
-                    />
-                </h5>
-            ),
             columns: [
                 {
                     id: 'title',
@@ -99,13 +82,13 @@ const ChallengesListTable = ({ addChallenge, challengesModule }: Props) => {
     return <TanstackTable table={challengesTable} rowFormatter={rowFormatter} />;
 };
 
-export const ChallengesList = ({ addChallenge, challengesModule }: Props) => {
+export const ChallengesList = ({ challengesModule }: Props) => {
     const challengePluralName = useSelector(getChallengePluralNameSetting);
 
     // TODO: Move hook into a sub-component?
     if (!challengesModule.isLoading && challengesModule.data.length === 0) {
         return <div>There are no {challengePluralName} for this event</div>;
     } else {
-        return <ChallengesListTable addChallenge={addChallenge} challengesModule={challengesModule} />;
+        return <ChallengesListTable challengesModule={challengesModule} />;
     }
 };
