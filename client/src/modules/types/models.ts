@@ -1,8 +1,8 @@
-import { Moment } from "moment";
+import { Moment } from 'moment';
 
-export const UnsolvedPlot = "UnsolvedPlot";
-export const SolvedPlot   = "SolvedPlot";
-export const SkipPlot     = "SkipPlot";
+export const UnsolvedPlot = 'UnsolvedPlot';
+export const SolvedPlot = 'SolvedPlot';
+export const SkipPlot = 'SkipPlot';
 
 /**
  * Represents an achievement that can be granted to a team or a player. If this
@@ -76,11 +76,11 @@ export type CallTemplate = Readonly<{
     callId?: string;
     teamId?: string;
     participationId?: string;
-    tableOfContentEntry?: string;
+    tableOfContentsEntry?: string;
     callType: string;
-    callSubType: string;
-    notes: string;
-    teamNotes: string;
-    publicNotes: string;
+    callSubType?: string;
+    notes?: string;
+    teamNotes?: string;
+    publicNotes?: string;
     callEnd?: Moment;
-}>
+}>;
