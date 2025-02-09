@@ -1,8 +1,8 @@
-import { getEventInstanceId } from "modules";
-import { doServiceRequest } from "modules/types";
+import { getEventInstanceId } from 'modules';
+import { doServiceRequest } from 'modules/types';
 
-import * as actions from "./actions";
-import Axios from "axios";
+import * as actions from './actions';
+import Axios from 'axios';
 
 export const fetchEventSettings = () => (dispatch: any, getState: any) => {
     const eventInstanceId = getEventInstanceId(getState());
