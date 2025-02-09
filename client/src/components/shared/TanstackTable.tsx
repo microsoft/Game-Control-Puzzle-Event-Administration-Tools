@@ -4,9 +4,10 @@ import { Table as BTable } from 'react-bootstrap';
 
 type Props = Readonly<{
     table: Table<any>;
+    rowFormatter?: (row: any) => any;
 }>;
 
-export const TanstackTable = ({ table }: Props) => {
+export const TanstackTable = ({ table, rowFormatter }: Props) => {
     return (
         <BTable bordered>
             <thead>
@@ -21,13 +22,17 @@ export const TanstackTable = ({ table }: Props) => {
                 ))}
             </thead>
             <tbody>
-                {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id}>
-                        {row.getVisibleCells().map((cell) => {
-                            return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>;
-                        })}
-                    </tr>
-                ))}
+                {table.getRowModel().rows.map((row) => {
+                    const rowStyle = rowFormatter ? rowFormatter(row) : {};
+
+                    return (
+                        <tr key={row.id} style={rowStyle}>
+                            {row.getVisibleCells().map((cell) => {
+                                return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>;
+                            })}
+                        </tr>
+                    );
+                })}
             </tbody>
         </BTable>
     );

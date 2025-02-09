@@ -94,7 +94,9 @@ const ChallengesListTable = ({ addChallenge, challengesModule }: Props) => {
         getCoreRowModel: getCoreRowModel(),
     });
 
-    return <TanstackTable table={challengesTable} />;
+    const rowFormatter = (row: any) => (row.getValue('pendingSubmissions') > 0 && { backgroundColor: 'orange' }) || {};
+
+    return <TanstackTable table={challengesTable} rowFormatter={rowFormatter} />;
 };
 
 export const ChallengesList = ({ addChallenge, challengesModule }: Props) => {
