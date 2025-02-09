@@ -2,8 +2,8 @@ import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 
-import { getChallengePluralNameSetting, getChallengeSingularNameSetting, getPointsNameSetting } from 'modules';
-import { Challenge, ChallengeTemplate } from 'modules/staff/challenges';
+import { getChallengePluralNameSetting, getChallengeSingularNameSetting } from 'modules';
+import { Challenge } from 'modules/staff/challenges';
 import { Module } from 'modules/types';
 import { Link } from 'react-router-dom';
 import { TanstackTable } from 'components/shared/TanstackTable';
