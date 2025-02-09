@@ -5,7 +5,7 @@ import { getEventSettingsModule } from 'modules/admin';
 import { ShowAchievementsSetting, ShowActivitySetting, ShowCallManagerSetting, ShowChallengesSetting, ShowInboxSetting, ShowPulseSetting } from 'modules/types';
 
 import { ToggleConfigurationButton } from './ToggleConfigurationButton';
-import { TanstackTable } from '../common/TanstackTable';
+import { TanstackTable } from '../../../../shared/TanstackTable';
 
 export const FeatureFlagTable = () => {
     const settingsModule = useSelector(getEventSettingsModule);

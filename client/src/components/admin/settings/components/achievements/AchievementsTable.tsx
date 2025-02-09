@@ -7,7 +7,7 @@ import { updateStringSetting } from 'modules/admin/settings/service';
 
 import { AchievementSetting } from './AchievementSetting';
 import { AchievementConfigurationButton } from './AchievementConfigurationButton';
-import { TanstackTable } from '../common/TanstackTable';
+import { TanstackTable } from '../../../../shared/TanstackTable';
 
 // Settings for automatically unlocking specific achievements
 const PulseAchievementSetting = 'PulseAchievement';

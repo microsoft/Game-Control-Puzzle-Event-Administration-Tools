@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { StringConfigurationButton } from '../common/StringConfigurationButton';
 import { ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting } from 'modules/types';
 import { getEventSettingsModule } from 'modules/admin';
-import { TanstackTable } from '../common/TanstackTable';
+import { TanstackTable } from '../../../../shared/TanstackTable';
 
 export const BrandSettingsTable = () => {
     const settingsModule = useSelector(getEventSettingsModule);
