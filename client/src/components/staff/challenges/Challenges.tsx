@@ -11,6 +11,8 @@ import { Challenge, useStaffChallenges } from 'modules/staff/challenges';
 import { Module } from 'modules/types';
 import { getChallengePluralNameSetting, getChallengeSingularNameSetting, getPointsNameSetting } from 'modules';
 
+import { ChallengesList as TanstackList } from './components/ChallengesList';
+
 const ChallengesList = ({ challengesModule }: { challengesModule: Module<Challenge[]> }) => {
     const challengePluralName = useSelector(getChallengePluralNameSetting);
     const challengeSingularName = useSelector(getChallengeSingularNameSetting);
@@ -100,6 +102,8 @@ export const Challenges = () => {
             {!!challengesModule.isLoading && <Alert variant="info">Loading...</Alert>}
 
             <ChallengesList challengesModule={challengesModule} />
+
+            <TanstackList challengesModule={challengesModule} addChallenge={addChallenge} />
         </div>
     );
 };

@@ -1,5 +1,4 @@
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { Table } from 'react-bootstrap';
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useSelector } from 'react-redux';
 
 import { EventSetting, getEventSettingsModule } from 'modules/admin';

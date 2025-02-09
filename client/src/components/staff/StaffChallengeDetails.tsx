@@ -2,7 +2,7 @@ import React from 'react';
 import { ListGroup, ListGroupItem, Card, CardColumns } from 'react-bootstrap';
 import { FaEdit } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
+import { useParams } from 'react-router-dom';
 import * as moment from 'moment';
 
 import * as constants from '../../constants';
@@ -24,67 +24,82 @@ const getColorForState = (state: number) => {
 const SubmissionContent = ({ submission }: { submission: ChallengeSubmission }) => {
     let submissionContent = <div>No submission content available</div>;
 
-    if (submission.submissionType === "ChallengePic") {
-        submissionContent = <Card.Img variant="bottom" src={`${constants.APPLICATION_URL}api/content/challengePicFull/${submission.challengeSubmissionId}`}/>;
-    } else if (submission.submissionType === "BlobPic") {
-        submissionContent = <Card.Img variant="bottom" src={`${submission.submissionTextContent}`}/>;
+    if (submission.submissionType === 'ChallengePic') {
+        submissionContent = <Card.Img variant="bottom" src={`${constants.APPLICATION_URL}api/content/challengePicFull/${submission.challengeSubmissionId}`} />;
+    } else if (submission.submissionType === 'BlobPic') {
+        submissionContent = <Card.Img variant="bottom" src={`${submission.submissionTextContent}`} />;
     } else {
         submissionContent = <div>{submission.submissionTextContent}</div>;
     }
 
     return (
         <Card>
-            <Card.Header style={{backgroundColor: getColorForState(submission.state)}}> Submitted by {submission.submitterDisplayName}: {moment.utc(submission.submissionDate).fromNow()}</Card.Header>
+            <Card.Header style={{ backgroundColor: getColorForState(submission.state) }}>
+                {' '}
+                Submitted by {submission.submitterDisplayName}: {moment.utc(submission.submissionDate).fromNow()}
+            </Card.Header>
             <Card.Body>
-                <Card.Title><div>{submission.submissionNotes}</div></Card.Title>
-                
+                <Card.Title>
+                    <div>{submission.submissionNotes}</div>
+                </Card.Title>
+
                 <div>
-                    { !!submission.approverNotes && <div><b><em><small>Review Notes: {submission.approverNotes}</small></em></b></div> }
+                    {!!submission.approverNotes && (
+                        <div>
+                            <b>
+                                <em>
+                                    <small>Review Notes: {submission.approverNotes}</small>
+                                </em>
+                            </b>
+                        </div>
+                    )}
                 </div>
 
-                { submissionContent }
+                {submissionContent}
             </Card.Body>
         </Card>
     );
 };
 
-const PendingSubmissions = ({ challenge, updateApproval } : { challenge: Challenge, updateApproval: (approval: ChallengeApproval) => void }) => {
-    const pendingSubmissions = challenge.submissions.filter(x => x.state === 0);
+const PendingSubmissions = ({ challenge, updateApproval }: { challenge: Challenge; updateApproval: (approval: ChallengeApproval) => void }) => {
+    const pendingSubmissions = challenge.submissions.filter((x) => x.state === 0);
 
     if (pendingSubmissions?.length > 0) {
         return (
             <ListGroup>
-                {pendingSubmissions.map(submission => 
+                {pendingSubmissions.map((submission) => (
                     <ListGroupItem key={submission.challengeSubmissionId}>
                         <Card>
                             <SubmissionContent submission={submission} />
-                            <ChallengeApprovalForm submission={submission}
-                                                onSubmit={(approval: ChallengeApproval) => updateApproval(approval)}/>
+                            <ChallengeApprovalForm submission={submission} onSubmit={(approval: ChallengeApproval) => updateApproval(approval)} />
                         </Card>
                     </ListGroupItem>
-                )}
+                ))}
             </ListGroup>
         );
     } else {
-        return <div>There are no pending submissions for this challenge.</div>
+        return <div>There are no pending submissions for this challenge.</div>;
     }
-}
+};
 
 const PreviousSubmissions = ({ challenge }: { challenge: Challenge }) => {
-    const previousSubmissions = challenge?.submissions.filter(x => x.state > 0);
+    const previousSubmissions = challenge?.submissions.filter((x) => x.state > 0);
 
     if (previousSubmissions?.length > 0) {
         return (
             <CardColumns>
-                {previousSubmissions.map(submission => <SubmissionContent key={submission.challengeSubmissionId} submission={submission} />)}
+                {previousSubmissions.map((submission) => (
+                    <SubmissionContent key={submission.challengeSubmissionId} submission={submission} />
+                ))}
             </CardColumns>
         );
     } else {
-        return <div>There no teams have made a submission for this challenge.</div>
+        return <div>There no teams have made a submission for this challenge.</div>;
     }
-}
+};
 
-export const StaffChallengeDetails = ({ match: { params: { id }} }: RouteComponentProps<{ id: string }>) => {
+export const StaffChallengeDetails = () => {
+    const { id } = useParams<{ id: string }>();
     const { challenge, updateApproval, updateChallenge } = useStaffChallengeDetails(id);
     const challengeSingularName = useSelector(getChallengeSingularNameSetting);
     const pointsNameSetting = useSelector(getPointsNameSetting);
@@ -97,22 +112,31 @@ export const StaffChallengeDetails = ({ match: { params: { id }} }: RouteCompone
                     &nbsp;
                     <DialogRenderProp
                         renderTitle={() => `Edit ${challengeSingularName}`}
-                        renderButton={() => <FaEdit/>}
-                        renderBody={(onComplete: any) =>
-                            <ChallengeForm
-                                pointsName={pointsNameSetting}
-                                sourceChallenge={challenge}
-                                onSubmit={updateChallenge}
-                                onComplete={onComplete}
-                            />
-                        }
+                        renderButton={() => <FaEdit />}
+                        renderBody={(onComplete: any) => (
+                            <ChallengeForm pointsName={pointsNameSetting} sourceChallenge={challenge} onSubmit={updateChallenge} onComplete={onComplete} />
+                        )}
                     />
                 </h4>
                 <strong>{challenge.description}</strong>
-                { !!challenge.startTime ? 
-                    <div><small>This {challengeSingularName} will be visible at: {moment.utc(challenge.startTime).local().format('MM-DD HH:mm')}</small></div> : ''}
-                { !!challenge.endTime ? 
-                    <div><small>This {challengeSingularName} will expire at: {moment.utc(challenge.endTime).local().format('MM-DD HH:mm')}</small></div> : ''}
+                {!!challenge.startTime ? (
+                    <div>
+                        <small>
+                            This {challengeSingularName} will be visible at: {moment.utc(challenge.startTime).local().format('MM-DD HH:mm')}
+                        </small>
+                    </div>
+                ) : (
+                    ''
+                )}
+                {!!challenge.endTime ? (
+                    <div>
+                        <small>
+                            This {challengeSingularName} will expire at: {moment.utc(challenge.endTime).local().format('MM-DD HH:mm')}
+                        </small>
+                    </div>
+                ) : (
+                    ''
+                )}
                 <div>
                     <h5>Pending Submissions</h5>
                     <PendingSubmissions challenge={challenge} updateApproval={updateApproval} />
@@ -124,8 +148,6 @@ export const StaffChallengeDetails = ({ match: { params: { id }} }: RouteCompone
             </div>
         );
     } else {
-        return (
-            <div>Could not find challenge with id { id }</div>
-        );
+        return <div>Could not find challenge with id {id}</div>;
     }
 };
