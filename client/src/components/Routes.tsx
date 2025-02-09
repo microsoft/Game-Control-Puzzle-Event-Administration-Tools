@@ -25,7 +25,7 @@ import { StaffTeams } from './staff/StaffTeams';
 import { StaffTeamDetails } from './staff/StaffTeamDetails';
 import { StaffAchievements } from './staff/StaffAchievements';
 import { StaffSendMessage } from './staff/StaffSendMessage';
-import { Challenges as StaffChallenges } from './staff/Challenges';
+import { Challenges as StaffChallenges } from './staff/challenges/Challenges';
 import { StaffChallengeDetails } from './staff/StaffChallengeDetails';
 
 import { AdminEvents } from './admin/AdminEvents';
