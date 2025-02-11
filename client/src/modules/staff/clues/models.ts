@@ -81,6 +81,9 @@ export type ClueRating = Readonly<{
     tableOfContentId: string;
     rating: number;
     comments: string;
+    ratedByUser: string;
+    ratedByTeam: string;
+    lastUpdated: Moment;
 }>;
 
 /**
