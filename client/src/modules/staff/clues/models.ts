@@ -121,8 +121,3 @@ export type ClueInstanceTemplate = Readonly<{
     notes: string;
     needsReset?: boolean;
 }>;
-
-export type ClueState = Readonly<{
-    clues: StaffClue[];
-    isLoading: boolean;
-}>;

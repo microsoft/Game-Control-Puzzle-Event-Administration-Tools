@@ -35,7 +35,7 @@ export type TeamCall = Readonly<{
 
     // TODO: This isn't actually on the server type but client code wanted to read it
     // figure out if it belongs here
-    participant: string | null;
+    participant?: string | null;
 }>;
 
 export type TeamTemplate = Readonly<{

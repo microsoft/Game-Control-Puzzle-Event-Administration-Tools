@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Form, FormGroup, Button } from 'react-bootstrap';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { TeamCall } from 'modules/staff';
 import { CallTemplate } from 'modules/types';
@@ -72,8 +72,8 @@ export const TeamCallForm = ({ currentCall, onUpdate, puzzles }: Props) => {
             <FormGroup>
                 <em>Last updated {moment.utc(currentCall.lastUpdated).fromNow()}</em>
             </FormGroup>
-            <Button onClick={() => onUpdate({ callId, tableOfContentEntry: toCEntry, callType, callSubType, notes, teamNotes, publicNotes })}>Update and Keep Call Open</Button>
-            <Button onClick={() => onUpdate({ callId, tableOfContentEntry: toCEntry, callType, callSubType, notes, teamNotes, publicNotes, callEnd: moment.utc() })}>
+            <Button onClick={() => onUpdate({ callId, tableOfContentsEntry: toCEntry, callType, callSubType, notes, teamNotes, publicNotes })}>Update and Keep Call Open</Button>
+            <Button onClick={() => onUpdate({ callId, tableOfContentsEntry: toCEntry, callType, callSubType, notes, teamNotes, publicNotes, callEnd: moment.utc() })}>
                 Update and End Call
             </Button>
         </div>
