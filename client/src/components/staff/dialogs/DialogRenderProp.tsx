@@ -5,7 +5,7 @@ type Props = Readonly<{
     renderTitle: () => string;
     renderButton: () => string | JSX.Element;
     renderBody: (onComplete: () => void) => JSX.Element;
-    variant?: 'default' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
+    variant?: 'default' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'outline-primary' | 'link';
     disabled?: boolean;
     className?: string;
     size?: 'sm' | 'lg';

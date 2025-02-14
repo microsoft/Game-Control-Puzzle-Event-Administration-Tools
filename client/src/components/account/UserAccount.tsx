@@ -12,8 +12,8 @@ const UserAccount = () => {
             // TODO: Should probably triple check that we have a valid start and end time.
             return (
                 <ListGroup>
-                    {user.participation.map((participation) => (
-                        <ListGroupItem key={participation.participationId} header={participation.eventFriendlyName}>
+                    {user.participation.map((participation: any) => (
+                        <ListGroupItem key={participation.participationId}>
                             {moment(participation.eventStartTime).format('LL')} - {moment(participation.eventEndTime).format('LL')}
                         </ListGroupItem>
                     ))}

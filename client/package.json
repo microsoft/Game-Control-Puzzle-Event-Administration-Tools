@@ -58,6 +58,7 @@
         "@testing-library/jest-dom": "^5.11.9",
         "@testing-library/react": "^11.2.5",
         "@testing-library/user-event": "^12.7.1",
+        "@types/humanize-duration": "^3.27.4",
         "@types/jest": "^26.0.20",
         "@types/node": "^12.20.1",
         "@types/react": "^17.0.2",
@@ -66,8 +67,10 @@
         "@types/react-dom": "^17.0.1",
         "@types/react-redux": "^7.1.9",
         "@types/react-router-bootstrap": "^0.24.5",
+        "@types/react-router-redux": "^5.0.27",
         "@types/redux-auth-wrapper": "^2.0.16",
         "ajv": "^6.9.1",
+        "eslint": "^9.20.1",
         "eslint-plugin-react": "^7.37.4",
         "eslint-webpack-plugin": "2.4.3"
     }
