@@ -1,61 +1,26 @@
 import React from 'react';
-import { Button, Col, Container, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
 import { FaEdit, FaPlus, FaRegCopy, FaTrashAlt } from 'react-icons/fa';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
-import { getCluesModule, getStaffTeam, getStaffTeams } from 'modules/staff';
+import { getCluesModule, getStaffTeams } from 'modules/staff';
 import { addAnswerToClue, addContentToAnswer, addPuzzleUnlock, deleteClueAnswer, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
-import { fetchStaffAchievements, getAchievementsModule, addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from "modules/staff/achievements";
+import { fetchStaffAchievements, getAchievementsModule, addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from 'modules/staff/achievements';
 
 import { AdditionalContent } from '../presentation/AdditionalContent';
 import { AnswerForm, ContentForm } from '../dialogs';
 import { UnlockedAchievement } from './UnlockedAchievement';
 import { UnlockedPuzzle } from './UnlockedPuzzle';
-import SimpleListForm from '../dialogs/SimpleListForm';
 import SimpleListFormGroupApply from '../dialogs/SimpleListFormGroupApply';
 import DialogRenderProp from '../dialogs/DialogRenderProp';
 
-const AnswerContent = ({ content, deleteContent }) => {
-    if (content) {
-        return (
-            <Container fluid>
-                <Row>
-                    <Col>
-                        <AdditionalContent content={content}/>
-                    </Col>
-                    <Col style={{ justifyContent: 'flex-end', display: 'flex'}}>
-                        <Button size="lg" onClick={deleteContent} variant="danger">
-                            <FaTrashAlt /> Delete
-                        </Button>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    } else {
-        return <div style={{ textAlign: 'center' }}>There is no additional content for this answer.</div>;
-    }
-};
-
-const AnswerText = ({ answer }) => {
-    const team = useSelector(state => getStaffTeam(state, answer.teamId));
-
-    if (team) {
-        return <h4><strong>({team?.name ?? "UNKNOWN"}) {answer.answerText}</strong></h4>
-    } else {
-        return (
-            <h4>
-                <strong>{answer.answerText}</strong>
-                {answer.isHidden && <div><em>(This answer will not be shown to teams)</em></div>}
-            </h4>
-        );
-    }
-};
+import { AnswerText } from './answers/AnswerText';
 
 class PuzzleAnswersList extends React.Component {
     componentWillMount() {
         // TODO: Only fetch if out of date.
         this.props.getStaffAchievements();
-        this.setState({enableGrouping:true});
+        this.setState({ enableGrouping: true });
     }
 
     deletePuzzleAnswer(answerId, tableOfContentId) {
@@ -79,110 +44,116 @@ class PuzzleAnswersList extends React.Component {
         teams.sort((teamA, teamB) => {
             return teamA.name.localeCompare(teamB.name);
         });
-        return  <span>
-                    <h4><strong>{groupedAnswer.answerText}</strong></h4>
-                    <div>Applies to {groupedAnswer.teamIds.length} teams:</div>
-                    <ul>
-                        {teams.map(team =>
-                            <li>{ team.name }</li>
-                        )}
-                    </ul>
-                </span>;
+        return (
+            <span>
+                <h4>
+                    <strong>{groupedAnswer.answerText}</strong>
+                </h4>
+                <div>Applies to {groupedAnswer.teamIds.length} teams:</div>
+                <ul>
+                    {teams.map((team) => (
+                        <li>{team.name}</li>
+                    ))}
+                </ul>
+            </span>
+        );
     }
 
     FindTeamName(teamGuid) {
         const team = this.FindTeam(teamGuid);
-        return team !== undefined ? team.name : "UNKNOWN";
+        return team !== undefined ? team.name : 'UNKNOWN';
     }
 
     renderGroupUnlocks(groupedAnswer) {
-        const unlockableClues = this.props.clues.clues.filter(clue => 
-            clue.tableOfContentId !== this.props.clue.tableOfContentId && 
-            groupedAnswer.unlockedClues.find(unlock => unlock.tableOfContentId === clue.tableOfContentId) === undefined
+        const unlockableClues = this.props.clues.clues.filter(
+            (clue) =>
+                clue.tableOfContentId !== this.props.clue.tableOfContentId &&
+                groupedAnswer.unlockedClues.find((unlock) => unlock.tableOfContentId === clue.tableOfContentId) === undefined
         );
 
         if (groupedAnswer.unlockedClues !== null) {
-            return <div>
-                        <div>  
-                            Puzzles Unlocked by Answer
-                            &nbsp;
-                            <DialogRenderProp
-                                renderTitle={() => "Add Unlock To Puzzle"}
-                                renderButton={() => <FaPlus/>}
-                                renderBody={onComplete =>
-                                    <SimpleListFormGroupApply
-                                        label="Add Puzzle to Unlock"
-                                        submitText="Add"
-                                        collection={unlockableClues}
-                                        applyCollection={this.GetTeamApplyCollection(groupedAnswer.teamIds, groupedAnswer.answerIds)}
-                                        getItemKey={puzzle => puzzle.tableOfContentId}
-                                        getItemValue={puzzle => puzzle.tableOfContentId}
-                                        getItemLabel={puzzle => puzzle.submittableTitle}
-                                        onSubmit={(tableOfContentId, applyToCollection) => {
-                                            applyToCollection.map(answerId => this.addPuzzleUnlock(answerId, tableOfContentId));
-                                            onComplete();
-                                        }
-                                    }/>
-                                }
-                            />
-                        </div>
-                        {groupedAnswer.unlockedClues.map(unlock => 
-                            <UnlockedPuzzle 
-                                key={unlock.tableOfContentId}
-                                unlockedPuzzle={unlock} 
-                                answerIds={groupedAnswer.answerIds}
-                                deleteUnlock={() => 
-                                    groupedAnswer.answerIds.map(answerId => this.deletePuzzleUnlock(answerId, unlock.tableOfContentId))
-                                }/>
-                        )}
-                        <div>
-                            Achievements Unlocked by Answer
-                            <DialogRenderProp
-                                renderTitle={() => "Add Achievement Unlock"}
-                                renderButton={() => <FaPlus/>}
-                                renderBody={onComplete =>
-                                    <SimpleListFormGroupApply
-                                        label="Add Achievement Unlock"
-                                        submitText="Add"
-                                        groupLabel="teams"
-                                        collection={this.props.achievements.data}
-                                        applyCollection={this.GetTeamApplyCollection(groupedAnswer.teamIds, groupedAnswer.answerIds)}
-                                        getItemKey={achievement => achievement.achievementId}
-                                        getItemValue={achievement => achievement.achievementId}
-                                        getItemLabel={achievement => achievement.name}
-                                        onSubmit={(achievementId, applyToCollection) => {
-                                            applyToCollection.map(answerId => this.props.addAchievementUnlockToAnswer(answerId, achievementId));
-                                            onComplete();
-                                        }}
-                                        />
-                                }
-                            />
-
-                            {groupedAnswer.unlockedAchievements.map(achievement =>
-                                <UnlockedAchievement
-                                    key={achievement.achievementId}
-                                    unlockedAchievement={achievement}
-                                    deleteUnlock={(achievementId) => groupedAnswer.answerIds.map(answerId => this.props.deleteAchievementUnlockFromAnswer(answerId, achievement.achievementId))}
+            return (
+                <div>
+                    <div>
+                        Puzzles Unlocked by Answer &nbsp;
+                        <DialogRenderProp
+                            renderTitle={() => 'Add Unlock To Puzzle'}
+                            renderButton={() => <FaPlus />}
+                            renderBody={(onComplete) => (
+                                <SimpleListFormGroupApply
+                                    label="Add Puzzle to Unlock"
+                                    submitText="Add"
+                                    collection={unlockableClues}
+                                    applyCollection={this.GetTeamApplyCollection(groupedAnswer.teamIds, groupedAnswer.answerIds)}
+                                    getItemKey={(puzzle) => puzzle.tableOfContentId}
+                                    getItemValue={(puzzle) => puzzle.tableOfContentId}
+                                    getItemLabel={(puzzle) => puzzle.submittableTitle}
+                                    onSubmit={(tableOfContentId, applyToCollection) => {
+                                        applyToCollection.map((answerId) => this.addPuzzleUnlock(answerId, tableOfContentId));
+                                        onComplete();
+                                    }}
                                 />
                             )}
-                        </div>
-                        <div>
-                            Additional Content
-                            <DialogRenderProp
-                                renderTitle={() => "Add Additional Content Unlock"}
-                                renderButton={() => <FaPlus/>}
-                                renderBody={onComplete => 
-                                    <ContentForm
-                                        onSubmit={content => {
-                                            groupedAnswer.answerIds.map(answerId => this.props.addContentToAnswer(this.props.clue.tableOfContentId, answerId, content));
-                                            onComplete();
-                                        }
-                                    }/>
+                        />
+                    </div>
+                    {groupedAnswer.unlockedClues.map((unlock) => (
+                        <UnlockedPuzzle
+                            key={unlock.tableOfContentId}
+                            unlockedPuzzle={unlock}
+                            answerIds={groupedAnswer.answerIds}
+                            deleteUnlock={() => groupedAnswer.answerIds.map((answerId) => this.deletePuzzleUnlock(answerId, unlock.tableOfContentId))}
+                        />
+                    ))}
+                    <div>
+                        Achievements Unlocked by Answer
+                        <DialogRenderProp
+                            renderTitle={() => 'Add Achievement Unlock'}
+                            renderButton={() => <FaPlus />}
+                            renderBody={(onComplete) => (
+                                <SimpleListFormGroupApply
+                                    label="Add Achievement Unlock"
+                                    submitText="Add"
+                                    groupLabel="teams"
+                                    collection={this.props.achievements.data}
+                                    applyCollection={this.GetTeamApplyCollection(groupedAnswer.teamIds, groupedAnswer.answerIds)}
+                                    getItemKey={(achievement) => achievement.achievementId}
+                                    getItemValue={(achievement) => achievement.achievementId}
+                                    getItemLabel={(achievement) => achievement.name}
+                                    onSubmit={(achievementId, applyToCollection) => {
+                                        applyToCollection.map((answerId) => this.props.addAchievementUnlockToAnswer(answerId, achievementId));
+                                        onComplete();
+                                    }}
+                                />
+                            )}
+                        />
+                        {groupedAnswer.unlockedAchievements.map((achievement) => (
+                            <UnlockedAchievement
+                                key={achievement.achievementId}
+                                unlockedAchievement={achievement}
+                                deleteUnlock={(achievementId) =>
+                                    groupedAnswer.answerIds.map((answerId) => this.props.deleteAchievementUnlockFromAnswer(answerId, achievement.achievementId))
                                 }
                             />
-                            {this._renderGroupedAnswerContent(groupedAnswer)}
-                        </div>
+                        ))}
+                    </div>
+                    <div>
+                        Additional Content
+                        <DialogRenderProp
+                            renderTitle={() => 'Add Additional Content Unlock'}
+                            renderButton={() => <FaPlus />}
+                            renderBody={(onComplete) => (
+                                <ContentForm
+                                    onSubmit={(content) => {
+                                        groupedAnswer.answerIds.map((answerId) => this.props.addContentToAnswer(this.props.clue.tableOfContentId, answerId, content));
+                                        onComplete();
+                                    }}
+                                />
+                            )}
+                        />
+                        {this._renderGroupedAnswerContent(groupedAnswer)}
+                    </div>
                 </div>
+            );
         } else {
             return '';
         }
@@ -192,114 +163,22 @@ class PuzzleAnswersList extends React.Component {
         if (!!groupedAnswer.additionalContent) {
             return (
                 <div>
-                    <AdditionalContent content={groupedAnswer.additionalContent}/>
-                    <Button onClick={() => groupedAnswer.answerIds.map(answerId => this.props.deleteContentFromAnswer(this.props.clue.tableOfContentId, answerId))}>
+                    <AdditionalContent content={groupedAnswer.additionalContent} />
+                    <Button onClick={() => groupedAnswer.answerIds.map((answerId) => this.props.deleteContentFromAnswer(this.props.clue.tableOfContentId, answerId))}>
                         Remove Content
                     </Button>
                 </div>
             );
         } else {
-            return (
-                <div>There is no additional content for this answer.</div>
-            )
-        }
-    }
-
-    renderUnlocks(answer) {
-        const unlockableClues = this.props.clues.clues.filter(clue => 
-            clue.tableOfContentId !== this.props.clue.tableOfContentId && 
-            answer.unlockedClues.find(unlock => unlock.tableOfContentId === clue.tableOfContentId) === undefined
-        );
-
-        if (answer.unlockedClues !== null) {
-            return <div>
-                        <div>  
-                            Puzzles Unlocked by Answer
-                            &nbsp;         
-                            <DialogRenderProp
-                                renderTitle={() => "Add Unlock To Puzzle"}
-                                renderButton={() => <FaPlus/>}
-                                renderBody={onComplete =>
-                                    <SimpleListForm
-                                        label="Add Puzzle to Unlock"
-                                        submitText="Add"
-                                        collection={unlockableClues}
-                                        getItemKey={puzzle => puzzle.tableOfContentId}
-                                        getItemValue={puzzle => puzzle.tableOfContentId}
-                                        getItemLabel={puzzle => puzzle.submittableTitle}
-                                        onSubmit={tableOfContentId => {
-                                            this.addPuzzleUnlock(answer.answerId, tableOfContentId);
-                                            onComplete();
-                                        }
-                                    }/>
-                                }
-                            />
-                        </div>
-                        {answer.unlockedClues.map(unlock => 
-                            <UnlockedPuzzle 
-                                key={unlock.tableOfContentId}
-                                unlockedPuzzle={unlock} 
-                                answerId={answer.answerId}
-                                deleteUnlock={() => this.deletePuzzleUnlock(answer.answerId, unlock.tableOfContentId)}/>
-                        )}
-                        <div>
-                            Achievements Unlocked by Answer
-                            <DialogRenderProp
-                                renderTitle={() => "Add Achievement Unlock"}
-                                renderButton={() => <FaPlus/>}
-                                renderBody={onComplete =>
-                                    <SimpleListForm
-                                        label="Add Achievement Unlock"
-                                        submitText="Add"
-                                        collection={this.props.achievements.data}
-                                        getItemKey={achievement => achievement.achievementId}
-                                        getItemValue={achievement => achievement.achievementId}
-                                        getItemLabel={achievement => achievement.name}
-                                        onSubmit={achievementId => {
-                                            this.props.addAchievementUnlockToAnswer(answer.answerId, achievementId);
-                                            onComplete();
-                                        }}
-                                        />
-                                }
-                            />
-
-                            {answer.unlockedAchievements.map(achievement =>
-                                <UnlockedAchievement
-                                    key={achievement.achievementId}
-                                    unlockedAchievement={achievement}
-                                    deleteUnlock={(achievementId) => this.props.deleteAchievementUnlockFromAnswer(answer.answerId, achievement.achievementId)}
-                                />
-                            )}
-                        </div>
-                        <div>
-                            Additional Content
-                            <DialogRenderProp
-                                renderTitle={() => "Add Additional Content"}
-                                renderButton={() => <FaPlus/>}
-                                renderBody={onComplete => 
-                                    <ContentForm
-                                        onSubmit={content => {
-                                            this.props.addContentToAnswer(this.props.clue.tableOfContentId, answer.answerId, content);
-                                            onComplete();
-                                        }
-                                    }/>
-                                }
-                            />
-                            <AnswerContent content={answer.additionalContent} deleteContent={() => this.props.deleteContentFromAnswer(this.props.clue.tableOfContentId, answer.answerId)} />
-                        </div>
-                </div>
-        } else {
-            return '';
+            return <div>There is no additional content for this answer.</div>;
         }
     }
 
     renderFallback(dividedAnswerGroups) {
         if (dividedAnswerGroups.groupedAnswers.length > 0) {
             return (
-                <div style={{position:"absolute", left:"calc(100% - 140px)", display:"inline"}}>
-                    <Button 
-                        size="sm"
-                        onClick={() => this.setState({enableGrouping: false})}>
+                <div style={{ position: 'absolute', left: 'calc(100% - 140px)', display: 'inline' }}>
+                    <Button size="sm" onClick={() => this.setState({ enableGrouping: false })}>
                         Disable Grouping
                     </Button>
                 </div>
@@ -311,80 +190,84 @@ class PuzzleAnswersList extends React.Component {
     render() {
         if (this.props.clue.answers !== null && this.props.clue.answers.length > 0) {
             let dividedAnswerGroups = this.GetGroupedAnswers(this.props.clue.answers, this.state.enableGrouping);
-            return  <span>
-                        {this.renderFallback(dividedAnswerGroups)}
-                        <ListGroup>
-                            {dividedAnswerGroups.standAloneAnswers.map(answer =>
-                                <ListGroupItem 
-                                    key={answer.answerId}
-                                    variant={answer.isCorrectAnswer ? 'success' : 'danger'}>
-                                        <div style={{textAlign: "left"}}>
-                                            <AnswerText answer={answer} clue={this.props.clue} />
-                                            <div>Response: <em>{answer.answerResponse}</em></div>
-                                            { this.renderUnlocks(answer) }
-                                        </div>
-                                        <div style={{ display: 'flow', justifyContent: "space-between" }}>
-                                            <DialogRenderProp
-                                                variant="primary"
-                                                renderTitle={() => "Update Response"}
-                                                renderButton={() => <><FaEdit/> Update Response</>}
-                                                renderBody={onComplete => 
-                                                    <AnswerForm
-                                                        answer={answer}
-                                                        teams={this.props.teams.data}
-                                                        onSubmit={updatedAnswer => {
-                                                            this.props.addAnswerToClue(this.props.clue.tableOfContentId, updatedAnswer);
-                                                            onComplete();
-                                                        }}
-                                                    />
-                                                }
+            return (
+                <span>
+                    {this.renderFallback(dividedAnswerGroups)}
+                    <ListGroup>
+                        {dividedAnswerGroups.standAloneAnswers.map((answer) => (
+                            <ListGroupItem key={answer.answerId} variant={answer.isCorrectAnswer ? 'success' : 'danger'}>
+                                <div style={{ textAlign: 'left' }}>
+                                    <AnswerText answer={answer} clue={this.props.clue} />
+                                    <div>
+                                        Response: <em>{answer.answerResponse}</em>
+                                    </div>
+                                    <PuzzleUnlocks answer={answer} tableOfContentId={this.props.clue.tableOfContentId} />
+                                </div>
+                                <div style={{ display: 'flow', justifyContent: 'space-between' }}>
+                                    <DialogRenderProp
+                                        variant="primary"
+                                        renderTitle={() => 'Update Response'}
+                                        renderButton={() => (
+                                            <>
+                                                <FaEdit /> Update Response
+                                            </>
+                                        )}
+                                        renderBody={(onComplete) => (
+                                            <AnswerForm
+                                                answer={answer}
+                                                teams={this.props.teams.data}
+                                                onSubmit={(updatedAnswer) => {
+                                                    this.props.addAnswerToClue(this.props.clue.tableOfContentId, updatedAnswer);
+                                                    onComplete();
+                                                }}
                                             />
-                                            <DialogRenderProp
-                                                variant="primary"
-                                                renderTitle={() => "Copy Answer"}
-                                                renderButton={() => <><FaRegCopy/> Clone Answer</>}
-                                                renderBody={onComplete => 
-                                                    <AnswerForm
-                                                        answer={{...answer, answerId: undefined}}
-                                                        teams={this.props.teams.data}
-                                                        onSubmit={updatedAnswer => {
-                                                            this.props.addAnswerToClue(this.props.clue.tableOfContentId, updatedAnswer);
-                                                            onComplete();
-                                                        }}
-                                                    />
-                                                }
+                                        )}
+                                    />
+                                    <DialogRenderProp
+                                        variant="primary"
+                                        renderTitle={() => 'Copy Answer'}
+                                        renderButton={() => (
+                                            <>
+                                                <FaRegCopy /> Clone Answer
+                                            </>
+                                        )}
+                                        renderBody={(onComplete) => (
+                                            <AnswerForm
+                                                answer={{ ...answer, answerId: undefined }}
+                                                teams={this.props.teams.data}
+                                                onSubmit={(updatedAnswer) => {
+                                                    this.props.addAnswerToClue(this.props.clue.tableOfContentId, updatedAnswer);
+                                                    onComplete();
+                                                }}
                                             />
-                                            <Button
-                                                variant="danger"
-                                                onClick={() => this.deletePuzzleAnswer(answer.answerId, this.props.clue.tableOfContentId)}>
-                                                <FaTrashAlt/> Delete Answer
-                                            </Button>
-                                        </div>
-                                </ListGroupItem>
-                            )}
-                            {dividedAnswerGroups.groupedAnswers.map(groupedAnswer =>
-                                <ListGroupItem 
-                                    key={groupedAnswer.answerIds[0]}
-                                    variant={groupedAnswer.isCorrectAnswer ? 'success' : 'danger'}>
-                                        <div style={{textAlign: "left"}}>
-                                            { this.renderGroupedAnswerText(groupedAnswer) }
-                                            <div>Response: {groupedAnswer.answerResponse}</div>
-                                            { this.renderGroupUnlocks(groupedAnswer) }
-                                        </div>
-                                        <div style={{ display: 'flow', justifyContent: "center" }}>
-                                            <Button onClick={() => groupedAnswer.answerIds.map(answerId => this.deletePuzzleAnswer(answerId, this.props.clue.tableOfContentId))}>
-                                                Delete Answer
-                                            </Button>
-                                        </div>
-                                </ListGroupItem>
-                            )}
-                        </ListGroup>
-                    </span>;
-        }
-        else if (this.props.clue.answers !== null && this.props.clue.answers.length === 0) {
+                                        )}
+                                    />
+                                    <Button variant="danger" onClick={() => this.deletePuzzleAnswer(answer.answerId, this.props.clue.tableOfContentId)}>
+                                        <FaTrashAlt /> Delete Answer
+                                    </Button>
+                                </div>
+                            </ListGroupItem>
+                        ))}
+                        {dividedAnswerGroups.groupedAnswers.map((groupedAnswer) => (
+                            <ListGroupItem key={groupedAnswer.answerIds[0]} variant={groupedAnswer.isCorrectAnswer ? 'success' : 'danger'}>
+                                <div style={{ textAlign: 'left' }}>
+                                    {this.renderGroupedAnswerText(groupedAnswer)}
+                                    <div>Response: {groupedAnswer.answerResponse}</div>
+                                    {this.renderGroupUnlocks(groupedAnswer)}
+                                </div>
+                                <div style={{ display: 'flow', justifyContent: 'center' }}>
+                                    <Button onClick={() => groupedAnswer.answerIds.map((answerId) => this.deletePuzzleAnswer(answerId, this.props.clue.tableOfContentId))}>
+                                        Delete Answer
+                                    </Button>
+                                </div>
+                            </ListGroupItem>
+                        ))}
+                    </ListGroup>
+                </span>
+            );
+        } else if (this.props.clue.answers !== null && this.props.clue.answers.length === 0) {
             return <div>There are no answers for this clue</div>;
-        }
-        else {
+        } else {
             return <div>Loading answers for this clue... hold on.</div>;
         }
     }
@@ -397,7 +280,7 @@ class PuzzleAnswersList extends React.Component {
                 result.push({
                     name: teams[i].name,
                     key: teams[i].teamId,
-                    value: answerIds[i]
+                    value: answerIds[i],
                 });
             }
         }
@@ -416,37 +299,35 @@ class PuzzleAnswersList extends React.Component {
     }
 
     FindTeam(teamId) {
-        const team = this.props.teams.data.find(x => x.teamId === teamId);
+        const team = this.props.teams.data.find((x) => x.teamId === teamId);
         return team;
     }
 
     GetGroupedAnswers(answers, groupingEnabled) {
         const allAnswers = this.props.clue.answers;
 
-        for(var a = 0; a < allAnswers.length; a++) {
-            allAnswers[a]["team"] = this.FindTeam(allAnswers[a].teamId);
+        for (var a = 0; a < allAnswers.length; a++) {
+            allAnswers[a]['team'] = this.FindTeam(allAnswers[a].teamId);
         }
         allAnswers.sort(this.compareAnswers);
 
         let standAloneAnswers = [];
         let groupedAnswers = [];
         if (!groupingEnabled) {
-            for(let answerIndex = 0; answerIndex < allAnswers.length; answerIndex++) {
+            for (let answerIndex = 0; answerIndex < allAnswers.length; answerIndex++) {
                 standAloneAnswers.push(allAnswers[answerIndex]);
             }
-        }
-        else {
+        } else {
             let isAnswerAllocated = new Array(allAnswers.length);
             isAnswerAllocated.fill(false);
-            for(var i = 0; i < allAnswers.length; i++) {
+            for (var i = 0; i < allAnswers.length; i++) {
                 if (!isAnswerAllocated[i]) {
                     isAnswerAllocated[i] = true;
                     if (allAnswers[i].teamId === null) {
                         standAloneAnswers.push(allAnswers[i]);
-                    }
-                    else {
+                    } else {
                         let answersInGroup = [i];
-                        for(var j = 0; j < allAnswers.length; j++) {
+                        for (var j = 0; j < allAnswers.length; j++) {
                             if (!isAnswerAllocated[j] && allAnswers[j].teamId !== null) {
                                 if (this.AnswersEqual(allAnswers[i], allAnswers[j])) {
                                     answersInGroup.push(j);
@@ -457,8 +338,7 @@ class PuzzleAnswersList extends React.Component {
 
                         if (answersInGroup.length === 1) {
                             standAloneAnswers.push(allAnswers[i]);
-                        }
-                        else {
+                        } else {
                             let groupedAnswer = {
                                 additionalContent: allAnswers[i].additionalContent,
                                 answerIds: [],
@@ -468,8 +348,8 @@ class PuzzleAnswersList extends React.Component {
                                 teamIds: [],
                                 unlockedAchievements: allAnswers[i].unlockedAchievements,
                                 unlockedClues: allAnswers[i].unlockedClues,
-                            }
-                            for(var k = 0; k < answersInGroup.length; k++) {
+                            };
+                            for (var k = 0; k < answersInGroup.length; k++) {
                                 let answerToMerge = allAnswers[answersInGroup[k]];
                                 groupedAnswer.answerIds.push(answerToMerge.answerId);
                                 groupedAnswer.teamIds.push(answerToMerge.teamId);
@@ -480,10 +360,10 @@ class PuzzleAnswersList extends React.Component {
                 }
             }
         }
-        return  {
-                    standAloneAnswers: standAloneAnswers,
-                    groupedAnswers: groupedAnswers,
-                }
+        return {
+            standAloneAnswers: standAloneAnswers,
+            groupedAnswers: groupedAnswers,
+        };
     }
 
     AnswersEqual(answer1, answer2) {
@@ -494,7 +374,7 @@ class PuzzleAnswersList extends React.Component {
             return false;
         }
 
-        if (answer1.unlockedClues.length !== answer2.unlockedClues.length ) {
+        if (answer1.unlockedClues.length !== answer2.unlockedClues.length) {
             return false;
         }
 
@@ -508,7 +388,7 @@ class PuzzleAnswersList extends React.Component {
             }
         }
 
-        if (answer1.unlockedAchievements.length !== answer2.unlockedAchievements.length ) {
+        if (answer1.unlockedAchievements.length !== answer2.unlockedAchievements.length) {
             return false;
         }
 
@@ -526,8 +406,7 @@ class PuzzleAnswersList extends React.Component {
             if (!(answer1.additionalContent === undefined && answer2.additionalContent === undefined)) {
                 return false;
             }
-        }
-        else if (!this.ContentEqual(answer1.additionalContent, answer2.additionalContent)) {
+        } else if (!this.ContentEqual(answer1.additionalContent, answer2.additionalContent)) {
             return false;
         }
 
@@ -648,11 +527,11 @@ class PuzzleAnswersList extends React.Component {
 
     compareClues(clueA, clueB) {
         if (clueA.sortOrder < clueB.sortOrder) {
-          return -1;
+            return -1;
         }
 
         if (clueA.sortOrder > clueB.sortOrder) {
-          return 1;
+            return 1;
         }
 
         const submittableIdCompare = clueA.submittableId.localeCompare(clueB.submittableId);
@@ -685,11 +564,11 @@ class PuzzleAnswersList extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     clues: getCluesModule(state),
     teams: getStaffTeams(state),
-    achievements: getAchievementsModule(state)
-})
+    achievements: getAchievementsModule(state),
+});
 
 const mapDispatchToProps = (dispatch) => ({
     getStaffAchievements: () => dispatch(fetchStaffAchievements()),
@@ -701,6 +580,6 @@ const mapDispatchToProps = (dispatch) => ({
     deleteContentFromAnswer: (tableOfContentId, answerId) => dispatch(deleteContentFromAnswer(tableOfContentId, answerId)),
     addPuzzleUnlock: (answerId, tableOfContentId, teamId) => dispatch(addPuzzleUnlock(answerId, tableOfContentId, teamId)),
     deletePuzzleUnlock: (answerId, tableOfContentId) => dispatch(deletePuzzleUnlock(answerId, tableOfContentId)),
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(PuzzleAnswersList);

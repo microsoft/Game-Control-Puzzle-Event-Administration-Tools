@@ -1,22 +1,16 @@
-import Axios from "axios";
-import * as constants from "../../../constants";
+import Axios from 'axios';
+import * as constants from '../../../constants';
 
-import { doServiceRequest } from "modules/types";
-import { getEventInstanceId } from "modules/user/selectors";
+import { doServiceRequest } from 'modules/types';
+import { getEventInstanceId } from 'modules/user/selectors';
 
 import * as actions from './actions';
-import { AnswerTemplate, ClueInstanceTemplate, ContentTemplate, LocationTemplate, StaffClueTemplate } from "./models";
+import { AnswerTemplate, ClueInstanceTemplate, ContentTemplate, LocationTemplate, StaffClueTemplate } from './models';
 
 export const fetchStaffClues = () => (dispatch: any, getState: any) => {
     const eventInstanceId = getEventInstanceId(getState());
 
-    doServiceRequest(
-        dispatch,
-        () => Axios.get(`/api/staff/puzzles/${eventInstanceId}`),
-        constants.STAFFCLUES_FETCHING,
-        constants.STAFFCLUES_FETCHED,
-        constants.STAFFCLUES_FAILED
-    );
+    doServiceRequest(dispatch, () => Axios.get(`/api/staff/puzzles/${eventInstanceId}`), constants.STAFFCLUES_FETCHING, constants.STAFFCLUES_FETCHED, constants.STAFFCLUES_FAILED);
 };
 
 export const fetchStaffClueDetails = (tableOfContentsId: string) => (dispatch: any, getState: any) => {
@@ -107,13 +101,13 @@ export const addContentToClue = (tableOfContentId: string, contentTemplate: Cont
     const eventInstanceId = getEventInstanceId(getState());
 
     const body = new FormData();
-    contentTemplate.contentId && body.append("contentId", contentTemplate.contentId);
-    contentTemplate.stringContent && body.append("stringContent", contentTemplate.stringContent);
+    contentTemplate.contentId && body.append('contentId', contentTemplate.contentId);
+    contentTemplate.stringContent && body.append('stringContent', contentTemplate.stringContent);
 
-    body.append("contentName", contentTemplate.contentName);
-    body.append("contentType", contentTemplate.contentType);
-    body.append("binaryContent", contentTemplate.binaryContent);
-    contentTemplate.achievementUnlockId && body.append("achievementUnlockId", contentTemplate.achievementUnlockId);
+    body.append('contentName', contentTemplate.contentName);
+    body.append('contentType', contentTemplate.contentType);
+    body.append('binaryContent', contentTemplate.binaryContent);
+    contentTemplate.achievementUnlockId && body.append('achievementUnlockId', contentTemplate.achievementUnlockId);
 
     doServiceRequest(
         dispatch,
@@ -152,12 +146,12 @@ export const addContentToAnswer = (tableOfContentId: string, answerId: string, c
     const eventInstanceId = getEventInstanceId(getState());
 
     const body = new FormData();
-    contentTemplate.contentId && body.append("contentId", contentTemplate.contentId);
-    contentTemplate.stringContent && body.append("stringContent", contentTemplate.stringContent);
+    contentTemplate.contentId && body.append('contentId', contentTemplate.contentId);
+    contentTemplate.stringContent && body.append('stringContent', contentTemplate.stringContent);
 
-    body.append("contentName", contentTemplate.contentName);
-    body.append("contentType", contentTemplate.contentType);
-    body.append("binaryContent", contentTemplate.binaryContent);
+    body.append('contentName', contentTemplate.contentName);
+    body.append('contentType', contentTemplate.contentType);
+    body.append('binaryContent', contentTemplate.binaryContent);
 
     doServiceRequest(
         dispatch,
@@ -204,17 +198,17 @@ export const deleteClueInstance = (tableOfContentId: string, instanceId: string)
     );
 };
 
-export const addPuzzleUnlock = (answerId: string, tableOfContentId: string, teamId: string) => (dispatch: any, getState: any) => {
+export const addPuzzleUnlock = (answerId: string, tableOfContentId: string, teamId?: string) => (dispatch: any, getState: any) => {
     const eventInstanceId = getEventInstanceId(getState());
 
     doServiceRequest(
         dispatch,
-        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/unlocks/${tableOfContentId}${( teamId !== null ? '?appliesToTeam=' + teamId : '' )}`),
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/unlocks/${tableOfContentId}${!!teamId ? '?appliesToTeam=' + teamId : ''}`),
         actions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
     );
-}
+};
 
 export const deletePuzzleUnlock = (answerId: string, tableOfContentId: string) => (dispatch: any, getState: any) => {
     const eventInstanceId = getEventInstanceId(getState());
@@ -226,4 +220,4 @@ export const deletePuzzleUnlock = (answerId: string, tableOfContentId: string) =
         actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
         actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
     );
-}
+};
