@@ -1,6 +1,6 @@
-import React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Col, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
+
 import { ClueRating } from 'modules/staff/clues';
 
 type Props = Readonly<{

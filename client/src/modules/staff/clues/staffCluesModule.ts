@@ -1,8 +1,8 @@
-import * as constants from '../../constants';
+import * as constants from '../../../constants';
 import * as actions from 'modules/staff/clues/actions';
 import { Action, Module } from 'modules/types';
 import * as moment from 'moment';
-import { Answer, StaffClue } from './clues';
+import { Answer, StaffClue } from '.';
 
 type ClueDictionary = { [key: string]: StaffClue };
 

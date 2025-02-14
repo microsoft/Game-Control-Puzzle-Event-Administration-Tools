@@ -8,7 +8,7 @@ import { gridReducer } from './grid/staffGridModule';
 import { challengesReducer } from './challenges/reducer';
 import { messagesReducer } from './messages/messagesModule';
 import { staffTeamsReducer } from './teams/staffTeamsModule';
-import { StaffCluesState } from './staffCluesModule';
+import { StaffCluesState } from './clues/staffCluesModule';
 
 export * from './grid';
 export * from './teams';
