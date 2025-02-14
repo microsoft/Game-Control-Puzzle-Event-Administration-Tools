@@ -3,7 +3,7 @@ import { routerReducer } from 'react-router-redux';
 
 import admin from './admin';
 
-import { staffCluesReducer } from './staff/staffCluesModule';
+import { staffCluesReducer } from './staff/clues/staffCluesModule';
 import staff from './staff';
 
 import player from './player';

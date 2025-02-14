@@ -1,8 +1,8 @@
 import { initialCluesState, staffCluesReducer, StaffCluesState } from './staffCluesModule';
 import * as actions from 'modules/staff/clues/actions';
-import * as constants from '../../constants';
+import * as constants from '../../../constants';
 import moment from 'moment';
-import { Answer, StaffClue } from './clues/models';
+import { Answer, StaffClue } from './models';
 
 const timestamp = moment.utc();
 

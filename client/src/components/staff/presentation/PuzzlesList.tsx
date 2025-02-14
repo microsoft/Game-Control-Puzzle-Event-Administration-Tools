@@ -2,7 +2,7 @@ import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import { ClueIcon } from './ClueIcon';
-import { StaffCluesState } from 'modules/staff/staffCluesModule';
+import { StaffCluesState } from 'modules/staff/clues/staffCluesModule';
 
 type Props = Readonly<{
     clues: StaffCluesState;
