@@ -2,24 +2,12 @@ import { useState } from 'react';
 import { Alert, Breadcrumb, Button, DropdownButton, Dropdown, Tab, Tabs } from 'react-bootstrap';
 import { FaImages, FaMapPin, FaPen, FaPlus } from 'react-icons/fa';
 import { LinkContainer } from 'react-router-bootstrap';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { getIsUserAdmin, getStaffPuzzleDetails } from 'modules';
-import { getStaffTeams, shouldRefreshTeams, shouldRefreshClues, useStaffTeams } from 'modules/staff';
-import {
-    addAnswerToClue,
-    addContentToClue,
-    addLocationToClue,
-    createClue,
-    deleteClue,
-    deleteContent,
-    fetchStaffClueDetails,
-    fetchStaffClues,
-    relockClueForTeam,
-    unlockClueForTeam,
-} from 'modules/staff/clues/service';
-import { fetchStaffTeams } from 'modules/staff/teams/service';
-import { fetchStaffAchievements, getAchievementsModule, shouldRefreshAchievements, useStaffAchievements } from 'modules/staff/achievements';
+import { useStaffTeams } from 'modules/staff';
+import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
+import { useStaffAchievements } from 'modules/staff/achievements';
 
 import { AnswerForm, ClueForm, ContentForm, LocationForm } from './dialogs';
 import DialogRenderProp from './dialogs/DialogRenderProp';

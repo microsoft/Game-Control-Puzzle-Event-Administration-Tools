@@ -3,7 +3,7 @@ import { Breadcrumb, Button, Tab, Tabs, Card, Alert, ListGroup, ListGroupItem, C
 import { FaGem, FaPencilAlt } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { getIsUserAdmin, getPointsNameSetting } from 'modules';
 
@@ -18,9 +18,10 @@ import { useStaffClues } from 'modules/staff/clues/hooks';
 import { getLastDeleteError, getIsDeletingSubmission } from 'modules/admin';
 import { updateUserInfo } from 'modules/admin/users/service';
 import { deletePlayerSubmission } from 'modules/admin/player/service';
+import { CallTemplate } from 'modules/types';
 
 export const StaffTeamDetails = () => {
-    const { id } = useParams();
+    const { id, tab } = useParams<{ id: string; tab: string }>();
 
     const { cluesModule } = useStaffClues();
     const { teams, addOrUpdateTeam, deleteTeam, updatePoints, updateCallForTeam } = useStaffTeams();
@@ -37,13 +38,13 @@ export const StaffTeamDetails = () => {
 
     const clues = cluesModule;
 
-    const handleCallUpdate = (updatedCall) => updateCallForTeam(id, updatedCall);
+    const handleCallUpdate = (updatedCall: CallTemplate) => updateCallForTeam(id, updatedCall);
 
-    const handleTabChange = (k) => {
+    const updateCurrentTab = (k: string) => {
         setKey(k);
         history.replace('/staff/teams/' + id + '/' + k);
     };
-    const startCall = () => handleCallUpdate({});
+    const startCall = () => handleCallUpdate({ callType: 'None' });
 
     if (currentTeam) {
         let activeCall = currentTeam.callHistory ? currentTeam.callHistory.find((x) => x.callEnd === null) : undefined;
@@ -74,7 +75,7 @@ export const StaffTeamDetails = () => {
                                 <FaPencilAlt /> Edit
                             </>
                         )}
-                        renderBody={(onComplete) => <TeamForm team={currentTeam} disabled={teams.isLoading} onSubmit={addOrUpdateTeam} onComplete={onComplete} />}
+                        renderBody={(onComplete) => <TeamForm team={currentTeam} onSubmit={addOrUpdateTeam} onComplete={onComplete} />}
                     />
                     <DialogRenderProp
                         variant="outline-primary"
@@ -97,11 +98,11 @@ export const StaffTeamDetails = () => {
                 </div>
                 {currentTeam.gcNotes && <Alert variant="info">NOTE: {currentTeam.gcNotes}</Alert>}
 
-                <Tabs defaultActiveKey={1} id="team-detals-tabs" activeKey={key} onSelect={handleTabChange}>
+                <Tabs defaultActiveKey={1} id="team-detals-tabs" activeKey={key} onSelect={(eventKey) => updateCurrentTab(eventKey ?? '')}>
                     <Tab eventKey={1} title="Calls">
                         {activeCall ? (
                             <Card>
-                                <TeamCallForm key={activeCall.callId} puzzles={clues.clues} currentCall={activeCall} onUpdate={handleCallUpdate} />
+                                <TeamCallForm key={activeCall.callId} puzzles={clues.data} currentCall={activeCall} onUpdate={handleCallUpdate} />
                             </Card>
                         ) : (
                             <Button onClick={startCall}>Start Call</Button>
