@@ -1,9 +1,7 @@
 import moment from 'moment';
 import { useState } from 'react';
 import { Button, Col, Collapse, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
-import _ from 'lodash';
 
-import { CallTemplate } from 'modules/types';
 import { StaffTeam } from 'modules/staff';
 
 const getFriendlyNameForCallType = (callType: string) => {
@@ -37,7 +35,7 @@ const CallList = ({ currentTeam }: { currentTeam: StaffTeam }) => {
                         return moment.utc(b.callStart).diff(moment.utc(a.callStart));
                     })
                     .map((call) => {
-                        const participant = _.find(currentTeam.roster, (player) => player.participantId === call.participant);
+                        const participant = currentTeam.roster.find((player) => player.participantId === call.participant);
                         return (
                             <ListGroupItem key={call.callId}>
                                 <div>

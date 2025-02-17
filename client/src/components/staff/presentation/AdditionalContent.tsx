@@ -1,7 +1,5 @@
-import React from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
 
 import { Achievement, Content } from 'modules/types';
 

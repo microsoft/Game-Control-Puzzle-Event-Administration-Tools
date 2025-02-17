@@ -1,9 +1,13 @@
 import * as Msal from 'msal';
-import _ from 'lodash';
 
 type ApplicationConfig = Readonly<{
     clientId: string | undefined;
     graphScopes: string[];
+}>;
+
+type IdToken = Readonly<{
+    preferred_username: string;
+    oid: string;
 }>;
 
 export default class AuthService {
@@ -28,7 +32,7 @@ export default class AuthService {
             (idToken) => {
                 const user = this.app.getUser();
                 if (user) {
-                    return { token: idToken, oid: _.get(user, 'idToken.oid'), preferred_username: _.get(user, 'idToken.preferred_username') };
+                    return { token: idToken, oid: (user.idToken as IdToken).oid, preferred_username: (user.idToken as IdToken).preferred_username };
                 } else {
                     return null;
                 }
