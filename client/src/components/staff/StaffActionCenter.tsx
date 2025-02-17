@@ -5,17 +5,47 @@ import { FiMessageCircle } from 'react-icons/fi';
 import { FaRegClock, FaPuzzlePiece } from 'react-icons/fa';
 import { GrNotes } from 'react-icons/gr';
 import { MdContactPhone } from 'react-icons/md';
-import { useHistory } from 'react-router-dom';
-import * as moment from 'moment';
-import _ from 'lodash';
+import { useHistory, useParams } from 'react-router-dom';
+import moment from 'moment';
 
-import { useStaffGridData } from '../../actions/staff/gridDataHooks';
+import { ExtendedGridCellData, ExtendedGridTeam, useStaffGridData } from '../../actions/staff/gridDataHooks';
 import { LiveTimerControl } from '../shared/LiveTimerControl';
 import { unlockClueForTeam } from 'modules/staff/clues/service';
 import { updateCallForTeam } from 'modules/staff/teams/service';
 import { TanstackTable } from 'components/shared/TanstackTable';
+import { CallTemplate } from 'modules/types';
+import { StaffTeam, TeamCall } from 'modules/staff';
+import { StaffClue } from 'modules/staff/clues';
 
-const getFriendlyNameForCallType = (type) => {
+type ExtraExtendedGridTeam = Readonly<{
+    id: string;
+    team: ExtendedGridTeam;
+    name: string;
+    gcNotes: string;
+    isSolving?: boolean;
+    currentPuzzleName?: string;
+    currentPuzzleId?: string;
+    currentTocId?: string;
+    activeCall?: TeamCall;
+    activeCallAge?: React.ReactElement | string;
+    mostRecentCall?: TeamCall;
+    minutesSinceLastCall: number;
+    solvingMinutes?: number;
+    isRequest?: boolean;
+    callSortOrder: number;
+    minutesSinceMostRecentCallStart?: number;
+    solveStartTime?: moment.Moment;
+    mostRecentCallEnd?: moment.Moment;
+}>;
+
+type ExtraExtendedGridCellData = ExtendedGridCellData &
+    StaffClue &
+    Readonly<{
+        instanceCount: number;
+        freeInstanceCount: number;
+    }>;
+
+const getFriendlyNameForCallType = (type: string) => {
     switch (type) {
         case 'Hint':
             return 'Hint Call';
@@ -37,24 +67,25 @@ const AcknowledgedAFewMinutes = 'Game Control has received your request and will
 const AcknowledgedTenToFifteenMinutes =
     'Game Control has received your request and will assist you in about ten to fifteen minutes.  Perhaps this would be a good time to consider taking a short break?';
 
-const StaffActionCenter = (props) => {
+const StaffActionCenter = () => {
     document.title = 'Game Control - Action Center';
 
-    const { data, refresh } = useStaffGridData({ noRefresh: false, fastRefresh: props.match.params.fastRefresh });
-    const user = useSelector((state) => state.user);
+    const { fastRefresh } = useParams<{ fastRefresh: string }>();
+    const { data, refresh } = useStaffGridData({ noRefresh: false, fastRefresh: !!fastRefresh });
+    const user = useSelector((state: any) => state.user);
     const dispatch = useDispatch();
     const history = useHistory();
 
-    const acknowledge = (teamId, call, notes) => {
+    const acknowledge = (teamId: string, call: CallTemplate, notes: string) => {
         let updatedCall = { ...call, publicNotes: notes };
 
         dispatch(updateCallForTeam(teamId, updatedCall));
         setTimeout(refresh, 500);
     };
 
-    const switchToGcCall = (team, call) => {
+    const switchToGcCall = (team: ExtraExtendedGridTeam, call: CallTemplate) => {
         const teamId = team.id;
-        const updatedCall = { ...call, callEnd: moment.utc().format() };
+        const updatedCall = { ...call, callEnd: moment.utc() };
         dispatch(
             updateCallForTeam(teamId, updatedCall, () => {
                 dispatch(
@@ -70,35 +101,32 @@ const StaffActionCenter = (props) => {
         );
     };
 
-    const unlockPuzzleAndEndCall = (teamId, tableOfContentId, puzzleName, call) => {
+    const unlockPuzzleAndEndCall = (teamId: string, tableOfContentId: string, puzzleName: string, call: CallTemplate) => {
         dispatch(unlockClueForTeam(teamId, tableOfContentId, 'GcUnlock'));
         endCall(teamId, { ...call, publicNotes: puzzleName + ' unlocked.' });
     };
 
-    const checkInWithTeam = (teamId, message) => {
-        dispatch(updateCallForTeam(teamId, { callEnd: moment.utc().format(), callType: 'Checkin' }));
+    const checkInWithTeam = (teamId: string, message: string) => {
+        dispatch(updateCallForTeam(teamId, { callEnd: moment.utc(), callType: 'Checkin' }));
         setTimeout(refresh, 500);
     };
 
-    const endCall = (teamId, call) => {
-        const updatedCall = { ...call, callEnd: moment.utc().format() };
+    const endCall = (teamId: string, call: CallTemplate) => {
+        const updatedCall = { ...call, callEnd: moment.utc() };
         dispatch(updateCallForTeam(teamId, updatedCall));
         setTimeout(refresh, 500);
     };
 
-    let teams = [];
+    let teams: ExtraExtendedGridTeam[] = [];
     if (data.teams) {
         teams = data.teams.map((team) => {
             const activeCall = team.callHistory.find((x) => !x.callEnd);
-            const activeCallAge = activeCall && activeCall.callStart ? <LiveTimerControl timestamp={_.get(activeCall, 'callStart')} /> : 'unknown time';
-            const mostRecentCall = _.first((_.get(team, 'callHistory') ?? []).sort((a, b) => Date.parse(b.callEnd) - Date.parse(a.callEnd)));
-            const mostRecentCallEnd = _.get(mostRecentCall, 'callEnd');
-            const minutesSinceMostRecentCallStart = activeCall ? moment.duration(moment.utc().diff(moment.utc(_.get(mostRecentCall, 'callStart')))).asMinutes() : 999999;
-            const minutesSinceLastCall = activeCall
-                ? -50000
-                : mostRecentCall && mostRecentCall.callEnd
-                ? moment.duration(moment.utc().diff(moment.utc(_.get(mostRecentCall, 'callEnd')))).asMinutes()
-                : -1;
+            const activeCallAge = activeCall && activeCall.callStart ? <LiveTimerControl timestamp={activeCall.callStart.toLocaleString()} /> : 'unknown time';
+            const mostRecentCall =
+                team.callHistory.length > 0 ? team.callHistory.sort((a, b) => Date.parse(b.callEnd!.toLocaleString()) - Date.parse(a.callEnd!.toLocaleString()))[0] : undefined;
+            const mostRecentCallEnd = mostRecentCall?.callEnd;
+            const minutesSinceMostRecentCallStart = mostRecentCall ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callStart))).asMinutes() : 999999;
+            const minutesSinceLastCall = activeCall ? -50000 : mostRecentCall?.callEnd ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callEnd))).asMinutes() : -1;
             const isRequest = activeCall && (activeCall.callType === 'TeamFree' || activeCall.callType === 'TeamHelp');
             const callSortOrder = minutesSinceMostRecentCallStart + (isRequest ? 0 : -10000);
             const solvingMinutes = team.currentPuzzle?.startTime ? moment.duration(moment.utc().diff(moment.utc(team.currentPuzzle.startTime))).asMinutes() : undefined;
@@ -109,9 +137,9 @@ const StaffActionCenter = (props) => {
                 name: team.name,
                 gcNotes: team.gcNotes ?? '',
                 isSolving: team.currentPuzzle && team.currentPuzzle.isActive,
-                currentPuzzleName: _.get(data.clues, _.get(team, 'currentPuzzle.clueId', 'invalid') + '.submittableTitle'),
-                currentPuzzleId: _.get(team, 'currentPuzzle.clueId'),
-                currentTocId: _.get(data.clues, _.get(team, 'currentPuzzle.clueId', 'invalid') + '.tableOfContentId'),
+                currentPuzzleName: team.currentPuzzle ? data.clues[team.currentPuzzle.clueId].submittableTitle : undefined,
+                currentPuzzleId: team.currentPuzzle?.clueId,
+                currentTocId: team.currentPuzzle ? data.clues[team.currentPuzzle.clueId].tableOfContentId : undefined,
                 activeCall,
                 activeCallAge,
                 mostRecentCall,
@@ -126,7 +154,7 @@ const StaffActionCenter = (props) => {
         });
     }
 
-    const tanColumns = [
+    const tanColumns: ColumnDef<any>[] = [
         {
             id: 'teamStatus',
             header: () => <span>All Teams</span>,
@@ -214,25 +242,30 @@ const StaffActionCenter = (props) => {
                     <Card.Header>Open Calls</Card.Header>
                     <Card.Body>
                         <CardDeck>
-                            {_.filter(teams, (t) => t && t.activeCall)
+                            {teams
+                                .filter((t) => t.activeCall)
                                 .sort((a, b) => b.callSortOrder - a.callSortOrder)
-                                .map((team) => {
-                                    const call = team.activeCall;
-                                    const isAcknowledged = team.activeCall.publicNotes;
+                                .map((team: ExtraExtendedGridTeam) => {
+                                    // It should be given that we have an active call based on the filter,
+                                    // but typescript wants us to assert it here to be really sure.
+                                    const call = team.activeCall!;
+                                    const isAcknowledged = call.publicNotes;
 
-                                    let eligiblePuzzles = _.filter(team.team.puzzles, (p) => p.isNotStarted) ?? [];
-                                    eligiblePuzzles = eligiblePuzzles.map((puzzle) => ({
-                                        ...puzzle,
-                                        ...data.clues[puzzle.clueId],
-                                        instanceCount: data.clues[puzzle.clueId].instances.length,
-                                        freeInstanceCount: data.clues[puzzle.clueId].instances.filter((x) => !x.currentTeam && !x.needsReset).length,
-                                    }));
+                                    const eligiblePuzzles: ExtraExtendedGridCellData[] =
+                                        team.team.puzzles
+                                            ?.filter((p) => p.isNotStarted)
+                                            .map((puzzle) => ({
+                                                ...puzzle,
+                                                ...data.clues[puzzle.clueId],
+                                                instanceCount: data.clues[puzzle.clueId].instances.length,
+                                                freeInstanceCount: data.clues[puzzle.clueId].instances.filter((x) => !x.currentTeam && !x.needsReset).length,
+                                            })) ?? [];
                                     eligiblePuzzles.sort((a, b) => {
                                         return (a.sortOrder < 100 ? a.sortOrder + 1000 : a.sortOrder) - (b.sortOrder < 100 ? b.sortOrder + 1000 : b.sortOrder);
                                     });
 
                                     let cardclass = 'actionCenterCard';
-                                    if (call.callType === 'Hint') {
+                                    if (call!.callType === 'Hint') {
                                         cardclass += ' actionCenterCardInCall';
                                     } else if (!isAcknowledged) {
                                         cardclass += ' actionCenterCardActionRequired';
@@ -263,7 +296,7 @@ const StaffActionCenter = (props) => {
                                                     </DropdownButton>
                                                 )}
                                                 {call.callType === 'TeamHelp' && <Button onClick={() => switchToGcCall(team, call)}>Start GC Call</Button>}
-                                                {call.callType === 'TeamHelp' && <Button onClick={() => endCall(team.id, call)}>Close</Button>}
+                                                {call.callType === 'TeamHelp' && <Button onClick={() => endCall(team.id, call!)}>Close</Button>}
                                                 {call.callType === 'TeamFree' && (
                                                     <>
                                                         <DropdownButton title="Assign Puzzle">
@@ -335,7 +368,8 @@ const StaffActionCenter = (props) => {
                     <Card.Header>Active Solves</Card.Header>
                     <Card.Body>
                         <CardDeck>
-                            {_.filter(teams, (t) => t && t.isSolving)
+                            {teams
+                                .filter((t) => t.isSolving)
                                 .sort((a, b) => b.minutesSinceLastCall - a.minutesSinceLastCall)
                                 .map((team) => {
                                     return (
@@ -357,11 +391,17 @@ const StaffActionCenter = (props) => {
                                                 </div>
                                                 <div>
                                                     <FaRegClock className="mr-2" title="Time Working On Puzzle" />
-                                                    <LiveTimerControl timestamp={team.solveStartTime} />
+                                                    <LiveTimerControl timestamp={team.solveStartTime!.toLocaleString()} />
                                                 </div>
                                                 <div>
                                                     <MdContactPhone className="mr-2" title="Last Contacted" />
-                                                    {team.activeCall ? 'Call Active' : team.mostRecentCallEnd ? <LiveTimerControl timestamp={team.mostRecentCallEnd} /> : 'Never'}
+                                                    {team.activeCall ? (
+                                                        'Call Active'
+                                                    ) : team.mostRecentCallEnd ? (
+                                                        <LiveTimerControl timestamp={team.mostRecentCallEnd.toLocaleString()} />
+                                                    ) : (
+                                                        'Never'
+                                                    )}
                                                 </div>
                                                 {<Button onClick={() => checkInWithTeam(team.id, 'Snooze Button')}>Snooze</Button>}
                                             </Card.Body>

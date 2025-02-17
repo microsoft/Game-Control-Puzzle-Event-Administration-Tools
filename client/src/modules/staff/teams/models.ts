@@ -28,9 +28,9 @@ export type TeamCall = Readonly<{
     callEnd?: Moment;
     callType: string;
     callSubType: string;
-    notes: string | null;
-    teamNotes: string | null;
-    publicNotes: string | null;
+    notes?: string;
+    teamNotes?: string;
+    publicNotes?: string;
     lastUpdated: Moment;
 
     // TODO: This isn't actually on the server type but client code wanted to read it

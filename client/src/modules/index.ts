@@ -1,16 +1,11 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import admin from './admin';
-
 import { staffCluesReducer } from './staff/clues/staffCluesModule';
+import admin from './admin';
 import staff from './staff';
-
 import player from './player';
-
 import { userReducer } from './user';
-
-import _ from 'lodash';
 import { getEventInstanceId } from './user/selectors';
 import { StaffClue } from './staff/clues';
 
@@ -31,9 +26,9 @@ export const getIsVirtual = (state: any) => {
 
 export const getTeamId = (state: any) => {
     let eventId = getEventInstanceId(state);
-    const participation = _.get(state, 'user.data.participation');
+    const participation = state.user.data.participation;
     if (participation) {
-        const matchingEvent = _.find(participation, (p) => p && p.eventInstanceId === eventId);
+        const matchingEvent = participation.find((p: any) => p && p.eventInstanceId === eventId);
         if (matchingEvent) {
             return matchingEvent.teamId;
         }
@@ -76,10 +71,7 @@ export const getDerivedTeamId = (state: any, tableOfContentId: string) => {
 };
 
 export const getDerivedPlayerId = (state: any, tableOfContentId: string) => {
-    let participantId = _.get(state, 'user.data.participantId');
-    let id = xorGuids(participantId, tableOfContentId);
-
-    return id ?? '';
+    return xorGuids(state.user.data.participantId, tableOfContentId) ?? '';
 };
 
 export const getAllStaffPuzzles = (state: any) => {
