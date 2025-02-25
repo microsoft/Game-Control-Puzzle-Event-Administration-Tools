@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Breadcrumb, Button, DropdownButton, Dropdown, Tab, Tabs } from 'react-bootstrap';
 import { FaImages, FaMapPin, FaPen, FaPlus } from 'react-icons/fa';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getIsUserAdmin, getStaffPuzzleDetails } from 'modules';
 import { useStaffTeams } from 'modules/staff';
-import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
+import { fetchStaffClueDetails, relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
 import { useStaffAchievements } from 'modules/staff/achievements';
 
 import { AnswerForm, ClueForm, ContentForm, LocationForm } from './dialogs';
@@ -33,6 +33,10 @@ const StaffClueDetails = () => {
     const { teams } = useStaffTeams();
     const isUserAdmin = useSelector(getIsUserAdmin);
     const currentClue = useSelector((state) => getStaffPuzzleDetails(state, id));
+
+    useEffect(() => {
+        dispatch(fetchStaffClueDetails(id));
+    }, []);
 
     const updateCurrentTab = (k: string) => {
         setKey(k);
