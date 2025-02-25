@@ -93,10 +93,10 @@ export type AnswerTemplate = Readonly<{
     answerId?: string;
     answerText: string;
     answerResponse: string;
-    isCorrect: boolean;
+    isCorrectAnswer: boolean;
     isHidden: boolean;
     isTeamSpecific: boolean;
-    appliesToTeam?: string;
+    teamId?: string;
 }>;
 
 export type UnlockedClue = Readonly<{

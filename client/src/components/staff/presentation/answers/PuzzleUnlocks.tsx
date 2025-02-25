@@ -105,6 +105,6 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
             </div>
         );
     } else {
-        return '';
+        return null;
     }
 };
