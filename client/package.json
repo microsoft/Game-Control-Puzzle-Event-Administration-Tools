@@ -31,7 +31,7 @@
         "react-scripts": "5.0.1",
         "redux": "^4.0.4",
         "redux-auth-wrapper": "^2.0.2",
-        "redux-signalr": "0.0.6",
+        "redux-signalr": "1.2.0",
         "redux-thunk": "^2.2.0",
         "signalr": "^2.4.1",
         "sockette": "^2.0.0",
