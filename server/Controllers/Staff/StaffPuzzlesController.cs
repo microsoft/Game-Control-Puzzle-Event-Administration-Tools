@@ -300,7 +300,7 @@ namespace GameControl.Server.Controllers
                                 sanitizedAnswer.Equals(p.AnswerText, StringComparison.InvariantCultureIgnoreCase) &&
                                 p.EventInstance == eventInstanceId &&
                                 p.Submittable == toc.Submittable &&
-                                p.AppliesToTeam == answer.AppliesToTeam);
+                                p.AppliesToTeam == answer.TeamId);
 
                             if (similarAnswer != null)
                             {
@@ -313,11 +313,11 @@ namespace GameControl.Server.Controllers
                                     AnswerId = Guid.NewGuid(),
                                     AnswerText = sanitizedAnswer,
                                     AnswerResponse = answer.AnswerResponse,
-                                    IsCorrectAnswer = answer.IsCorrect,
+                                    IsCorrectAnswer = answer.IsCorrectAnswer,
                                     LastUpdated = DateTime.UtcNow,
                                     EventInstance = eventInstanceId,
                                     Submittable = toc.Submittable,
-                                    AppliesToTeam = answer.IsTeamSpecific ? answer.AppliesToTeam : null,
+                                    AppliesToTeam = answer.IsTeamSpecific ? answer.TeamId : null,
                                     IsHidden = answer.IsHidden
                                 };
 
@@ -332,7 +332,7 @@ namespace GameControl.Server.Controllers
                             if (previousAnswer != null)
                             {
                                 previousAnswer.AnswerResponse = answer.AnswerResponse;
-                                previousAnswer.IsCorrectAnswer = answer.IsCorrect;
+                                previousAnswer.IsCorrectAnswer = answer.IsCorrectAnswer;
                                 previousAnswer.IsHidden = answer.IsHidden;
                                 previousAnswer.LastUpdated = DateTime.UtcNow;
 

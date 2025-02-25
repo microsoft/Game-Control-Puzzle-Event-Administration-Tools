@@ -10,12 +10,12 @@ namespace GameControl.Server.RequestTypes.Staff
 
         public string AnswerResponse { get; set; }
 
-        public bool IsCorrect { get; set; }
+        public bool IsCorrectAnswer { get; set; }
 
         public bool IsHidden { get; set; }
 
         public bool IsTeamSpecific { get; set; }
 
-        public Guid? AppliesToTeam { get; set; }
+        public Guid? TeamId { get; set; }
     }
 }
