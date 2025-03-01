@@ -35,7 +35,7 @@ const AcknowledgedTenToFifteenMinutes = "Game Control has received your request 
 const StaffActionCenter = (props) => {
     document.title = 'Game Control - Action Center';
 
-    const { data, refresh } = useStaffGridData({ noRefresh: false, fastRefresh: props.match.params.fastRefresh });
+    const { data, refresh } = useStaffGridData({ noRefresh: false, fastRefresh: props.match.params.fastRefresh, hidePlot: true });
     const user = useSelector(state => state.user);
     const dispatch = useDispatch();
     const history = useHistory();
