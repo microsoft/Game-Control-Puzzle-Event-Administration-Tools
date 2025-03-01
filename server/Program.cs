@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using GameControl.Server.Authentication;
@@ -25,12 +25,12 @@ namespace GameControl.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.AddServiceDefaults();
 
             var services = builder.Services;
             var configuration = builder.Configuration;
 
-            services.AddDbContext<GameControlContext>(options =>
-                                                        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            builder.AddSqlServerDbContext<GameControlContext>(connectionName: "spiderdog-v2");
 
             var jwtAppSettingOptions = configuration.GetSection(nameof(JwtIssuerOptions));
             var SecretKey = configuration.GetSection("GameControl")["SecretKey"];
@@ -113,6 +113,8 @@ namespace GameControl.Server
             });
 
             var app = builder.Build();
+
+            app.MapDefaultEndpoints();
 
             app.UseRouting();
 

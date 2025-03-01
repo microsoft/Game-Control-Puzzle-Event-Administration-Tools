@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29118.114
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35728.132 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameControl.Server", "server/GameControl.Server.csproj", "{D7EEF32A-D590-488A-98FA-6244134EE861}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameControl.Server", "server\GameControl.Server.csproj", "{D7EEF32A-D590-488A-98FA-6244134EE861}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameControl.AppHost", "GameControl.AppHost\GameControl.AppHost.csproj", "{E3E73F76-CD28-4812-9E60-07911590BFA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameControl.ServiceDefaults", "GameControl.ServiceDefaults\GameControl.ServiceDefaults.csproj", "{52607406-6FAC-4824-A767-E220B85AB685}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,12 +19,20 @@ Global
 		{D7EEF32A-D590-488A-98FA-6244134EE861}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7EEF32A-D590-488A-98FA-6244134EE861}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7EEF32A-D590-488A-98FA-6244134EE861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3E73F76-CD28-4812-9E60-07911590BFA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E73F76-CD28-4812-9E60-07911590BFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E73F76-CD28-4812-9E60-07911590BFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E73F76-CD28-4812-9E60-07911590BFA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52607406-6FAC-4824-A767-E220B85AB685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52607406-6FAC-4824-A767-E220B85AB685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52607406-6FAC-4824-A767-E220B85AB685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52607406-6FAC-4824-A767-E220B85AB685}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		        SolutionGuid = {AA6AB6B5-7719-4C5F-901D-E7CE9866D6F0}
 		SolutionGuid = {26DBE728-57D1-4181-9EBA-720CA576950A}
+		        SolutionGuid = {AA6AB6B5-7719-4C5F-901D-E7CE9866D6F0}
 	EndGlobalSection
 EndGlobal
