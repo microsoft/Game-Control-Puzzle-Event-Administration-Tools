@@ -1,6 +1,5 @@
 import { initialCluesState, staffCluesReducer, StaffCluesState } from './staffCluesModule';
 import * as actions from 'modules/staff/clues/actions';
-import * as constants from '../../../constants';
 import moment from 'moment';
 import { Answer, StaffClue } from './models';
 
@@ -9,7 +8,7 @@ const timestamp = moment.utc();
 describe('StaffClues', () => {
     it('isLoading should be set when fetching clues', () => {
         const newState = staffCluesReducer(undefined, {
-            type: constants.STAFFCLUES_FETCHING,
+            type: actions.STAFFCLUES_FETCHING,
             timestamp,
         });
 
@@ -38,7 +37,7 @@ describe('StaffClues', () => {
         };
 
         let newState = staffCluesReducer(previousState, {
-            type: constants.STAFFCLUES_FETCHED,
+            type: actions.STAFFCLUES_FETCHED,
             payload: [
                 {
                     tableOfContentId: '00000000-0000-0000-0000-000000000003',
@@ -58,7 +57,7 @@ describe('StaffClues', () => {
         };
 
         let newState = staffCluesReducer(undefined, {
-            type: constants.STAFFCLUES_FETCHING,
+            type: actions.STAFFCLUES_FETCHING,
             timestamp,
         });
 
@@ -124,7 +123,7 @@ describe('StaffClues', () => {
         };
 
         let newState = staffCluesReducer(previousState, {
-            type: constants.STAFFCLUES_ADDED,
+            type: actions.STAFFCLUES_ADDED,
             payload: addedClue,
             timestamp,
         });
@@ -235,7 +234,7 @@ describe('StaffClues', () => {
         };
 
         let newState = staffCluesReducer(previousState, {
-            type: constants.STAFFDETAILS_FETCHED,
+            type: actions.STAFFDETAILS_FETCHED,
             payload: detailedClue,
             timestamp,
         });
@@ -249,7 +248,7 @@ describe('StaffClues', () => {
         };
 
         let newState = staffCluesReducer(initialCluesState, {
-            type: constants.ADD_ANSWER_STARTED,
+            type: actions.ADD_ANSWER_STARTED,
             timestamp,
         });
 
@@ -359,7 +358,7 @@ describe('StaffClues', () => {
         };
 
         let newState = staffCluesReducer(previousState, {
-            type: constants.ADD_ANSWER_FINISHED,
+            type: actions.ADD_ANSWER_FINISHED,
             payload: detailedClue,
             timestamp,
         });
