@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
 import { useStaffGrid } from 'modules/staff/grid';

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { StaffClueTemplate } from './models';
 import { getStaffClues } from './selectors';

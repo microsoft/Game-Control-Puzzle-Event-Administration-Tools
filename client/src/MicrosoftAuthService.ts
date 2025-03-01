@@ -17,7 +17,7 @@ export default class AuthService {
 
     constructor() {
         this.applicationConfig = {
-            clientId: process.env.REACT_APP_MICROSOFT_ACCOUNT_CLIENT_ID,
+            clientId: import.meta.env.VITE_APP_MICROSOFT_ACCOUNT_CLIENT_ID,
             graphScopes: ['user.read'],
         };
 

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { achievementsReducer, teamAchievementsReducer } from './achievements/reducer';
 

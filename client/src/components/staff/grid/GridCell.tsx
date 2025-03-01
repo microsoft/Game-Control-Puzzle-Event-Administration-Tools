@@ -1,5 +1,6 @@
 import { MdLock } from 'react-icons/md';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { GridCellData } from 'modules/staff/grid';
 import DialogRenderProp from '../dialogs/DialogRenderProp';

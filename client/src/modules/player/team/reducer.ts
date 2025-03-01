@@ -1,13 +1,14 @@
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
-import { Action, Module } from "modules/types";
-import * as userActions from "modules/user/actions";
+import { Action, Module } from 'modules/types';
+import * as userActions from 'modules/user/actions';
 import * as actions from './actions';
-import { PlayerTeamState, TeamData } from "./models";
+import { PlayerTeamState, TeamData } from './models';
 
 const initialState: PlayerTeamState = {
     data: { points: 0 },
-    isLoading: false
+    isLoading: false,
 };
 
 export const teamReducer = (state: PlayerTeamState = initialState, { type, payload, timestamp = moment.utc() }: Action): Module<TeamData> => {
@@ -15,7 +16,7 @@ export const teamReducer = (state: PlayerTeamState = initialState, { type, paylo
         case actions.PLAYER_TEAM_FETCHING:
             return {
                 ...state,
-                isLoading: true
+                isLoading: true,
             };
         case actions.PLAYER_TEAM_FETCHED:
             return {
@@ -23,18 +24,18 @@ export const teamReducer = (state: PlayerTeamState = initialState, { type, paylo
                 isLoading: false,
                 lastFetched: timestamp,
                 lastError: undefined,
-                data: payload
+                data: payload,
             };
         case actions.PLAYER_TEAM_FAILED:
             return {
                 ...state,
                 isLoading: false,
                 lastFetched: timestamp,
-                lastError: payload
+                lastError: payload,
             };
         case userActions.USER_LOGGED_OUT:
-            return initialState;    
+            return initialState;
         default:
             return state;
-    };
+    }
 };

@@ -1,14 +1,15 @@
-import * as moment from 'moment';
-import { Achievement, Action } from "modules/types";
+import moment from 'moment';
+import 'moment-timezone';
+import { Achievement, Action } from 'modules/types';
 
-import * as userActions from "modules/user/actions";
-import * as actions from "./actions";
-import { StaffAchievementState, TeamAchievements } from "./models";
+import * as userActions from 'modules/user/actions';
+import * as actions from './actions';
+import { StaffAchievementState, TeamAchievements } from './models';
 
 const initialState: StaffAchievementState = {
     data: [],
     isLoading: false,
-    isGrantingAchievement: false
+    isGrantingAchievement: false,
 };
 
 export const achievementsReducer = (state: StaffAchievementState = initialState, { type, payload, timestamp = moment.utc() }: Action): StaffAchievementState => {
@@ -22,7 +23,7 @@ export const achievementsReducer = (state: StaffAchievementState = initialState,
                 isLoading: false,
                 lastError: undefined,
                 lastFetched: timestamp,
-                data: payload
+                data: payload,
             };
         case actions.STAFF_ACHIEVEMENTS_ADDED:
             return {
@@ -30,7 +31,7 @@ export const achievementsReducer = (state: StaffAchievementState = initialState,
                 isLoading: false,
                 lastError: undefined,
                 lastFetched: timestamp,
-                data: [...state.data, ...payload as Achievement[]]
+                data: [...state.data, ...(payload as Achievement[])],
             };
         case actions.STAFF_ACHIEVEMENTS_FAILED:
         case actions.STAFF_ACHIEVEMENTS_ADD_FAILED:
@@ -38,28 +39,28 @@ export const achievementsReducer = (state: StaffAchievementState = initialState,
                 ...state,
                 isLoading: false,
                 lastFetched: timestamp,
-                lastError: payload
+                lastError: payload,
             };
         case actions.STAFF_ACHIEVEMENTS_GRANT_FETCHING:
             return {
                 ...state,
-                isGrantingAchievement: true
+                isGrantingAchievement: true,
             };
         case actions.STAFF_ACHIEVEMENTS_GRANT_FETCHED:
             return {
                 ...state,
                 isGrantingAchievement: false,
-                lastFetched: timestamp
-            }
+                lastFetched: timestamp,
+            };
         case actions.STAFF_ACHIEVEMENTS_GRANT_FAILED:
             return {
                 ...state,
                 isGrantingAchievement: false,
                 lastFetched: timestamp,
-                lastError: payload
-            }
+                lastError: payload,
+            };
         case userActions.USER_LOGGED_OUT:
-            return initialState;    
+            return initialState;
         default:
             return state;
     }
@@ -75,8 +76,8 @@ export const teamAchievementsReducer = (state: TeamAchievements = initialTeamAch
                 [payload.team]: {
                     ...state[payload.team],
                     isLoading: true,
-                    data: state[payload.team]?.data ?? []
-                }
+                    data: state[payload.team]?.data ?? [],
+                },
             };
         case actions.STAFF_ACHIEVEMENTS_TEAMS_FAILED:
             return {
@@ -85,8 +86,8 @@ export const teamAchievementsReducer = (state: TeamAchievements = initialTeamAch
                     ...state[payload.team],
                     isLoading: false,
                     lastFetched: timestamp,
-                    lastError: payload
-                }
+                    lastError: payload,
+                },
             };
         case actions.STAFF_ACHIEVEMENTS_TEAMS_SUCCEEDED:
             return {
@@ -95,12 +96,12 @@ export const teamAchievementsReducer = (state: TeamAchievements = initialTeamAch
                     data: payload.achievements,
                     lastFetched: timestamp,
                     lastError: undefined,
-                    isLoading: false
-                }
+                    isLoading: false,
+                },
             };
         case userActions.USER_LOGGED_OUT:
             return initialTeamAchievementsState;
         default:
             return state;
-    };
+    }
 };

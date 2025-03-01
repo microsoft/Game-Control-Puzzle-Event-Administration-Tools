@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useParams } from 'react-router-dom';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { AdditionalContent } from '../staff/presentation/AdditionalContent';
 import { AchievementItem } from '../shared/AchievementItem';

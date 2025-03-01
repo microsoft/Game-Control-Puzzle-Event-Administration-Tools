@@ -1,15 +1,16 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import * as moment from 'moment';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
+import 'moment-timezone';
 
-import { CallTemplate } from "modules/types";
-import { PointsTemplate, StaffTeamState, TeamTemplate } from "./models";
-import { getStaffTeams } from "./selectors";
-import { addOrUpdateTeam, deleteTeam, fetchStaffTeams, updateCallForTeam, updatePoints } from "./service";
+import { CallTemplate } from 'modules/types';
+import { PointsTemplate, StaffTeamState, TeamTemplate } from './models';
+import { getStaffTeams } from './selectors';
+import { addOrUpdateTeam, deleteTeam, fetchStaffTeams, updateCallForTeam, updatePoints } from './service';
 
 export const shouldRefreshTeams = (staffTeamsModule: StaffTeamState) => {
-    return !staffTeamsModule || !staffTeamsModule.lastFetched || moment.utc().diff(staffTeamsModule.lastFetched, 'seconds') > 15; 
-}
+    return !staffTeamsModule || !staffTeamsModule.lastFetched || moment.utc().diff(staffTeamsModule.lastFetched, 'seconds') > 15;
+};
 
 export const useStaffTeams = () => {
     const dispatch = useDispatch();

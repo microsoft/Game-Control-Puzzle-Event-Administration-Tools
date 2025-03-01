@@ -1,14 +1,15 @@
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { Action } from 'modules/types';
-import * as userActions from "modules/user/actions";
+import * as userActions from 'modules/user/actions';
 import * as actions from './actions';
 import { FeedState } from './models';
 
 export const initialState: FeedState = {
     data: [],
     isLoading: false,
-    isSubmittingPulse: false
+    isSubmittingPulse: false,
 };
 
 export const feedReducer = (state: FeedState = initialState, { type, payload, timestamp = moment.utc() }: Action): FeedState => {
@@ -16,7 +17,7 @@ export const feedReducer = (state: FeedState = initialState, { type, payload, ti
         case actions.PLAYER_FEED_FETCHING:
             return {
                 ...state,
-                isLoading: true
+                isLoading: true,
             };
         case actions.PLAYER_FEED_FETCHED:
             return {
@@ -24,25 +25,25 @@ export const feedReducer = (state: FeedState = initialState, { type, payload, ti
                 isLoading: false,
                 lastFetched: timestamp,
                 lastError: undefined,
-                data: payload
+                data: payload,
             };
         case actions.PLAYER_FEED_FAILED:
             return {
                 ...state,
                 isLoading: false,
                 lastFetched: timestamp,
-                lastError: payload
-            }
+                lastError: payload,
+            };
         case actions.PLAYER_FEED_PULSE_SUBMITTING:
             return {
                 ...state,
-                isSubmittingPulse: true
+                isSubmittingPulse: true,
             };
         case actions.PLAYER_FEED_PULSE_COMPLETED:
             return {
                 ...state,
                 isSubmittingPulse: false,
-                lastPulse: payload
+                lastPulse: payload,
             };
         case userActions.USER_LOGGED_OUT:
             return initialState;

@@ -1,8 +1,9 @@
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { Action } from 'modules/types';
-import * as userActions from "modules/user/actions";
-import * as actions from "./actions";
+import * as userActions from 'modules/user/actions';
+import * as actions from './actions';
 import { PlayerClueState } from './models';
 
 export const initialState: PlayerClueState = {
@@ -21,49 +22,49 @@ export const playerCluesReducer = (state = initialState, { type, payload, timest
         case actions.PLAYER_CLUES_RATING_SUBMITTING:
             return { ...state, isSubmittingRating: true };
         case actions.PLAYER_CLUES_RATING_FAILED:
-            return { 
-                ...state, 
-                isSubmittingRating: false, 
+            return {
+                ...state,
+                isSubmittingRating: false,
                 lastFetched: timestamp,
-                lastRatingError: payload
+                lastRatingError: payload,
             };
         case actions.PLAYER_CLUES_ANSWER_FAILED:
-            return { 
-                ...state, 
-                isSubmittingAnswer: false, 
+            return {
+                ...state,
+                isSubmittingAnswer: false,
                 lastFetched: timestamp,
-                lastAnswerError: payload
+                lastAnswerError: payload,
             };
         case actions.PLAYER_CLUES_FAILED:
-            return { 
-                ...state, 
-                isLoading: false, 
+            return {
+                ...state,
+                isLoading: false,
                 lastFetched: timestamp,
-                lastError: payload
+                lastError: payload,
             };
         case actions.PLAYER_CLUES_FETCHED:
             return {
-                ...state, 
-                isLoading: false, 
+                ...state,
+                isLoading: false,
                 lastFetched: timestamp,
-                lastError: undefined, 
-                data: payload
+                lastError: undefined,
+                data: payload,
             };
         case actions.PLAYER_CLUES_ANSWER_SUBMITTED:
             return {
-                ...state, 
-                isSubmittingAnswer: false, 
-                lastAnswerError: undefined, 
+                ...state,
+                isSubmittingAnswer: false,
+                lastAnswerError: undefined,
                 lastFetched: timestamp,
-                data: payload
+                data: payload,
             };
         case actions.PLAYER_CLUES_RATING_SUBMITTED:
             return {
-                ...state, 
-                isSubmittingRating: false, 
-                lastRatingError: undefined, 
+                ...state,
+                isSubmittingRating: false,
+                lastRatingError: undefined,
                 lastFetched: timestamp,
-                data: payload
+                data: payload,
             };
         case userActions.USER_LOGGED_OUT:
             return initialState;

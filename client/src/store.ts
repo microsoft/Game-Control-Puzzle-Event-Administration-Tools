@@ -1,10 +1,11 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import rootReducer from './modules';
 import createSignalMiddleware from './modules/signalr/middleware';
-export const history = createHistory();
+
+export const history = createBrowserHistory();
 
 const middleware = [thunk, routerMiddleware(history), createSignalMiddleware(history)];
 
