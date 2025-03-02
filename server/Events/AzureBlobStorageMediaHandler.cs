@@ -8,13 +8,10 @@ namespace GameControl.Server.Events
     public class AzureBlobStorageMediaHandler : IMediaHandler
     {
         private BlobContainerClient containerClient;
-        private readonly string blobBaseUrl = "";
 
-        public AzureBlobStorageMediaHandler(IConfiguration configuration)
+        public AzureBlobStorageMediaHandler(BlobServiceClient client)
         {
-            var blobConnectionString = configuration.GetSection("GameControl")["BlobStorageConnectionString"];
-            this.blobBaseUrl = configuration.GetSection("GameControl")["BlobStorageBaseUrl"];
-            this.containerClient = new BlobContainerClient(blobConnectionString, "events");
+            this.containerClient = client.GetBlobContainerClient("events");
         }
 
         public bool IsMediaSupported { get { return true; } }
@@ -25,7 +22,7 @@ namespace GameControl.Server.Events
             memoryStream.Position = 0;
             var response = await blobClient.UploadAsync(memoryStream);
 
-            return this.blobBaseUrl + path;
+            return containerClient.Uri + path;
         }
     }
 }
