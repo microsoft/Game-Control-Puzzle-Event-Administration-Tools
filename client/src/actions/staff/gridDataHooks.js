@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { getGridModule } from "modules/staff";
 import { getStaffGrid } from "modules/staff/grid/service";
 
-export const useStaffGridData = ({ noRefresh, fastRefresh }) => {
+export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }) => {
     const dispatch = useDispatch();
     const gridModule = useSelector(getGridModule);
     const isLoading = gridModule.isLoading;
@@ -13,10 +13,21 @@ export const useStaffGridData = ({ noRefresh, fastRefresh }) => {
     let teams = gridModule?.data?.teams;
     let clues = gridModule?.data?.clues;
 
+    const plotSubmittableIds = clues
+        .filter(clue => clue.submittableType === "Plot")
+        .map(clue => clue.submittableId);
+
     let teamData = undefined;
     if (teams) {
         teamData = teams.map(team => {
             if (team.teamGridData) {
+                if (hidePlot) {
+                    team.teamGridData = team.teamGridData.filter(
+                        (puzzle) => {
+                            return !plotSubmittableIds.includes(puzzle.clueId);
+                        }
+                    );
+                }
                 let puzzles = team.teamGridData.map(
                     (puzzle) => {
                         return {

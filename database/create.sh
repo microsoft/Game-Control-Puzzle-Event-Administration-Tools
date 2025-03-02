@@ -2,7 +2,7 @@
 
 for i in {1..50};
 do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -d master -i gamecontrol.sql
+    /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -d master -i gamecontrol.sql
     if [ $? -eq 0 ]
     then
         echo "Database created."
@@ -17,7 +17,7 @@ echo "Creating login user..."
 sed "s/!!!GCUSERNAME!!!/gc/g;s/!!!GCPASSWORD!!!/${GC_PASSWORD}/g" createlogin.sql > /tmp/createlogin.sql
 for i in {1..50};
 do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -d master -i /tmp/createlogin.sql
+    /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -d master -i /tmp/createlogin.sql
     if [ $? -eq 0 ]
     then
         echo "Login user created."
@@ -32,7 +32,7 @@ rm /tmp/createlogin.sql
 sed "s/!!!USERNAME!!!/${LOGIN_USERNAME}/g;s/!!!PASSWORDHASH!!!/${LOGIN_PASSWORD_HASH}/g;s/!!!PASSWORDSALT!!!/${LOGIN_PASSWORD_SALT}/g" defaultdata.sql > /tmp/defaultdata.sql
 for i in {1..50};
 do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -d master -i /tmp/defaultdata.sql
+    /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -d master -i /tmp/defaultdata.sql
     if [ $? -eq 0 ]
     then
         echo "Default data created."
