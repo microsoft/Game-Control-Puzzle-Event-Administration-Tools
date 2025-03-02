@@ -1,4 +1,4 @@
-export const APPLICATION_URL = process.env.REACT_APP_GAMECONTROL_CLIENT_API_URL;
+export const APPLICATION_URL = process.env.services__gamecontrol-server__https__0;
 
 export const STAFFCLUES_FETCHING = 'STAFFCLUES_FETCHING';
 export const STAFFCLUES_FETCHED  = 'STAFFCLUES_FETCHED';

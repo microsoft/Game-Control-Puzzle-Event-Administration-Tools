@@ -7,7 +7,7 @@ var blobs = storage.AddBlobs("blobs");
 var queues = storage.AddQueues("queues");
 
 var db = builder.AddSqlServer("gamecontrol-db")
-                 .WithBindMount("../database/", "/usr/config/")
+                 .WithBindMount("../database", "/usr/config")
                  .WithEntrypoint("/usr/config/entrypoint.sh")
                  .WithDataVolume()
                  .WithLifetime(ContainerLifetime.Persistent)
