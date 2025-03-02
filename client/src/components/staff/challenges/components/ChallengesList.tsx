@@ -7,6 +7,7 @@ import { Challenge } from 'modules/staff/challenges';
 import { Module } from 'modules/types';
 import { Link } from 'react-router-dom';
 import { TanstackTable } from 'components/shared/TanstackTable';
+import { useCallback, useMemo } from 'react';
 
 type Props = Readonly<{
     challengesModule: Module<Challenge[]>;
@@ -60,16 +61,20 @@ const ChallengesListTable = ({ challengesModule }: Props) => {
         },
     ];
 
-    const data = challengesModule.data.map((challenge) => {
-        return {
-            ...challenge,
-            availableAt: challenge.startTime ? moment.utc(challenge.startTime).local().format('MM-DD HH:mm') : 'No Start Time',
-            locksAt: challenge.endTime ? moment.utc(challenge.endTime).local().format('MM-DD HH:mm') : 'No End Time',
-            created: moment.utc(challenge.lastUpdated).local().format('MM-DD HH:mm'),
-            pendingSubmissions: challenge.submissions?.filter((x) => x.state === 0).length ?? 0,
-            completedSubmissions: challenge.submissions?.filter((x) => x.state === 1).length ?? 0,
-        };
-    });
+    const data = useMemo(
+        () =>
+            challengesModule.data.map((challenge) => {
+                return {
+                    ...challenge,
+                    availableAt: challenge.startTime ? moment.utc(challenge.startTime).local().format('MM-DD HH:mm') : 'No Start Time',
+                    locksAt: challenge.endTime ? moment.utc(challenge.endTime).local().format('MM-DD HH:mm') : 'No End Time',
+                    created: moment.utc(challenge.lastUpdated).local().format('MM-DD HH:mm'),
+                    pendingSubmissions: challenge.submissions?.filter((x) => x.state === 0).length ?? 0,
+                    completedSubmissions: challenge.submissions?.filter((x) => x.state === 1).length ?? 0,
+                };
+            }),
+        [challengesModule]
+    );
 
     const challengesTable = useReactTable({
         data: data,
@@ -89,6 +94,7 @@ export const ChallengesList = ({ challengesModule }: Props) => {
     if (!challengesModule.isLoading && challengesModule.data.length === 0) {
         return <div>There are no {challengePluralName} for this event</div>;
     } else {
+        console.log('Rendering ChallengesListTable');
         return <ChallengesListTable challengesModule={challengesModule} />;
     }
 };

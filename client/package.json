@@ -20,7 +20,7 @@
         "prop-types": "^15.7.2",
         "react": "^18.3.1",
         "react-bootstrap": "^1.6.1",
-        "react-datetime": "^2.14.0",
+        "react-datetime": "^3.3.1",
         "react-dom": "^18.3.1",
         "react-icons": "^3.10.0",
         "react-images-upload": "^1.2.8",
