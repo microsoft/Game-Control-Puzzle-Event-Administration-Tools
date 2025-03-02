@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import { Alert, Button, ListGroup, ListGroupItem } from 'react-bootstrap'
+import { Alert, Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { FaPencilAlt, FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 import DialogRenderProp from 'components/staff/dialogs/DialogRenderProp';
 import { EventForm, EventInstanceForm } from './dialogs';
 import { getParticipantId, getUser } from 'modules';
 import { Event, getEventsModule } from 'modules/admin';
 import { addAdminEvent, addEventInstance, cloneEventInstance, getAdminEvents } from 'modules/admin/events/service';
-import { addUserToEventInstance } from "modules/admin/users/service";
+import { addUserToEventInstance } from 'modules/admin/users/service';
 
 const EventInstancesList = ({ event }: { event: Event }) => {
     const participantId = useSelector(getParticipantId);
@@ -17,33 +17,38 @@ const EventInstancesList = ({ event }: { event: Event }) => {
     const dispatch = useDispatch();
 
     if (event.eventInstances !== null) {
-        return <ListGroup className="clickable">
-                {event.eventInstances.map(eventInstance => 
+        return (
+            <ListGroup className="clickable">
+                {event.eventInstances.map((eventInstance) => (
                     <ListGroupItem key={eventInstance.eventInstanceId}>
                         {eventInstance.friendlyName} ( {eventInstance.eventType} )
-                        { user.data.participation.find((x: any) => x.eventInstanceId === eventInstance.eventInstanceId) ?
-                            '' : 
-                            <Button onClick={() => {                              
-                                dispatch(addUserToEventInstance(
-                                    eventInstance.eventInstanceId,
-                                    participantId,
-                                    {
-                                        isStaff: true,
-                                        isAdmin: true
-                                    }
-                                ));
-                            }}>
+                        {user.data.participation.find((x: any) => x.eventInstanceId === eventInstance.eventInstanceId) ? (
+                            ''
+                        ) : (
+                            <Button
+                                onClick={() => {
+                                    dispatch(
+                                        addUserToEventInstance(eventInstance.eventInstanceId, participantId, {
+                                            isStaff: true,
+                                            isAdmin: true,
+                                        })
+                                    );
+                                }}
+                            >
                                 Join
                             </Button>
-                        }
-                    </ListGroupItem>)}
+                        )}
+                    </ListGroupItem>
+                ))}
             </ListGroup>
+        );
     } else {
         return null;
     }
 };
 
-export const AdminEventDetails = ({ match: { params: { id }} }: RouteComponentProps<{ id: string }>) => {
+export const AdminEventDetails = () => {
+    const { id } = useParams<{ id: string }>();
     const eventsModule = useSelector(getEventsModule);
     const dispatch = useDispatch();
 
@@ -51,47 +56,48 @@ export const AdminEventDetails = ({ match: { params: { id }} }: RouteComponentPr
         dispatch(getAdminEvents());
     }, [dispatch]);
 
-    const foundEvent = eventsModule.data.find(event => event.eventId === id);
+    const foundEvent = eventsModule.data.find((event) => event.eventId === id);
 
     return (
         <>
-            { 
-                !!eventsModule.lastError &&
-                <Alert variant="danger">{eventsModule.lastError}</Alert>
-            }
+            {!!eventsModule.lastError && <Alert variant="danger">{eventsModule.lastError}</Alert>}
 
-            {
-                !!eventsModule.isLoading && 
-                <Alert variant="info">Loading...</Alert>
-            }
+            {!!eventsModule.isLoading && <Alert variant="info">Loading...</Alert>}
 
-            {
-                foundEvent && (
+            {foundEvent && (
                 <div>
                     <h4>
                         {foundEvent.name}
                         <DialogRenderProp
                             variant="outline-primary"
                             renderTitle={() => `Update ${foundEvent.name}`}
-                            renderButton={() => <><FaPencilAlt /> Edit</>}
-                            renderBody={(onComplete: any) =>
+                            renderButton={() => (
+                                <>
+                                    <FaPencilAlt /> Edit
+                                </>
+                            )}
+                            renderBody={(onComplete: any) => (
                                 <EventForm
                                     event={foundEvent}
-                                    onSubmit={updatedEvent => {
+                                    onSubmit={(updatedEvent) => {
                                         dispatch(addAdminEvent(updatedEvent));
                                         onComplete();
                                     }}
                                 />
-                            }
+                            )}
                         />
                         <DialogRenderProp
                             variant="outline-primary"
-                            renderTitle={() => "Add New Event Instance"}
-                            renderButton={() => <><FaPlus /> Add Instance</>}
-                            renderBody={(onComplete: any) =>
+                            renderTitle={() => 'Add New Event Instance'}
+                            renderButton={() => (
+                                <>
+                                    <FaPlus /> Add Instance
+                                </>
+                            )}
+                            renderBody={(onComplete: any) => (
                                 <EventInstanceForm
                                     eventInstances={foundEvent.eventInstances}
-                                    onSubmit={newInstance => {
+                                    onSubmit={(newInstance) => {
                                         if (newInstance.sourceEvent) {
                                             dispatch(cloneEventInstance(id, newInstance.sourceEvent, newInstance));
                                         } else {
@@ -99,9 +105,9 @@ export const AdminEventDetails = ({ match: { params: { id }} }: RouteComponentPr
                                         }
 
                                         onComplete();
-                                    }}                                
+                                    }}
                                 />
-                            }
+                            )}
                         />
                     </h4>
                     <div>
@@ -109,11 +115,7 @@ export const AdminEventDetails = ({ match: { params: { id }} }: RouteComponentPr
                     </div>
                 </div>
             )}
-            {
-                !foundEvent && (
-                    <div>Failed to load event details.</div>
-                )
-            }
+            {!foundEvent && <div>Failed to load event details.</div>}
         </>
     );
 };
