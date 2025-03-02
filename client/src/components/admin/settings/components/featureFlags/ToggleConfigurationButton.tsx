@@ -20,9 +20,7 @@ export const ToggleConfigurationButton = ({ settingName, previousValue }: { sett
     return (
         <Button
             onClick={() => {
-                console.log('settingValue', settingValue?.stringValue);
                 const newSettingStringValue = (!(settingValue?.stringValue === 'true')).toString();
-                console.log('newSettingStringValue', newSettingStringValue);
                 updateStringSetting('UserString', settingName, newSettingStringValue);
             }}
         >
