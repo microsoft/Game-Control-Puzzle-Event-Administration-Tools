@@ -1,29 +1,17 @@
 import Axios from 'axios';
 
 import { doServiceRequest } from 'modules/types/serviceCommon';
-import * as userActions from "modules/user/actions";
+import * as userActions from 'modules/user/actions';
 import { getEventInstanceId } from 'modules/user/selectors';
-import * as actions from "./actions";
+import * as actions from './actions';
 import { ApiKeyTemplate, EventTemplate, EventInstanceTemplate } from './models';
 
 export const getAdminEvents = () => (dispatch: any) => {
-    doServiceRequest(
-        dispatch,
-        () => Axios.get(`/api/admin/events`),
-        actions.ADMIN_EVENTS_LOADING,
-        actions.ADMIN_EVENTS_SUCCEEDED,
-        actions.ADMIN_EVENTS_FAILED
-    );
-}
+    doServiceRequest(dispatch, () => Axios.get(`/api/admin/events`), actions.ADMIN_EVENTS_LOADING, actions.ADMIN_EVENTS_SUCCEEDED, actions.ADMIN_EVENTS_FAILED);
+};
 
 export const addAdminEvent = (event: EventTemplate) => (dispatch: any) => {
-    doServiceRequest(
-        dispatch,
-        () => Axios.put(`/api/admin/events`, event),
-        actions.ADMIN_EVENTS_LOADING,
-        actions.ADMIN_EVENTS_SUCCEEDED,
-        actions.ADMIN_EVENTS_FAILED
-    );
+    doServiceRequest(dispatch, () => Axios.put(`/api/admin/events`, event), actions.ADMIN_EVENTS_LOADING, actions.ADMIN_EVENTS_SUCCEEDED, actions.ADMIN_EVENTS_FAILED);
 };
 
 export const getApiKeysForEvent = (eventInstanceId: string) => (dispatch: any) => {
@@ -71,10 +59,10 @@ export const forceRefreshStaff = () => async (dispatch: any, getState: any) => {
 
     try {
         await Axios.get(`/api/admin/events/${eventInstanceId}/refreshstaff`);
-    } catch (e) {
+    } catch (e: any) {
         if (e?.response?.status === 401) {
             localStorage.removeItem('userToken');
-            dispatch({ type: userActions.USER_LOGGED_OUT });    
+            dispatch({ type: userActions.USER_LOGGED_OUT });
         }
     }
 };
@@ -84,10 +72,10 @@ export const forceRefreshPlayers = () => async (dispatch: any, getState: any) =>
 
     try {
         await Axios.get(`/api/admin/events/${eventInstanceId}/refreshplayers`);
-    } catch (e) {
+    } catch (e: any) {
         if (e?.response?.status === 401) {
             localStorage.removeItem('userToken');
-            dispatch({ type: userActions.USER_LOGGED_OUT });    
+            dispatch({ type: userActions.USER_LOGGED_OUT });
         }
     }
 };
