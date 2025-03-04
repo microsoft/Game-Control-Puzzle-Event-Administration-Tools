@@ -21,7 +21,7 @@ export type ExtendedGridClue = Readonly<{
     [id: string]: StaffClue;
 }>;
 
-export const useStaffGridData = ({ noRefresh, fastRefresh }: { noRefresh: boolean; fastRefresh: boolean }) => {
+export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefresh: boolean; fastRefresh: boolean; hidePlot: boolean }) => {
     const dispatch = useDispatch();
     const gridModule = useSelector(getGridModule);
     const isLoading = gridModule.isLoading;
@@ -29,10 +29,19 @@ export const useStaffGridData = ({ noRefresh, fastRefresh }: { noRefresh: boolea
     let teams = gridModule?.data?.teams;
     let clues = gridModule?.data?.clues;
 
+    const plotSubmittableIds = clues.filter((clue) => clue.submittableType === 'Plot').map((clue) => clue.submittableId);
+
     let teamData: ExtendedGridTeam[] = [];
     if (teams) {
         teamData = teams.map((team) => {
             if (team.teamGridData) {
+                let teamGridData = team.teamGridData;
+                if (hidePlot) {
+                    teamGridData = team.teamGridData.filter((puzzle) => {
+                        return !plotSubmittableIds.includes(puzzle.clueId);
+                    });
+                }
+
                 const puzzles: ExtendedGridCellData[] = team.teamGridData.map((puzzle) => {
                     return {
                         ...puzzle,
@@ -47,7 +56,7 @@ export const useStaffGridData = ({ noRefresh, fastRefresh }: { noRefresh: boolea
                     .sort((a, b) => Date.parse(b.startTime!.toLocaleString()) - Date.parse(a.startTime!.toLocaleString()));
                 const currentPuzzle = activePuzzles.length > 0 ? activePuzzles[0] : undefined;
 
-                return { ...team, puzzles, currentPuzzle };
+                return { ...team, puzzles, currentPuzzle, teamGridData };
             } else {
                 return team;
             }
