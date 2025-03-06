@@ -1,9 +1,10 @@
-import { Moment } from "moment";
-import { Module, PlayerSubmission } from "modules/types";
+import { Moment } from 'moment';
+import { Module, PlayerSubmission } from 'modules/types';
 
 export type StaffTeamState = Readonly<{
     isEditingCall: boolean;
-}> & Module<StaffTeam[]>;
+}> &
+    Module<StaffTeam[]>;
 
 export type StaffTeam = Readonly<{
     teamId: string;
@@ -27,10 +28,14 @@ export type TeamCall = Readonly<{
     callEnd?: Moment;
     callType: string;
     callSubType: string;
-    notes: string | null;
-    teamNotes: string | null;
-    publicNotes: string | null;
+    notes?: string;
+    teamNotes?: string;
+    publicNotes?: string;
     lastUpdated: Moment;
+
+    // TODO: This isn't actually on the server type but client code wanted to read it
+    // figure out if it belongs here
+    participant?: string | null;
 }>;
 
 export type TeamTemplate = Readonly<{

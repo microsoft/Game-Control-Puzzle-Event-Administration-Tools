@@ -1,5 +1,5 @@
-import { Moment } from "moment";
-import { Content } from "modules/types";
+import { Moment } from 'moment';
+import { Content } from 'modules/types';
 
 /**
  * The current status of a team's solve for a puzzle. If start time is null,
@@ -29,8 +29,9 @@ export type StaffClue = Readonly<{
     parSolveTime?: number;
     averageSolveTime?: number;
     openTime?: Moment;
-    closingTime?: Moment;    
+    closingTime?: Moment;
     ratings: ClueRating[];
+    instances: ClueInstance[];
 }>;
 
 export type StaffClueTemplate = Readonly<{
@@ -79,7 +80,10 @@ export type ClueRating = Readonly<{
     participationId: string;
     tableOfContentId: string;
     rating: number;
-    comments: string;    
+    comments: string;
+    ratedByUser: string;
+    ratedByTeam: string;
+    lastUpdated: Moment;
 }>;
 
 /**
@@ -89,15 +93,15 @@ export type AnswerTemplate = Readonly<{
     answerId?: string;
     answerText: string;
     answerResponse: string;
-    isCorrect: boolean;
+    isCorrectAnswer: boolean;
     isHidden: boolean;
     isTeamSpecific: boolean;
-    appliesToTeam?: string;
+    teamId?: string;
 }>;
 
 export type UnlockedClue = Readonly<{
     tableOfContentId: string;
-    title: string;    
+    title: string;
 }>;
 
 export type ClueInstance = Readonly<{
@@ -116,9 +120,4 @@ export type ClueInstanceTemplate = Readonly<{
     friendlyName: string;
     notes: string;
     needsReset?: boolean;
-}>;
-
-export type ClueState = Readonly<{
-    clues: StaffClue[];
-    isLoading: boolean;
 }>;

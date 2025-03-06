@@ -1,12 +1,12 @@
-import { Moment } from "moment";
-import { Module } from "modules/types";
+import { Moment } from 'moment';
+import { Module } from 'modules/types';
 
 export type PlayerChallengeTemplate = Readonly<{
     submissionType: string;
     submissionNotes: string;
     submissionImage?: any;
     submissionTextContent: string;
-    isDiabled: boolean;
+    isDisabled: boolean;
 }>;
 
 export type PlayerChallenge = Readonly<{

@@ -1,5 +1,6 @@
-import { Moment } from "moment";
-import { StaffTeam } from "../teams";
+import { Moment } from 'moment';
+import { StaffTeam } from '../teams';
+import { StaffClue } from '../clues';
 
 export type GridCellData = Readonly<{
     teamId: string;
@@ -16,13 +17,14 @@ export type GridCellData = Readonly<{
 
 export type GridTeam = Readonly<{
     teamGridData: GridCellData[];
-}> & StaffTeam;
+}> &
+    StaffTeam;
 
 export type GridViewModel = Readonly<{
     teams: GridTeam[];
-    clues: any[];
+    clues: StaffClue[];
     completedClues: string[];
     gridNotes: string;
-    theGrid: { [teamId: string]: { [tableOfContentId: string]: GridCellData }};
+    theGrid: { [teamId: string]: { [tableOfContentId: string]: GridCellData } };
     latestEndTime?: Moment;
-}>
+}>;
