@@ -370,7 +370,6 @@ const PuzzleAnswersList = ({ clue }: Props) => {
     } else if (clue.answers !== null && clue.answers.length === 0) {
         return <div>There are no answers for this clue</div>;
     } else {
-        console.log('clue', clue);
         return <div>Loading answers for this clue... hold on.</div>;
     }
 };

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getGridModule, GridCellData, GridTeam } from 'modules/staff';
@@ -29,46 +29,55 @@ export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefre
     let teams = gridModule?.data?.teams;
     let clues = gridModule?.data?.clues;
 
-    const plotSubmittableIds = clues.filter((clue) => clue.submittableType === 'Plot').map((clue) => clue.submittableId);
+    const teamData = useMemo(() => {
+        const plotSubmittableIds = clues.filter((clue) => clue.submittableType === 'Plot').map((clue) => clue.submittableId);
 
-    let teamData: ExtendedGridTeam[] = [];
-    if (teams) {
-        teamData = teams.map((team) => {
-            if (team.teamGridData) {
-                let teamGridData = team.teamGridData;
-                if (hidePlot) {
-                    teamGridData = team.teamGridData.filter((puzzle) => {
-                        return !plotSubmittableIds.includes(puzzle.clueId);
+        let teamData: ExtendedGridTeam[] = [];
+        if (teams) {
+            teamData = teams.map((team) => {
+                if (team.teamGridData) {
+                    let teamGridData = team.teamGridData;
+                    if (hidePlot) {
+                        teamGridData = team.teamGridData.filter((puzzle) => {
+                            return !plotSubmittableIds.includes(puzzle.clueId);
+                        });
+                    }
+
+                    const puzzles: ExtendedGridCellData[] = team.teamGridData.map((puzzle) => {
+                        return {
+                            ...puzzle,
+                            //isSkipped is already part of puzzle so we don't need the shortcut
+                            isActive: !!(!puzzle.isSkipped && puzzle.startTime && !puzzle.solveTime),
+                            isSolved: !!(!puzzle.isSkipped && puzzle.startTime && puzzle.solveTime),
+                            isNotStarted: !!(!puzzle.isSkipped && !puzzle.startTime && !puzzle.solveTime),
+                        };
                     });
+                    const activePuzzles = puzzles
+                        .filter((p: ExtendedGridCellData) => p.isActive)
+                        .sort((a, b) => Date.parse(b.startTime!.toLocaleString()) - Date.parse(a.startTime!.toLocaleString()));
+                    const currentPuzzle = activePuzzles.length > 0 ? activePuzzles[0] : undefined;
+
+                    return { ...team, puzzles, currentPuzzle, teamGridData };
+                } else {
+                    return team;
                 }
+            });
+        }
 
-                const puzzles: ExtendedGridCellData[] = team.teamGridData.map((puzzle) => {
-                    return {
-                        ...puzzle,
-                        //isSkipped is already part of puzzle so we don't need the shortcut
-                        isActive: !!(!puzzle.isSkipped && puzzle.startTime && !puzzle.solveTime),
-                        isSolved: !!(!puzzle.isSkipped && puzzle.startTime && puzzle.solveTime),
-                        isNotStarted: !!(!puzzle.isSkipped && !puzzle.startTime && !puzzle.solveTime),
-                    };
-                });
-                const activePuzzles = puzzles
-                    .filter((p: ExtendedGridCellData) => p.isActive)
-                    .sort((a, b) => Date.parse(b.startTime!.toLocaleString()) - Date.parse(a.startTime!.toLocaleString()));
-                const currentPuzzle = activePuzzles.length > 0 ? activePuzzles[0] : undefined;
+        return teamData;
+    }, [gridModule, hidePlot]);
 
-                return { ...team, puzzles, currentPuzzle, teamGridData };
-            } else {
-                return team;
-            }
-        });
-    }
+    const clueData = useMemo(() => {
+        let clueData: ExtendedGridClue = {};
+        if (clues) {
+            clueData = Object.assign({}, ...clues.map((clue) => ({ [clue.submittableId]: clue })));
+        }
+        return clueData;
+    }, [gridModule]);
 
-    let clueData: ExtendedGridClue = {};
-    if (clues) {
-        clueData = Object.assign({}, ...clues.map((clue) => ({ [clue.submittableId]: clue })));
-    }
-
-    const refreshGrid = useCallback(() => dispatch(getStaffGrid()), [dispatch]);
+    const refreshGrid = useCallback(() => {
+        dispatch(getStaffGrid());
+    }, [dispatch]);
 
     useEffect(() => {
         refreshGrid();

@@ -1,4 +1,5 @@
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { EventSetting, getEventSettingsModule } from 'modules/admin';
@@ -57,23 +58,26 @@ export const AchievementsTable = () => {
         },
     ];
 
-    const achievementData: AchievementSetting[] = [
-        {
-            settingName: PulseAchievementSetting,
-            settingLabel: 'Pulse Achievement',
-            settingValue: settingsModule.data.find((x) => x.name === PulseAchievementSetting),
-        },
-        {
-            settingName: PhotoPulseAchievementSetting,
-            settingLabel: 'Photo Pulse Achievement',
-            settingValue: settingsModule.data.find((x) => x.name === PhotoPulseAchievementSetting),
-        },
-        {
-            settingName: RatePuzzleAchievementSetting,
-            settingLabel: 'Rate Clue Achievement',
-            settingValue: settingsModule.data.find((x) => x.name === RatePuzzleAchievementSetting),
-        },
-    ];
+    const achievementData: AchievementSetting[] = useMemo(
+        () => [
+            {
+                settingName: PulseAchievementSetting,
+                settingLabel: 'Pulse Achievement',
+                settingValue: settingsModule.data.find((x) => x.name === PulseAchievementSetting),
+            },
+            {
+                settingName: PhotoPulseAchievementSetting,
+                settingLabel: 'Photo Pulse Achievement',
+                settingValue: settingsModule.data.find((x) => x.name === PhotoPulseAchievementSetting),
+            },
+            {
+                settingName: RatePuzzleAchievementSetting,
+                settingLabel: 'Rate Clue Achievement',
+                settingValue: settingsModule.data.find((x) => x.name === RatePuzzleAchievementSetting),
+            },
+        ],
+        [settingsModule]
+    );
 
     const achievementTable = useReactTable({
         data: achievementData,

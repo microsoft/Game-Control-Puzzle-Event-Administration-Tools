@@ -1,4 +1,5 @@
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getEventSettingsModule } from 'modules/admin';
@@ -44,44 +45,47 @@ export const FeatureFlagTable = () => {
         },
     ];
 
-    const featureFlagData = [
-        {
-            settingName: ShowPulseSetting,
-            settingLabel: 'Pulse',
-            settingValue: settingsModule.data.find((x) => x.name === ShowPulseSetting),
-            defaultValue: 'true',
-        },
-        {
-            settingName: ShowInboxSetting,
-            settingLabel: 'Inbox',
-            settingValue: settingsModule.data.find((x) => x.name === ShowInboxSetting),
-            defaultValue: 'true',
-        },
-        {
-            settingName: ShowActivitySetting,
-            settingLabel: 'Activity',
-            settingValue: settingsModule.data.find((x) => x.name === ShowActivitySetting),
-            defaultValue: 'true',
-        },
-        {
-            settingName: ShowAchievementsSetting,
-            settingLabel: 'Achievement',
-            settingValue: settingsModule.data.find((x) => x.name === ShowAchievementsSetting),
-            defaultValue: 'true',
-        },
-        {
-            settingName: ShowChallengesSetting,
-            settingLabel: 'Challenges',
-            settingValue: settingsModule.data.find((x) => x.name === ShowChallengesSetting),
-            defaultValue: 'true',
-        },
-        {
-            settingName: ShowCallManagerSetting,
-            settingLabel: 'Call Manager',
-            settingValue: settingsModule.data.find((x) => x.name === ShowCallManagerSetting),
-            defaultValue: 'true',
-        },
-    ];
+    const featureFlagData = useMemo(
+        () => [
+            {
+                settingName: ShowPulseSetting,
+                settingLabel: 'Pulse',
+                settingValue: settingsModule.data.find((x) => x.name === ShowPulseSetting),
+                defaultValue: 'true',
+            },
+            {
+                settingName: ShowInboxSetting,
+                settingLabel: 'Inbox',
+                settingValue: settingsModule.data.find((x) => x.name === ShowInboxSetting),
+                defaultValue: 'true',
+            },
+            {
+                settingName: ShowActivitySetting,
+                settingLabel: 'Activity',
+                settingValue: settingsModule.data.find((x) => x.name === ShowActivitySetting),
+                defaultValue: 'true',
+            },
+            {
+                settingName: ShowAchievementsSetting,
+                settingLabel: 'Achievement',
+                settingValue: settingsModule.data.find((x) => x.name === ShowAchievementsSetting),
+                defaultValue: 'true',
+            },
+            {
+                settingName: ShowChallengesSetting,
+                settingLabel: 'Challenges',
+                settingValue: settingsModule.data.find((x) => x.name === ShowChallengesSetting),
+                defaultValue: 'true',
+            },
+            {
+                settingName: ShowCallManagerSetting,
+                settingLabel: 'Call Manager',
+                settingValue: settingsModule.data.find((x) => x.name === ShowCallManagerSetting),
+                defaultValue: 'true',
+            },
+        ],
+        [settingsModule]
+    );
 
     const featureFlagTable = useReactTable({
         data: featureFlagData,

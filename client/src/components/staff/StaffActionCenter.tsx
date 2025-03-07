@@ -1,4 +1,5 @@
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Alert, Card, CardDeck, Spinner, DropdownButton, Dropdown, Badge } from 'react-bootstrap';
 import { FiMessageCircle } from 'react-icons/fi';
@@ -14,7 +15,7 @@ import { unlockClueForTeam } from 'modules/staff/clues/service';
 import { updateCallForTeam } from 'modules/staff/teams/service';
 import { TanstackTable } from 'components/shared/TanstackTable';
 import { CallTemplate } from 'modules/types';
-import { StaffTeam, TeamCall } from 'modules/staff';
+import { TeamCall } from 'modules/staff';
 import { StaffClue } from 'modules/staff/clues';
 
 type ExtraExtendedGridTeam = Readonly<{
@@ -67,6 +68,91 @@ const AcknowledgedAFewMinutes = 'Game Control has received your request and will
 const AcknowledgedTenToFifteenMinutes =
     'Game Control has received your request and will assist you in about ten to fifteen minutes.  Perhaps this would be a good time to consider taking a short break?';
 
+const ActionCenterTable = ({ teams }: { teams: ExtraExtendedGridTeam[] }) => {
+    const tanColumns: ColumnDef<any>[] = useMemo(() => {
+        return [
+            {
+                id: 'teamStatus',
+                header: () => <span>All Teams</span>,
+                columns: [
+                    {
+                        id: 'status',
+                        header: () => <span>Status</span>,
+                        accessorFn: (row) => row,
+                        cell: (cell) => {
+                            const call = cell.getValue().activeCall;
+                            if (call) {
+                                if (call.callType === 'TeamFree') {
+                                    return 'Puzzle Requested';
+                                }
+                                if (call.callType === 'TeamHelp') {
+                                    return 'Help Requested';
+                                }
+                                if (call.callType === 'Checkin') {
+                                    return 'Routine Checkin';
+                                }
+                                return 'In Call';
+                            }
+                            if (cell.getValue().isSolving) {
+                                return 'Solving';
+                            }
+                            return 'Idle';
+                        },
+                    },
+                    {
+                        id: 'teamName',
+                        header: () => <span>Team Name</span>,
+                        accessorFn: (row) => row,
+                        cell: (cell) => (
+                            <Button variant="link" onClick={() => history.push('/staff/teams/' + cell.getValue().id)}>
+                                {cell.getValue().name}
+                            </Button>
+                        ),
+                    },
+                    {
+                        id: 'currentPuzzle',
+                        header: () => <span>Current Puzzle</span>,
+                        accessorFn: (row) => row.currentPuzzleName,
+                    },
+                    {
+                        id: 'timeOnPuzzle',
+                        header: () => <span>Time Working On Puzzle</span>,
+                        accessorFn: (row) => row.solveStartTime,
+                        cell: (cell) => (cell.getValue() ? <LiveTimerControl timestamp={cell.getValue()} /> : ''),
+                    },
+                    {
+                        id: 'mostRecentCall',
+                        header: () => <span>Time Since Last Call</span>,
+                        accessorFn: (row) => row,
+                        cell: (cell) =>
+                            cell.getValue().activeCall ? (
+                                'Call Active'
+                            ) : cell.getValue().mostRecentCallEnd ? (
+                                <LiveTimerControl timestamp={cell.getValue().mostRecentCallEnd} />
+                            ) : (
+                                'Never'
+                            ),
+                    },
+                    {
+                        id: 'gcNotes',
+                        header: () => <span>GC Notes</span>,
+                        accessorFn: (row) => row.gcNotes,
+                        cell: (cell) => <div title={cell.getValue()}>{cell.getValue().length > 128 ? cell.getValue().substring(0, 128) + '...' : cell.getValue()}</div>,
+                    },
+                ],
+            },
+        ];
+    }, []);
+
+    const tanTable = useReactTable({
+        data: teams,
+        columns: tanColumns,
+        getCoreRowModel: getCoreRowModel(),
+    });
+
+    return <TanstackTable table={tanTable} />;
+};
+
 const StaffActionCenter = () => {
     document.title = 'Game Control - Action Center';
 
@@ -117,121 +203,51 @@ const StaffActionCenter = () => {
         setTimeout(refresh, 500);
     };
 
-    let teams: ExtraExtendedGridTeam[] = [];
-    if (data.teams) {
-        teams = data.teams.map((team) => {
-            const activeCall = team.callHistory.find((x) => !x.callEnd);
-            const activeCallAge = activeCall && activeCall.callStart ? <LiveTimerControl timestamp={activeCall.callStart.toLocaleString()} /> : 'unknown time';
-            const mostRecentCall =
-                team.callHistory.length > 0 ? team.callHistory.sort((a, b) => Date.parse(b.callEnd!.toLocaleString()) - Date.parse(a.callEnd!.toLocaleString()))[0] : undefined;
-            const mostRecentCallEnd = mostRecentCall?.callEnd;
-            const minutesSinceMostRecentCallStart = mostRecentCall ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callStart))).asMinutes() : 999999;
-            const minutesSinceLastCall = activeCall ? -50000 : mostRecentCall?.callEnd ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callEnd))).asMinutes() : -1;
-            const isRequest = activeCall && (activeCall.callType === 'TeamFree' || activeCall.callType === 'TeamHelp');
-            const callSortOrder = minutesSinceMostRecentCallStart + (isRequest ? 0 : -10000);
-            const solvingMinutes = team.currentPuzzle?.startTime ? moment.duration(moment.utc().diff(moment.utc(team.currentPuzzle.startTime))).asMinutes() : undefined;
+    const teams: ExtraExtendedGridTeam[] = useMemo(() => {
+        let teams: ExtraExtendedGridTeam[] = [];
 
-            return {
-                id: team.teamId,
-                team: team,
-                name: team.name,
-                gcNotes: team.gcNotes ?? '',
-                isSolving: team.currentPuzzle && team.currentPuzzle.isActive,
-                currentPuzzleName: team.currentPuzzle ? data.clues[team.currentPuzzle.clueId].submittableTitle : undefined,
-                currentPuzzleId: team.currentPuzzle?.clueId,
-                currentTocId: team.currentPuzzle ? data.clues[team.currentPuzzle.clueId].tableOfContentId : undefined,
-                activeCall,
-                activeCallAge,
-                mostRecentCall,
-                minutesSinceLastCall,
-                solvingMinutes,
-                isRequest,
-                callSortOrder,
-                minutesSinceMostRecentCallStart,
-                solveStartTime: team.currentPuzzle?.startTime,
-                mostRecentCallEnd,
-            };
-        });
-    }
+        if (data.teams) {
+            teams = data.teams.map((team) => {
+                const activeCall = team.callHistory.find((x) => !x.callEnd);
+                const activeCallAge = activeCall && activeCall.callStart ? <LiveTimerControl timestamp={activeCall.callStart.toLocaleString()} /> : 'unknown time';
+                const mostRecentCall =
+                    team.callHistory.length > 0 ? team.callHistory.sort((a, b) => Date.parse(b.callEnd!.toLocaleString()) - Date.parse(a.callEnd!.toLocaleString()))[0] : undefined;
+                const mostRecentCallEnd = mostRecentCall?.callEnd;
+                const minutesSinceMostRecentCallStart = mostRecentCall ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callStart))).asMinutes() : 999999;
+                const minutesSinceLastCall = activeCall
+                    ? -50000
+                    : mostRecentCall?.callEnd
+                    ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callEnd))).asMinutes()
+                    : -1;
+                const isRequest = activeCall && (activeCall.callType === 'TeamFree' || activeCall.callType === 'TeamHelp');
+                const callSortOrder = minutesSinceMostRecentCallStart + (isRequest ? 0 : -10000);
+                const solvingMinutes = team.currentPuzzle?.startTime ? moment.duration(moment.utc().diff(moment.utc(team.currentPuzzle.startTime))).asMinutes() : undefined;
 
-    const tanColumns: ColumnDef<any>[] = [
-        {
-            id: 'teamStatus',
-            header: () => <span>All Teams</span>,
-            columns: [
-                {
-                    id: 'status',
-                    header: () => <span>Status</span>,
-                    accessorFn: (row) => row,
-                    cell: (cell) => {
-                        const call = cell.getValue().activeCall;
-                        if (call) {
-                            if (call.callType === 'TeamFree') {
-                                return 'Puzzle Requested';
-                            }
-                            if (call.callType === 'TeamHelp') {
-                                return 'Help Requested';
-                            }
-                            if (call.callType === 'Checkin') {
-                                return 'Routine Checkin';
-                            }
-                            return 'In Call';
-                        }
-                        if (cell.getValue().isSolving) {
-                            return 'Solving';
-                        }
-                        return 'Idle';
-                    },
-                },
-                {
-                    id: 'teamName',
-                    header: () => <span>Team Name</span>,
-                    accessorFn: (row) => row,
-                    cell: (cell) => (
-                        <Button variant="link" onClick={() => history.push('/staff/teams/' + cell.getValue().id)}>
-                            {cell.getValue().name}
-                        </Button>
-                    ),
-                },
-                {
-                    id: 'currentPuzzle',
-                    header: () => <span>Current Puzzle</span>,
-                    accessorFn: (row) => row.currentPuzzleName,
-                },
-                {
-                    id: 'timeOnPuzzle',
-                    header: () => <span>Time Working On Puzzle</span>,
-                    accessorFn: (row) => row.solveStartTime,
-                    cell: (cell) => (cell.getValue() ? <LiveTimerControl timestamp={cell.getValue()} /> : ''),
-                },
-                {
-                    id: 'mostRecentCall',
-                    header: () => <span>Time Since Last Call</span>,
-                    accessorFn: (row) => row,
-                    cell: (cell) =>
-                        cell.getValue().activeCall ? (
-                            'Call Active'
-                        ) : cell.getValue().mostRecentCallEnd ? (
-                            <LiveTimerControl timestamp={cell.getValue().mostRecentCallEnd} />
-                        ) : (
-                            'Never'
-                        ),
-                },
-                {
-                    id: 'gcNotes',
-                    header: () => <span>GC Notes</span>,
-                    accessorFn: (row) => row.gcNotes,
-                    cell: (cell) => <div title={cell.getValue()}>{cell.getValue().length > 128 ? cell.getValue().substring(0, 128) + '...' : cell.getValue()}</div>,
-                },
-            ],
-        },
-    ];
+                return {
+                    id: team.teamId,
+                    team: team,
+                    name: team.name,
+                    gcNotes: team.gcNotes ?? '',
+                    isSolving: team.currentPuzzle && team.currentPuzzle.isActive,
+                    currentPuzzleName: team.currentPuzzle ? data.clues[team.currentPuzzle.clueId].submittableTitle : undefined,
+                    currentPuzzleId: team.currentPuzzle?.clueId,
+                    currentTocId: team.currentPuzzle ? data.clues[team.currentPuzzle.clueId].tableOfContentId : undefined,
+                    activeCall,
+                    activeCallAge,
+                    mostRecentCall,
+                    minutesSinceLastCall,
+                    solvingMinutes,
+                    isRequest,
+                    callSortOrder,
+                    minutesSinceMostRecentCallStart,
+                    solveStartTime: team.currentPuzzle?.startTime,
+                    mostRecentCallEnd,
+                };
+            });
+        }
 
-    const tanTable = useReactTable({
-        data: teams,
-        columns: tanColumns,
-        getCoreRowModel: getCoreRowModel(),
-    });
+        return teams;
+    }, [data]);
 
     if (!teams) {
         return <Spinner animation="border" />;
@@ -373,7 +389,7 @@ const StaffActionCenter = () => {
                                 .sort((a, b) => b.minutesSinceLastCall - a.minutesSinceLastCall)
                                 .map((team) => {
                                     return (
-                                        <Card className="actionCenterCard">
+                                        <Card className="actionCenterCard" key={team.id}>
                                             <Card.Header>
                                                 {team.gcNotes && (
                                                     <div title={team.gcNotes}>
@@ -415,7 +431,7 @@ const StaffActionCenter = () => {
                 <Card className="text-left">
                     <Card.Header>All Teams</Card.Header>
                     <Card.Body>
-                        <TanstackTable table={tanTable} />
+                        <ActionCenterTable teams={teams} />
                     </Card.Body>
                 </Card>
             </>

@@ -94,7 +94,6 @@ export const ChallengesList = ({ challengesModule }: Props) => {
     if (!challengesModule.isLoading && challengesModule.data.length === 0) {
         return <div>There are no {challengePluralName} for this event</div>;
     } else {
-        console.log('Rendering ChallengesListTable');
         return <ChallengesListTable challengesModule={challengesModule} />;
     }
 };
