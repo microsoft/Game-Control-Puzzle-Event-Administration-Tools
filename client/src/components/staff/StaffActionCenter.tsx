@@ -69,6 +69,7 @@ const AcknowledgedTenToFifteenMinutes =
     'Game Control has received your request and will assist you in about ten to fifteen minutes.  Perhaps this would be a good time to consider taking a short break?';
 
 const ActionCenterTable = ({ teams }: { teams: ExtraExtendedGridTeam[] }) => {
+    const history = useHistory();
     const tanColumns: ColumnDef<any>[] = useMemo(() => {
         return [
             {
