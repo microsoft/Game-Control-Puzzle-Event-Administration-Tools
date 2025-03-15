@@ -6,7 +6,7 @@
         "@restart/hooks": "^0.3.26",
         "@tanstack/react-table": "^8.20.6",
         "@uiw/react-codemirror": "^4.23.9",
-        "axios": "^0.28.0",
+        "axios": "^1.8.2",
         "bootstrap": "^4.6.0",
         "history": "^4.7.2",
         "humanize-duration": "^3.23.1",
