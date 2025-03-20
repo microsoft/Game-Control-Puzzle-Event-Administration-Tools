@@ -1,15 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux'; 
-import * as moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
+import 'moment-timezone';
 
-import { Module } from "modules/types";
-import { TeamData } from "./models";
+import { Module } from 'modules/types';
+import { TeamData } from './models';
 import { getTeamModule } from './selectors';
 import { useEffect } from 'react';
 import { fetchTeamData } from './service';
 
-
-export const shouldRefreshTeam = (teamModule : Module<TeamData>) =>
-    !teamModule.isLoading && (!teamModule.lastFetched || moment.utc().diff(teamModule.lastFetched, 'seconds') > 60);
+export const shouldRefreshTeam = (teamModule: Module<TeamData>) => !teamModule.isLoading && (!teamModule.lastFetched || moment.utc().diff(teamModule.lastFetched, 'seconds') > 60);
 
 export const useTeamData = () => {
     const teamModule = useSelector(getTeamModule);
@@ -22,6 +21,6 @@ export const useTeamData = () => {
     }, [teamModule, dispatch]);
 
     return {
-        teamModule
+        teamModule,
     };
 };

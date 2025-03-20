@@ -1,7 +1,7 @@
-import * as constants from '../../../constants';
 import * as actions from 'modules/staff/clues/actions';
 import { Action, Module } from 'modules/types';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 import { Answer, StaffClue } from '.';
 
 type ClueDictionary = { [key: string]: StaffClue };
@@ -147,9 +147,9 @@ function updateClueDictionary(initialClueDictionary: ClueDictionary, clues: Staf
 
 export const staffCluesReducer = (state = initialCluesState, { type, payload, timestamp = moment.utc() }: Action): StaffCluesState => {
     switch (type) {
-        case constants.STAFFCLUES_FETCHING:
+        case actions.STAFFCLUES_FETCHING:
             return { ...state, isLoading: true };
-        case constants.STAFFCLUES_FETCHED:
+        case actions.STAFFCLUES_FETCHED:
             return {
                 ...state,
                 data: updateExistingClues(state.data, payload),
@@ -178,8 +178,8 @@ export const staffCluesReducer = (state = initialCluesState, { type, payload, ti
                 lastError: payload,
                 lastFetched: timestamp,
             };
-        case constants.STAFFCLUES_FAILED:
-        case constants.ADD_ANSWER_FAILED:
+        case actions.STAFFCLUES_FAILED:
+        case actions.ADD_ANSWER_FAILED:
         case actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED:
             return {
                 ...state,
@@ -188,7 +188,7 @@ export const staffCluesReducer = (state = initialCluesState, { type, payload, ti
                 lastFetched: timestamp,
                 lastError: payload,
             };
-        case constants.ADD_ANSWER_STARTED:
+        case actions.ADD_ANSWER_STARTED:
         case actions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING:
             return { ...state, isAddingAnswer: true };
         case actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED:
@@ -197,15 +197,15 @@ export const staffCluesReducer = (state = initialCluesState, { type, payload, ti
                 isAddingAnswer: false,
                 data: updateAnswer(state.data, payload),
             };
-        case constants.ADD_ANSWER_FINISHED:
+        case actions.ADD_ANSWER_FINISHED:
             return { ...state, isAddingAnswer: false, data: updateClueDetails(state.data, payload) };
-        case constants.STAFFCLUES_ADDED:
+        case actions.STAFFCLUES_ADDED:
             return { ...state, data: [...state.data, payload], isLoading: false };
-        case constants.STAFFDETAILS_FETCHED:
+        case actions.STAFFDETAILS_FETCHED:
         case actions.ADD_INSTANCE_FINISHED:
         case actions.DELETE_INSTANCE_FINISHED:
             return { ...state, isLoading: false, data: updateClueDetails(state.data, payload) };
-        case constants.STAFFCREATECLUE_FETCHED:
+        case actions.STAFFCREATECLUE_FETCHED:
             return { ...state, isLoading: false, data: updateToc(state.data, payload) };
         default:
             return state;

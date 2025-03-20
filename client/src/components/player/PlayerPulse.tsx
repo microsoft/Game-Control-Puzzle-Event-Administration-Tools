@@ -1,18 +1,19 @@
 import { Col, Row, Card } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux'
-import * as moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
+import 'moment-timezone';
 
 import * as constants from '../../constants';
-import { getFeedModule } from 'modules/player'
-import { AggregatedContent } from "modules/types/models";
+import { getFeedModule } from 'modules/player';
+import { AggregatedContent } from 'modules/types/models';
 
-import { PulseControl } from '../shared/PulseControl'
+import { PulseControl } from '../shared/PulseControl';
 import { PulseTemplate } from 'modules/player/feed/models';
 import { submitPhotoPulse, submitPulse } from 'modules/player/feed';
 
 const PulsePic = ({ pulse }: { pulse?: AggregatedContent }) => {
     if (pulse?.hasAdditionalImage) {
-        return <img alt="" src={`${constants.APPLICATION_URL}api/content/pulseThumb/${pulse.id}`}/>;
+        return <img alt="" src={`${constants.APPLICATION_URL}api/content/pulseThumb/${pulse.id}`} />;
     }
 
     return null;
@@ -26,13 +27,17 @@ const LastSuccessfulPulse = ({ pulse }: { pulse?: AggregatedContent }) => {
                 <Card>
                     <div>
                         <Row>
-                            <Col xs={8} md={8} style={{textAlign: "left"}}>
+                            <Col xs={8} md={8} style={{ textAlign: 'left' }}>
                                 <div>{pulse.description}</div>
                                 <PulsePic pulse={pulse} />
                             </Col>
-                            <Col xs={4} md={4} style={{textAlign: "right"}}>
-                                <div><small>Pulse</small></div>
-                                <div><small>{moment.utc(pulse.lastUpdated).fromNow()}</small></div>
+                            <Col xs={4} md={4} style={{ textAlign: 'right' }}>
+                                <div>
+                                    <small>Pulse</small>
+                                </div>
+                                <div>
+                                    <small>{moment.utc(pulse.lastUpdated).fromNow()}</small>
+                                </div>
                             </Col>
                         </Row>
                     </div>
@@ -42,10 +47,10 @@ const LastSuccessfulPulse = ({ pulse }: { pulse?: AggregatedContent }) => {
     }
 
     return null;
-}
+};
 
 export const PlayerPulse = () => {
-    document.title = "The Pulse";
+    document.title = 'The Pulse';
     const feedState = useSelector(getFeedModule);
     const dispatch = useDispatch();
 
@@ -55,15 +60,13 @@ export const PlayerPulse = () => {
         } else {
             dispatch(submitPhotoPulse(pulseTemplate));
         }
-    }
+    };
 
     return (
         <div>
             <h2>The Pulse</h2>
-            <PulseControl 
-                isBusy={feedState.isSubmittingPulse}
-                onSubmit={handlePulse}/>
-            <LastSuccessfulPulse pulse={feedState.lastPulse}/>
+            <PulseControl isBusy={feedState.isSubmittingPulse} onSubmit={handlePulse} />
+            <LastSuccessfulPulse pulse={feedState.lastPulse} />
         </div>
     );
-}
+};

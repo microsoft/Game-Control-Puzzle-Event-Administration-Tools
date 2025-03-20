@@ -1,6 +1,7 @@
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
-import * as actions from "./actions";
+import * as actions from './actions';
 import { Action } from 'modules/types';
 import { StaffMessageState } from './models';
 
@@ -15,14 +16,14 @@ export const messagesReducer = (state = initialMessagesState, { type, payload, t
         case actions.STAFF_MESSAGES_FETCHING:
             return {
                 ...state,
-                isLoading: true
+                isLoading: true,
             };
         case actions.STAFF_MESSAGES_FAILED:
             return {
                 ...state,
                 isLoading: false,
                 lastFetched: timestamp,
-                lastError: payload                
+                lastError: payload,
             };
         case actions.STAFF_MESSAGES_FETCHED:
             return {
@@ -30,12 +31,12 @@ export const messagesReducer = (state = initialMessagesState, { type, payload, t
                 isLoading: false,
                 lastFetched: timestamp,
                 lastError: undefined,
-                data: payload
-            }
+                data: payload,
+            };
         case actions.STAFF_MESSAGES_SENDING:
             return {
                 ...state,
-                isSendingMessage: true
+                isSendingMessage: true,
             };
         case actions.STAFF_MESSAGES_SENT:
             return {
@@ -43,16 +44,16 @@ export const messagesReducer = (state = initialMessagesState, { type, payload, t
                 data: payload,
                 isSendingMessage: false,
                 lastFetched: timestamp,
-                lastError: undefined
+                lastError: undefined,
             };
         case actions.STAFF_MESSAGES_SEND_FAILED:
             return {
                 ...state,
                 isSendingMessage: false,
                 lastError: payload,
-                lastFetched: timestamp
-            }
+                lastFetched: timestamp,
+            };
         default:
             return state;
     }
-}
+};

@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import * as constants from '../../../constants';
 
 import { doServiceRequest } from 'modules/types';
 import { getEventInstanceId } from 'modules/user/selectors';
@@ -10,7 +9,7 @@ import { AnswerTemplate, ClueInstanceTemplate, ContentTemplate, LocationTemplate
 export const fetchStaffClues = () => (dispatch: any, getState: any) => {
     const eventInstanceId = getEventInstanceId(getState());
 
-    doServiceRequest(dispatch, () => Axios.get(`/api/staff/puzzles/${eventInstanceId}`), constants.STAFFCLUES_FETCHING, constants.STAFFCLUES_FETCHED, constants.STAFFCLUES_FAILED);
+    doServiceRequest(dispatch, () => Axios.get(`/api/staff/puzzles/${eventInstanceId}`), actions.STAFFCLUES_FETCHING, actions.STAFFCLUES_FETCHED, actions.STAFFCLUES_FAILED);
 };
 
 export const fetchStaffClueDetails = (tableOfContentsId: string) => (dispatch: any, getState: any) => {
@@ -19,9 +18,9 @@ export const fetchStaffClueDetails = (tableOfContentsId: string) => (dispatch: a
     doServiceRequest(
         dispatch,
         () => Axios.get(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentsId}`),
-        constants.STAFFDETAILS_FETCHING,
-        constants.STAFFDETAILS_FETCHED,
-        constants.STAFFDETAILS_FAILED
+        actions.STAFFDETAILS_FETCHING,
+        actions.STAFFDETAILS_FETCHED,
+        actions.STAFFDETAILS_FAILED
     );
 };
 
@@ -31,9 +30,9 @@ export const createClue = (clueTemplate: StaffClueTemplate) => (dispatch: any, g
     doServiceRequest(
         dispatch,
         () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc`, clueTemplate),
-        constants.STAFFCREATECLUE_PUTTING,
-        constants.STAFFCREATECLUE_FETCHED,
-        constants.STAFFCREATECLUE_FAILED
+        actions.STAFFCREATECLUE_PUTTING,
+        actions.STAFFCREATECLUE_FETCHED,
+        actions.STAFFCREATECLUE_FAILED
     );
 };
 
@@ -43,9 +42,9 @@ export const deleteClue = (tableOfContentId: string) => (dispatch: any, getState
     doServiceRequest(
         dispatch,
         () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}`),
-        constants.STAFFCLUES_FETCHING,
-        constants.STAFFCLUES_FETCHED,
-        constants.STAFFCLUES_FAILED
+        actions.STAFFCLUES_FETCHING,
+        actions.STAFFCLUES_FETCHED,
+        actions.STAFFCLUES_FAILED
     );
 };
 
@@ -55,9 +54,9 @@ export const addAnswerToClue = (tableOfContentId: string, answerTemplate: Answer
     doServiceRequest(
         dispatch,
         () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers`, answerTemplate),
-        constants.ADD_ANSWER_STARTED,
-        constants.ADD_ANSWER_FINISHED,
-        constants.ADD_ANSWER_FAILED
+        actions.ADD_ANSWER_STARTED,
+        actions.ADD_ANSWER_FINISHED,
+        actions.ADD_ANSWER_FAILED
     );
 };
 
@@ -67,9 +66,9 @@ export const deleteClueAnswer = (tableOfContentId: string, answerId: string) => 
     doServiceRequest(
         dispatch,
         () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}`),
-        constants.ADD_ANSWER_STARTED,
-        constants.ADD_ANSWER_FINISHED,
-        constants.ADD_ANSWER_FAILED
+        actions.ADD_ANSWER_STARTED,
+        actions.ADD_ANSWER_FINISHED,
+        actions.ADD_ANSWER_FAILED
     );
 };
 
@@ -112,9 +111,9 @@ export const addContentToClue = (tableOfContentId: string, contentTemplate: Cont
     doServiceRequest(
         dispatch,
         () => Axios.post(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/content`, body),
-        constants.ADD_ANSWER_STARTED,
-        constants.ADD_ANSWER_FINISHED,
-        constants.ADD_ANSWER_FAILED
+        actions.ADD_ANSWER_STARTED,
+        actions.ADD_ANSWER_FINISHED,
+        actions.ADD_ANSWER_FAILED
     );
 };
 
@@ -124,9 +123,9 @@ export const addLocationToClue = (tableOfContentId: string, locationTemplate: Lo
     doServiceRequest(
         dispatch,
         () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/locations`, locationTemplate),
-        constants.ADD_ANSWER_STARTED,
-        constants.ADD_ANSWER_FINISHED,
-        constants.ADD_ANSWER_FAILED
+        actions.ADD_ANSWER_STARTED,
+        actions.ADD_ANSWER_FINISHED,
+        actions.ADD_ANSWER_FAILED
     );
 };
 
@@ -136,9 +135,9 @@ export const deleteContent = (tableOfContentId: string, contentId: string) => (d
     doServiceRequest(
         dispatch,
         () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/content/${contentId}`),
-        constants.STAFFDETAILS_FETCHING,
-        constants.STAFFDETAILS_FETCHED,
-        constants.STAFFDETAILS_FAILED
+        actions.STAFFDETAILS_FETCHING,
+        actions.STAFFDETAILS_FETCHED,
+        actions.STAFFDETAILS_FAILED
     );
 };
 
@@ -156,9 +155,9 @@ export const addContentToAnswer = (tableOfContentId: string, answerId: string, c
     doServiceRequest(
         dispatch,
         () => Axios.post(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}/content`, body),
-        constants.ADD_ANSWER_STARTED,
-        constants.ADD_ANSWER_FINISHED,
-        constants.ADD_ANSWER_FAILED
+        actions.ADD_ANSWER_STARTED,
+        actions.ADD_ANSWER_FINISHED,
+        actions.ADD_ANSWER_FAILED
     );
 };
 
@@ -168,9 +167,9 @@ export const deleteContentFromAnswer = (tableOfContentId: string, answerId: stri
     doServiceRequest(
         dispatch,
         () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/toc/${tableOfContentId}/answers/${answerId}/content`),
-        constants.ADD_ANSWER_STARTED,
-        constants.ADD_ANSWER_FINISHED,
-        constants.ADD_ANSWER_FAILED
+        actions.ADD_ANSWER_STARTED,
+        actions.ADD_ANSWER_FINISHED,
+        actions.ADD_ANSWER_FAILED
     );
 };
 

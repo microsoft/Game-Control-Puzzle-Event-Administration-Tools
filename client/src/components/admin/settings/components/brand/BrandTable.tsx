@@ -1,10 +1,11 @@
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useSelector } from 'react-redux';
 
 import { StringConfigurationButton } from '../common/StringConfigurationButton';
 import { ChallengesNamePluralSetting, ChallengesNameSingularSetting, PointsNameSetting } from 'modules/types';
 import { getEventSettingsModule } from 'modules/admin';
 import { TanstackTable } from '../../../../shared/TanstackTable';
+import { useMemo } from 'react';
 
 export const BrandSettingsTable = () => {
     const settingsModule = useSelector(getEventSettingsModule);
@@ -50,26 +51,29 @@ export const BrandSettingsTable = () => {
         },
     ];
 
-    const brandingData = [
-        {
-            settingName: ChallengesNameSingularSetting,
-            settingLabel: 'Name for Challenge (Singular)',
-            settingValue: settingsModule.data.find((x) => x.name === ChallengesNameSingularSetting),
-            defaultValue: 'Challenge',
-        },
-        {
-            settingName: ChallengesNamePluralSetting,
-            settingLabel: 'Name for Challenges (Plural)',
-            settingValue: settingsModule.data.find((x) => x.name === ChallengesNamePluralSetting),
-            defaultValue: 'Challenges',
-        },
-        {
-            settingName: PointsNameSetting,
-            settingLabel: 'Name for Points',
-            settingValue: settingsModule.data.find((x) => x.name === PointsNameSetting),
-            defaultValue: 'Points',
-        },
-    ];
+    const brandingData = useMemo(
+        () => [
+            {
+                settingName: ChallengesNameSingularSetting,
+                settingLabel: 'Name for Challenge (Singular)',
+                settingValue: settingsModule.data.find((x) => x.name === ChallengesNameSingularSetting),
+                defaultValue: 'Challenge',
+            },
+            {
+                settingName: ChallengesNamePluralSetting,
+                settingLabel: 'Name for Challenges (Plural)',
+                settingValue: settingsModule.data.find((x) => x.name === ChallengesNamePluralSetting),
+                defaultValue: 'Challenges',
+            },
+            {
+                settingName: PointsNameSetting,
+                settingLabel: 'Name for Points',
+                settingValue: settingsModule.data.find((x) => x.name === PointsNameSetting),
+                defaultValue: 'Points',
+            },
+        ],
+        [settingsModule]
+    );
 
     const brandingTable = useReactTable({
         data: brandingData,

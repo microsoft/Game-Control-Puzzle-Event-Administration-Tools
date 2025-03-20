@@ -1,6 +1,7 @@
 import { initialState, playerCluesReducer } from './reducer';
 import * as actions from './actions';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 describe('PlayerCluesModule', () => {
     it('isLoading should be set when fetching puzzles', () => {
@@ -12,7 +13,7 @@ describe('PlayerCluesModule', () => {
 
         const newState = playerCluesReducer(initialState, {
             type: actions.PLAYER_CLUES_FETCHING,
-            timestamp
+            timestamp,
         });
 
         expect(newState).toEqual(expectedState);
@@ -26,7 +27,7 @@ describe('PlayerCluesModule', () => {
 
         const newState = playerCluesReducer(initialState, {
             type: actions.PLAYER_CLUES_RATING_SUBMITTING,
-            timestamp
+            timestamp,
         });
 
         expect(newState).toEqual(expectedState);
@@ -36,13 +37,13 @@ describe('PlayerCluesModule', () => {
         const expectedState = {
             ...initialState,
             isSubmittingRating: false,
-            lastFetched: timestamp
+            lastFetched: timestamp,
         };
 
         const newState = playerCluesReducer(initialState, {
             type: actions.PLAYER_CLUES_RATING_SUBMITTED,
             payload: initialState.data,
-            timestamp
+            timestamp,
         });
 
         expect(newState).toEqual(expectedState);
@@ -56,7 +57,7 @@ describe('PlayerCluesModule', () => {
 
         const newState = playerCluesReducer(initialState, {
             type: actions.PLAYER_CLUES_ANSWER_SUBMITTING,
-            timestamp
+            timestamp,
         });
 
         expect(newState).toEqual(expectedState);
@@ -66,13 +67,13 @@ describe('PlayerCluesModule', () => {
         const expectedState = {
             ...initialState,
             isSubmittingAnswer: false,
-            lastFetched: timestamp
+            lastFetched: timestamp,
         };
 
         const newState = playerCluesReducer(initialState, {
             type: actions.PLAYER_CLUES_ANSWER_SUBMITTED,
             payload: initialState.data,
-            timestamp
+            timestamp,
         });
 
         expect(newState).toEqual(expectedState);

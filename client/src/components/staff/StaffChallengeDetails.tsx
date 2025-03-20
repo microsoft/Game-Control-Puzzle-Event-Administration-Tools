@@ -3,7 +3,8 @@ import { ListGroup, ListGroupItem, Card, CardColumns } from 'react-bootstrap';
 import { FaEdit } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import * as constants from '../../constants';
 import { useStaffChallengeDetails, ChallengeSubmission, Challenge, ChallengeApproval } from 'modules/staff/challenges';

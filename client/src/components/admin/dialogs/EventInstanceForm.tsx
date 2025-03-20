@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, FormGroup } from 'react-bootstrap';
 import Datetime from 'react-datetime';
-import moment, { isMoment } from 'moment';
+import moment from 'moment';
 
 import { EventInstance, EventInstanceTemplate } from 'modules/admin';
 
@@ -45,11 +45,11 @@ export const EventInstanceForm = ({ eventInstances, onSubmit }: Props) => {
             </FormGroup>
             <FormGroup>
                 <Form.Label>Start Time</Form.Label>
-                <Datetime value={moment.utc(startTime).local()} onChange={(value) => isMoment(value) && setStartTime(moment.utc(value))} />
+                <Datetime value={moment.utc(startTime).local()} onChange={(value) => moment.isMoment(value) && setStartTime(moment.utc(value))} />
             </FormGroup>
             <FormGroup>
                 <Form.Label>End Time</Form.Label>
-                <Datetime value={moment.utc(endTime).local()} onChange={(value) => isMoment(value) && setEndTime(moment.utc(value))} />
+                <Datetime value={moment.utc(endTime).local()} onChange={(value) => moment.isMoment(value) && setEndTime(moment.utc(value))} />
             </FormGroup>
 
             {!!eventInstances && (

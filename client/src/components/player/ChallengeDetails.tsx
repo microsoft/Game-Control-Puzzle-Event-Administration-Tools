@@ -1,7 +1,8 @@
 import { Alert, ListGroup, ListGroupItem, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import * as moment from 'moment';
+import moment from 'moment';
+import 'moment-timezone';
 
 import { putPlayerChallenge } from 'modules/player/challenges/service';
 import { getChallengePluralNameSetting, getChallengeSingularNameSetting } from 'modules';
