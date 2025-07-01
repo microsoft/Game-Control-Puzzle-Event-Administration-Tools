@@ -17,6 +17,10 @@ RUN     cd /client && \
 # Copy the remainder of the files and build the app.
 COPY tsconfig.json /client/tsconfig.json
 COPY .eslintrc.json /client/.eslintrc.json
+COPY vite.config.ts /client/vite.config.ts
+COPY vite-env.d.ts /client/vite-env.d.ts
+COPY manifest.json manifest.json
+COPy index.html index.html
 COPY public/ /client/public/
 COPY src/ /client/src/
 ENV REACT_APP_GAMECONTROL_CLIENT_API_URL /
