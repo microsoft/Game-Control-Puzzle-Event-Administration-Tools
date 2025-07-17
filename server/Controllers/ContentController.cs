@@ -1,7 +1,5 @@
 ﻿using LazyCache;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameControl.Server.Database;
 using GameControl.Server.Util;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Processing;
 
 namespace GameControl.Server.Controllers
 {
@@ -83,8 +84,16 @@ namespace GameControl.Server.Controllers
                             using (MemoryStream ms = new MemoryStream(challengeSubmission.SubmissionBinaryContent))
                             {
                                 var largePic = GetImageFromStream(challengeSubmissionId, ms);
-                                Image image = Image.FromStream(ms);
-                                return ms.ToArray();
+                                // Validate that this is a valid image by trying to load it
+                                try
+                                {
+                                    using var image = Image.Load(ms);
+                                    return ms.ToArray();
+                                }
+                                catch
+                                {
+                                    return null;
+                                }
                             }
                         }
                     }
@@ -116,17 +125,22 @@ namespace GameControl.Server.Controllers
                         {
                             using (MemoryStream ms = new MemoryStream(challengeSubmission.SubmissionBinaryContent))
                             {
-                                var largePic = GetImageFromStream(challengeSubmissionId, ms);
-                                Image image = Image.FromStream(ms);
-                                var thumb = ScaleImage(image, 256, 256);
-                                ms.Close();
-
-                                using (MemoryStream ms2 = new MemoryStream())
+                                try
                                 {
-                                    thumb.Save(ms2, ImageFormat.Jpeg);
-                                    ms2.Seek(0, SeekOrigin.Begin);
+                                    using var image = Image.Load(ms);
+                                    using var thumb = ScaleImage(image, 256, 256);
+                                    
+                                    using (MemoryStream ms2 = new MemoryStream())
+                                    {
+                                        thumb.SaveAsJpeg(ms2);
+                                        ms2.Seek(0, SeekOrigin.Begin);
 
-                                    return ms2.ToArray();
+                                        return ms2.ToArray();
+                                    }
+                                }
+                                catch
+                                {
+                                    return null;
                                 }
                             }
                         }
@@ -153,17 +167,22 @@ namespace GameControl.Server.Controllers
             {
                 using (MemoryStream ms = new MemoryStream(pulse.TeamPic))
                 {
-                    var largePic = GetImageFromStream(pulseId, ms);
-                    Image image = Image.FromStream(ms);
-                    var thumb = ScaleImage(image, 256, 256);
-                    ms.Close();
-
-                    using (MemoryStream ms2 = new MemoryStream())
+                    try
                     {
-                        thumb.Save(ms2, ImageFormat.Jpeg);
-                        ms2.Seek(0, SeekOrigin.Begin);
+                        using var image = Image.Load(ms);
+                        using var thumb = ScaleImage(image, 256, 256);
 
-                        return File(ms2.ToArray(), "image/jpg", pulseId.ToString() + "_t.jpg");
+                        using (MemoryStream ms2 = new MemoryStream())
+                        {
+                            thumb.SaveAsJpeg(ms2);
+                            ms2.Seek(0, SeekOrigin.Begin);
+
+                            return File(ms2.ToArray(), "image/jpg", pulseId.ToString() + "_t.jpg");
+                        }
+                    }
+                    catch
+                    {
+                        return StatusCode((int)HttpStatusCode.UnsupportedMediaType);
                     }
                 }
             }
@@ -171,7 +190,6 @@ namespace GameControl.Server.Controllers
             {
                 return NotFound();
             }
-
         }
 
         [HttpGet("[action]")]
@@ -192,19 +210,22 @@ namespace GameControl.Server.Controllers
 
         private ActionResult GetImageFromStream(Guid itemId, MemoryStream ms)
         {
-            Image image = Image.FromStream(ms);
             ms.Seek(0, SeekOrigin.Begin);
+            
+            try
+            {
+                using var image = Image.Load(ms);
+                var format = GameControlUtil.GetImageFormat(image);
+                var mimeType = GameControlUtil.GetMimeType(format);
+                var extension = GameControlUtil.GetExtension(format);
 
-            var codec = GameControlUtil.GetCodec(image);
-
-            if (codec == null)
+                ms.Seek(0, SeekOrigin.Begin);
+                return File(ms.ToArray(), mimeType, itemId.ToString() + extension);
+            }
+            catch
             {
                 // unsupported media type
                 return StatusCode((int)HttpStatusCode.UnsupportedMediaType);
-            }
-            else
-            {
-                return File(ms.ToArray(), codec.MimeType, itemId.ToString() + GameControlUtil.GetExtension(codec));
             }
         }
 
@@ -213,10 +234,13 @@ namespace GameControl.Server.Controllers
             var ratioX = (double)maxWidth / source.Width;
             var ratioY = (double)maxHeight / source.Height;
             var ratio = Math.Min(ratioX, ratioY);
-            var newImage = new Bitmap((int)(source.Width * ratio), (int)(source.Height * ratio));
-            Graphics.FromImage(newImage).DrawImage(source, 0, 0, newImage.Width, newImage.Height);
-
-            return newImage;
+            
+            var newWidth = (int)(source.Width * ratio);
+            var newHeight = (int)(source.Height * ratio);
+            
+            var clonedImage = source.Clone(x => x.Resize(newWidth, newHeight));
+            
+            return clonedImage;
         }
 
     }
