@@ -8,9 +8,10 @@ import 'moment-timezone';
 import * as constants from '../../constants';
 import { getPointsNameSetting } from 'modules';
 import { AggregatedContent } from 'modules/types/models';
-import { getFeedModule } from 'modules/player';
+import { getFeedModule, usePlayerTakeOverClue } from 'modules/player';
 import { getPlayerFeed } from 'modules/player/feed/service';
 import { useInterval } from 'utils/hooks';
+import { Redirect } from 'react-router-dom';
 
 type FeedItemProps = Readonly<{
     feedItem: AggregatedContent;
@@ -199,6 +200,7 @@ const TeamUnlockFeedItem = ({ feedItem }: FeedItemProps) => {
 
 export const PlayerFeed = () => {
     const feedModule = useSelector(getFeedModule);
+    const takeOverClue = usePlayerTakeOverClue();
     const dispatch = useDispatch();
     document.title = 'Activity Feed';
 
@@ -207,6 +209,10 @@ export const PlayerFeed = () => {
         // If we have never fetched, include a slight delay to account for the time to run the action.
         !feedModule.lastFetched && !feedModule.isLoading ? 50 : 15000
     );
+
+    if (takeOverClue) {
+        return <Redirect to={`/player/clue/${takeOverClue.tableOfContentId}`} />
+    }
 
     return (
         <div>

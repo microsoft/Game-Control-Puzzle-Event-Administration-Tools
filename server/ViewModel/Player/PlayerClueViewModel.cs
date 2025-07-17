@@ -17,6 +17,7 @@ namespace GameControl.Server.ViewModel.Player
             this.UnlockTime = toc.UnlockTime;
             this.SubmissionTime = toc.SubmissionTime;
             this.SortOrder = toc.SortOrder;
+            this.TakeOver = toc.TakeOver;
             this.SubmittableId = toc.SubmittableId;
             this.IsSolved = toc.SubmissionTime.HasValue || toc.AnswerCount == 0;
         }

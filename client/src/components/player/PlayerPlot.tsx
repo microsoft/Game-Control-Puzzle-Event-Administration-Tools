@@ -5,8 +5,9 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 import { AdditionalContent } from 'components/staff/presentation/AdditionalContent';
 import { CallManager } from './CallManager';
-import { PlayerClue, usePlayerClues } from 'modules/player';
+import { PlayerClue, usePlayerClues, usePlayerTakeOverClue } from 'modules/player';
 import { SolvedPlot, UnsolvedPlot } from 'modules/types';
+import { Redirect } from 'react-router-dom';
 
 const PlotItem = ({ clue }: { clue: PlayerClue }) => {
     const isSolved = !!clue.submissions.find((submission) => submission.isCorrectAnswer) || clue.isSolved;
@@ -115,8 +116,13 @@ export const PlayerPlot = () => {
     // TODO: Should the basic title be configurable? Only do so on the plot page?
     //    document.title = "The Story So Far...";
     const { cluesModule } = usePlayerClues();
+    const takeOverClue = usePlayerTakeOverClue();
     const sortedClues = cluesModule.data.slice().sort((a, b) => a.sortOrder - b.sortOrder);
     const hasAnyCluesNewerThanFifteenMinutes = !!sortedClues.find((clue) => clue.content && clue.content.length && moment.utc().diff(moment.utc(clue.unlockTime), 'minutes') < 15);
+
+    if (takeOverClue) {
+        return <Redirect to={`/player/clue/${takeOverClue.tableOfContentId}`} />
+    }
 
     return (
         <div>

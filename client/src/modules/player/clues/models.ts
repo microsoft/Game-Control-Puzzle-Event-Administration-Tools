@@ -8,6 +8,7 @@ export type PlayerClue = Readonly<{
     submittableTitle: string;
     submittableType: string;
     sortOrder: number;
+    takeOver: boolean;
     unlockTime: Moment;
     submissionTime?: Moment;
     submissions: PlayerSubmission[];

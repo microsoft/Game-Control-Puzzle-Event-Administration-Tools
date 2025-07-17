@@ -18,6 +18,7 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
     const [shortTitle, setShortTitle] = useState(clue?.shortTitle ?? '');
     const [submittableType, setSubmittableType] = useState(clue?.submittableType?.trim() ?? 'Puzzle');
     const [sortOrder, setSortOrder] = useState(clue?.sortOrder?.toString() ?? '0');
+    const [takeOver, setTakeOver] = useState(clue?.takeOver ?? false);
     const [parTime, setParTime] = useState(clue?.parSolveTime?.toString() ?? '0');
     const [openTime, setOpenTime] = useState<moment.Moment | undefined>(clue?.openTime);
     const [closingTime, setClosingTime] = useState<moment.Moment | undefined>(clue?.closingTime);
@@ -49,6 +50,10 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
                 <Form.Label>Sort Order</Form.Label>
                 <Form.Control type="text" isInvalid={!isSortOrderValid()} value={sortOrder} placeholder="Sort Order" onChange={(event) => setSortOrder(event.target.value)} />
                 <Form.Control.Feedback type="invalid">Sort order must be an integer</Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Take Over</Form.Label>
+                <Form.Check id="takeOverPuzzle" type="switch" checked={takeOver} onChange={(event) => setTakeOver(event.target.checked)} />
             </Form.Group>
             <Form.Group>
                 <Form.Label>Open Time</Form.Label>
@@ -89,6 +94,7 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
                         title,
                         shortTitle,
                         sortOrder: parseInt(sortOrder),
+                        takeOver,
                         submittableType,
                         parTime: parseInt(parTime),
                     });

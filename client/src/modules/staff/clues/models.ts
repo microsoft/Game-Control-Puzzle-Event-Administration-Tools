@@ -23,6 +23,7 @@ export type StaffClue = Readonly<{
     submittableType: string;
     shortTitle: string;
     sortOrder: number;
+    takeOver: boolean;
     content: Content[];
     answers: Answer[];
     teamsStatus: SolveStatus[];
@@ -41,6 +42,7 @@ export type StaffClueTemplate = Readonly<{
     shortTitle: string;
     submittableType: string;
     sortOrder: number;
+    takeOver: boolean;
     openTime?: Moment;
     closingTime?: Moment;
     parTime?: number;

@@ -18,6 +18,8 @@ namespace GameControl.Server.Database.SprocTypes
 
         public int SortOrder { get; set; }
 
+        public Boolean TakeOver { get; set; }
+
         public DateTime UnlockTime { get; set; }
 
         public DateTime? SubmissionTime { get; set; }
