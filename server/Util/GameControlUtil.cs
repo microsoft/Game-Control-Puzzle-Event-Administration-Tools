@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 
 namespace GameControl.Server.Util
 {
@@ -37,28 +37,21 @@ namespace GameControl.Server.Util
         }
 
         #region Image Utilities
-        public static ImageCodecInfo GetCodec(Image i)
+        public static IImageFormat GetImageFormat(Image image)
         {
-            var formatId = i.RawFormat.Guid;
-
-            foreach (var codec in ImageCodecInfo.GetImageDecoders())
-            {
-                if (codec.FormatID == formatId)
-                {
-                    return codec;
-                }
-            }
-
-            return null;
+            return image.Metadata.DecodedImageFormat;
         }
 
-        public static string GetExtension(ImageCodecInfo codec)
+        public static string GetMimeType(IImageFormat format)
         {
-            return codec.FilenameExtension
-                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                .First()
-                .Trim('*')
-                .ToLower();
+            return format?.DefaultMimeType ?? "application/octet-stream";
+        }
+
+        public static string GetExtension(IImageFormat format)
+        {
+            if (format == null) return ".bin";
+            
+            return format.FileExtensions.FirstOrDefault() ?? ".bin";
         }
         #endregion
     }
