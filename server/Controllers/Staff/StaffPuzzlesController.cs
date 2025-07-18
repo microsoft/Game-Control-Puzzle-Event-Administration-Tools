@@ -220,6 +220,7 @@ namespace GameControl.Server.Controllers
                         Submittable = newSubmittable.SubmittableId,
                         EventInstance = eventInstanceId,
                         SortOrder = newClue.SortOrder,
+                        TakeOver = newClue.TakeOver,
                         OpenTime = newClue.OpenTime,
                         ClosingTime = newClue.ClosingTime,
                         ParSolveTime = newClue.ParTime
@@ -265,6 +266,7 @@ namespace GameControl.Server.Controllers
                     submittable.SubmittableType = newClue.SubmittableType;
 
                     toc.SortOrder = newClue.SortOrder;
+                    toc.TakeOver = newClue.TakeOver;
                     toc.OpenTime = newClue.OpenTime;
                     toc.ClosingTime = newClue.ClosingTime;
                     toc.ParSolveTime = newClue.ParTime;

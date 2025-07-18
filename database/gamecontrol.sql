@@ -422,6 +422,7 @@ CREATE TABLE [dbo].[TableOfContentsEntry](
     [Submittable] [uniqueidentifier] NULL,
     [EventInstance] [uniqueidentifier] NOT NULL,
     [GloballyAvailable] [bit] NOT NULL,
+    [TakeOver] [bit] NOT NULL,
     [OpenTime] [datetime] NULL,
     [ClosingTime] [datetime] NULL,
     [ParSolveTime] [int] NULL,
@@ -2894,6 +2895,7 @@ BEGIN
 		   Submittable.LastUpdate AS SubmittableLastUpdate,
 		   Submittable.SubmittableId,
 		   TableOfContentsEntry.SortOrder,
+           TableOfContentsEntry.TakeOver,
 		   TeamTocAccess.UnlockTime,
 		   EarliestCorrectSubmission.SubmissionTime,
    	       COALESCE(AnswerCount.AnswerCount, 0) AS AnswerCount

@@ -3,12 +3,14 @@ import { LinkContainer } from 'react-router-bootstrap';
 import moment from 'moment';
 import 'moment-timezone';
 
-import { usePlayerClues } from 'modules/player';
+import { usePlayerClues, usePlayerTakeOverClue } from 'modules/player';
 import { CallManager } from './CallManager';
+import { Redirect } from 'react-router-dom';
 
 export const AvailableClues = () => {
     document.title = 'Puzzles';
     const { cluesModule } = usePlayerClues();
+    const takeOverClue = usePlayerTakeOverClue();
 
     const unsolvedPuzzles = cluesModule.data.filter((clue) => clue.submissionTime === null && clue.submittableType.trim() !== 'Plot').sort((a, b) => a.sortOrder - b.sortOrder);
     const solvedPuzzles = cluesModule.data.filter((clue) => clue.submissionTime !== null && clue.submittableType.trim() !== 'Plot').sort((a, b) => a.sortOrder - b.sortOrder);
@@ -64,6 +66,10 @@ export const AvailableClues = () => {
             );
         }
     };
+
+    if (takeOverClue) {
+        return <Redirect to={`/player/clue/${takeOverClue.tableOfContentId}`} />
+    }
 
     return (
         <div>

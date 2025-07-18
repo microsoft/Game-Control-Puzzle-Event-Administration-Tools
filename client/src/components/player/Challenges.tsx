@@ -8,6 +8,8 @@ import { Module } from 'modules/types';
 import { getChallengePluralNameSetting, getChallengeSingularNameSetting } from 'modules';
 import { PlayerChallenge } from 'modules/player/challenges/models';
 import { usePlayerChallenges } from 'modules/player/challenges/hooks';
+import { usePlayerTakeOverClue } from 'modules/player';
+import { Redirect } from 'react-router-dom';
 
 const isChallengeExpired = (challenge: any) => challenge.endTime === undefined || moment.utc().diff(moment.utc(challenge.endTime)) > 0;
 
@@ -60,6 +62,7 @@ const ChallengeRow = ({ challenge }: { challenge: any }) => {
 export const Challenges = () => {
     const challengesPluralName = useSelector(getChallengePluralNameSetting);
     const { challengesModule } = usePlayerChallenges();
+    const takeOverClue = usePlayerTakeOverClue();
 
     document.title = challengesPluralName;
 
@@ -87,6 +90,10 @@ export const Challenges = () => {
             return <div>No {challengesPluralName} are currently available. Please check back later</div>;
         }
     };
+
+    if (takeOverClue) {
+        return <Redirect to={`/player/clue/${takeOverClue.tableOfContentId}`} />
+    }
 
     return (
         <div>

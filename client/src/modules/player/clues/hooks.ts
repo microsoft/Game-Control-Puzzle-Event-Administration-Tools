@@ -22,3 +22,9 @@ export const usePlayerClues = () => {
         rateClue: (tableOfContentId: string, rating: RatingTemplate) => dispatch(rateClue(tableOfContentId, rating)),
     };
 };
+
+export const usePlayerTakeOverClue = () => {
+    const { cluesModule } = usePlayerClues();
+
+    return cluesModule.data.find((clue) => clue.takeOver && !clue.isSolved);
+}

@@ -16,6 +16,8 @@ namespace GameControl.Server.RequestTypes.Staff
 
         public int SortOrder { get; set; }
 
+        public bool TakeOver { get; set; }
+
         public DateTime? OpenTime { get; set; }
 
         public DateTime? ClosingTime { get; set; }

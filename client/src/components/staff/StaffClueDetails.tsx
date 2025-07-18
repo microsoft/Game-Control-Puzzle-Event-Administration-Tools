@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getIsUserAdmin, getStaffPuzzleDetails } from 'modules';
 import { useStaffTeams } from 'modules/staff';
-import { fetchStaffClueDetails, relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
+import { addAnswerToClue, addContentToClue, addLocationToClue, createClue, deleteClue, deleteContent, fetchStaffClueDetails, relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
 import { useStaffAchievements } from 'modules/staff/achievements';
 
 import { AnswerForm, ClueForm, ContentForm, LocationForm } from './dialogs';
@@ -43,14 +43,14 @@ const StaffClueDetails = () => {
         history.replace('/staff/clues/' + id + '/' + k);
     };
 
-    const createClue = (clueTemplate: StaffClueTemplate): void => dispatch(createClue(clueTemplate));
-    const deleteClue = (tableOfContentId: string): void => dispatch(deleteClue(tableOfContentId));
-    const addContentToClue = (tableOfContentId: string, content: ContentTemplate): void => dispatch(addContentToClue(tableOfContentId, content));
-    const deleteContent = (tableOfContentId: string, contentId: string): void => dispatch(deleteContent(tableOfContentId, contentId));
-    const unlockPuzzleForTeam = (teamId: string, tableOfContentId: string, reason: string) => dispatch(unlockClueForTeam(teamId, tableOfContentId, reason));
-    const relockPuzzleForTeam = (teamId: string, tableOfContentId: string) => dispatch(relockClueForTeam(teamId, tableOfContentId));
-    const addAnswerToClue = (tableOfContentId: string, answerTemplate: AnswerTemplate): void => dispatch(addAnswerToClue(tableOfContentId, answerTemplate));
-    const addLocationToClue = (tableOfContentId: string, locationTemplate: LocationTemplate): void => dispatch(addLocationToClue(tableOfContentId, locationTemplate));
+    const dispatchCreateClue = (clueTemplate: StaffClueTemplate): void => { dispatch(createClue(clueTemplate)); };
+    const dispatchDeleteClue = (tableOfContentId: string): void => { dispatch(deleteClue(tableOfContentId)); };
+    const dispatchAddContentToClue = (tableOfContentId: string, content: ContentTemplate): void => { dispatch(addContentToClue(tableOfContentId, content)) };
+    const dispatchDeleteContent = (tableOfContentId: string, contentId: string): void => { dispatch(deleteContent(tableOfContentId, contentId)) };
+    const dispatchUnlockPuzzleForTeam = (teamId: string, tableOfContentId: string, reason: string) => dispatch(unlockClueForTeam(teamId, tableOfContentId, reason));
+    const dispatchRelockPuzzleForTeam = (teamId: string, tableOfContentId: string) => dispatch(relockClueForTeam(teamId, tableOfContentId));
+    const dispatchAddAnswerToClue = (tableOfContentId: string, answerTemplate: AnswerTemplate): void => { dispatch(addAnswerToClue(tableOfContentId, answerTemplate)); };
+    const dispatchAddLocationToClue = (tableOfContentId: string, locationTemplate: LocationTemplate): void => { dispatch(addLocationToClue(tableOfContentId, locationTemplate)) };
 
     const foundClue = currentClue;
 
@@ -86,7 +86,7 @@ const StaffClueDetails = () => {
                                 <FaPen /> Edit
                             </>
                         )}
-                        renderBody={(onComplete) => <ClueForm onSubmit={createClue} clue={foundClue} onComplete={onComplete} />}
+                        renderBody={(onComplete) => <ClueForm onSubmit={dispatchCreateClue} clue={foundClue} onComplete={onComplete} />}
                     />
                 </div>
 
@@ -96,9 +96,9 @@ const StaffClueDetails = () => {
                     <Tab eventKey={1} title="Teams">
                         <TeamStatusList
                             teamsStatus={foundClue.teamsStatus}
-                            onUnlock={(teamId) => unlockPuzzleForTeam(teamId, foundClue.tableOfContentId, 'GcUnlock')}
-                            onSkip={(teamId) => unlockPuzzleForTeam(teamId, foundClue.tableOfContentId, 'Skip')}
-                            onRelock={(teamId) => relockPuzzleForTeam(teamId, foundClue.tableOfContentId)}
+                            onUnlock={(teamId) => dispatchUnlockPuzzleForTeam(teamId, foundClue.tableOfContentId, 'GcUnlock')}
+                            onSkip={(teamId) => dispatchUnlockPuzzleForTeam(teamId, foundClue.tableOfContentId, 'Skip')}
+                            onRelock={(teamId) => dispatchRelockPuzzleForTeam(teamId, foundClue.tableOfContentId)}
                         />
                     </Tab>
                     <Tab eventKey={2} title="Content">
@@ -115,7 +115,7 @@ const StaffClueDetails = () => {
                                 <ContentForm
                                     achievements={staffAchievementsModule.data}
                                     onSubmit={(content) => {
-                                        addContentToClue(foundClue.tableOfContentId, content);
+                                        dispatchAddContentToClue(foundClue.tableOfContentId, content);
                                         onComplete();
                                     }}
                                 />
@@ -133,7 +133,7 @@ const StaffClueDetails = () => {
                             renderBody={(onComplete) => (
                                 <LocationForm
                                     onSubmit={(location) => {
-                                        addLocationToClue(foundClue.tableOfContentId, location);
+                                        dispatchAddLocationToClue(foundClue.tableOfContentId, location);
                                         onComplete();
                                     }}
                                 />
@@ -143,9 +143,9 @@ const StaffClueDetails = () => {
                             content={foundClue.content}
                             achievements={staffAchievementsModule.data}
                             tableOfContentId={foundClue.tableOfContentId}
-                            addContentToClue={addContentToClue}
-                            addLocationToClue={addLocationToClue}
-                            deleteContent={deleteContent}
+                            addContentToClue={dispatchAddContentToClue}
+                            addLocationToClue={dispatchAddLocationToClue}
+                            deleteContent={dispatchDeleteContent}
                         />
                     </Tab>
                     <Tab eventKey={3} title="Answers">
@@ -162,7 +162,7 @@ const StaffClueDetails = () => {
                                 <AnswerForm
                                     teams={teams.data}
                                     onSubmit={(answer) => {
-                                        addAnswerToClue(id, answer);
+                                        dispatchAddAnswerToClue(id, answer);
                                         onComplete();
                                     }}
                                 />
@@ -184,7 +184,7 @@ const StaffClueDetails = () => {
                     </Tab>
                     {!!isUserAdmin && (
                         <Tab eventKey={8} title="Admin">
-                            <Button onClick={() => deleteClue(id)}>Delete Puzzle</Button>
+                            <Button onClick={() => dispatchDeleteClue(id)}>Delete Puzzle</Button>
                         </Tab>
                     )}
                 </Tabs>

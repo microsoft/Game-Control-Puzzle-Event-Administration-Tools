@@ -1,8 +1,7 @@
 import { Alert, Breadcrumb, Button, ListGroup, ListGroupItem, Card } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import moment from 'moment';
 import 'moment-timezone';
 
@@ -14,7 +13,7 @@ import { CallManager } from './CallManager';
 
 import { getDerivedTeamId, getDerivedPlayerId } from 'modules';
 import { Achievement, Content, PlayerSubmission, SolvedPlot, UnlockedClue, UnsolvedPlot } from 'modules/types';
-import { PlayerClue, RatingTemplate, SubmissionTemplate, usePlayerClues } from 'modules/player';
+import { PlayerClue, RatingTemplate, SubmissionTemplate, usePlayerClues, usePlayerTakeOverClue } from 'modules/player';
 
 type ContentListProps = Readonly<{
     content: Content[];
@@ -195,6 +194,7 @@ export const PlayerClueDetails = () => {
     const { id } = useParams<{ id: string }>();
     const { cluesModule, submitAnswer, rateClue } = usePlayerClues();
     const currentClue = cluesModule.data.find((clue) => clue.tableOfContentId === id);
+    const takeOverClue = usePlayerTakeOverClue();
     const teamId = useSelector((state: any) => getDerivedTeamId(state, id));
     const playerId = useSelector((state: any) => getDerivedPlayerId(state, id));
 
@@ -204,6 +204,10 @@ export const PlayerClueDetails = () => {
     const unsolvedPlot = currentClue?.content.filter((content) => content.name === UnsolvedPlot) ?? [];
     const solvedPlot = currentClue?.content.filter((content) => content.name === SolvedPlot) ?? [];
     const additionalContent = currentClue?.content.filter((content) => content.name !== SolvedPlot && content.name !== UnsolvedPlot) ?? [];
+
+    if (takeOverClue && takeOverClue.tableOfContentId !== id) {
+        return <Redirect to={`/player/clue/${takeOverClue.tableOfContentId}`} />
+    }
 
     const ClueContent = () => {
         if (currentClue) {

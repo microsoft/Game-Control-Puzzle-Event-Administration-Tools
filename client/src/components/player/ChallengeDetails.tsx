@@ -1,6 +1,6 @@
 import { Alert, ListGroup, ListGroupItem, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import moment from 'moment';
 import 'moment-timezone';
 
@@ -10,7 +10,7 @@ import { getChallengePluralNameSetting, getChallengeSingularNameSetting } from '
 import ChallengeSubmissionFragment from './fragments/ChallengeSubmissionFragment';
 
 import * as constants from '../../constants';
-import { usePlayerChallenges } from 'modules/player';
+import { usePlayerChallenges, usePlayerTakeOverClue } from 'modules/player';
 
 const getSubmissionStyle = (state: number) => {
     if (state === 1) {
@@ -126,12 +126,15 @@ const PreviousSubmissions = ({ challenge }: { challenge: any }) => {
 export const ChallengeDetails = () => {
     const { id } = useParams<{ id: string }>();
     const { challengesModule } = usePlayerChallenges();
+    const takeOverClue = usePlayerTakeOverClue();
     const challengesSingularName = useSelector(getChallengeSingularNameSetting);
     const challengesPluralName = useSelector(getChallengePluralNameSetting);
 
     const currentChallenge = challengesModule.data.find((x: any) => id === x.challengeId);
 
-    if (currentChallenge) {
+    if (takeOverClue) {
+        return <Redirect to={`/player/clue/${takeOverClue.tableOfContentId}`} />
+    } else if (currentChallenge) {
         document.title = `${challengesPluralName} - ${currentChallenge.title}`;
 
         return (

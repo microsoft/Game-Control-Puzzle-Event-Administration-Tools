@@ -17,6 +17,7 @@ namespace GameControl.Server.ViewModel
             this.SubmittableId = toc.Submittable;
             this.SubmittableTitle = sub.Title;
             this.SortOrder = toc.SortOrder;
+            this.TakeOver = toc.TakeOver;
             this.SubmittableType = sub.SubmittableType;
             this.Content = new List<ContentViewModel>();
         }
@@ -30,6 +31,8 @@ namespace GameControl.Server.ViewModel
         public string SubmittableTitle { get; set; }
 
         public int SortOrder { get; set; }
+
+        public bool TakeOver { get; set; }
 
         public string SubmittableType
         {

@@ -16,6 +16,8 @@ namespace GameControl.Server.Database.Tables
 
         public Boolean GloballyAvailable { get; set; }
 
+        public Boolean TakeOver { get; set; }
+
         public DateTime? OpenTime { get; set; }
 
         public DateTime? ClosingTime { get; set; }
