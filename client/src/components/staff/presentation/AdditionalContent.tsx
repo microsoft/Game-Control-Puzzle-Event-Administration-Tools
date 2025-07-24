@@ -28,27 +28,21 @@ const HtmlContent = ({ content }: ContentProps) => {
 };
 
 const LocationContent = ({ content }: ContentProps) => {
+    // Create Bing Maps URL with the location coordinates
+    const bingMapsUrlLatLong = `https://www.bing.com/maps/default.aspx?lvl=18&cp=${content.latitude}~${content.longitude}`;
+    const bingMapsUrlAddress = `https://www.bing.com/maps/default.aspx?&where1=${content.address}`;
+
     return (
         <>
             <div>
-                <img
-                    alt={content.name}
-                    src={
-                        'https://dev.virtualearth.net/REST/v1/Imagery/Map/Road?centerPoint=' +
-                        content.latitude +
-                        ',' +
-                        content.longitude +
-                        '&mapSize=280,180&pushpin=' +
-                        content.latitude +
-                        ',' +
-                        content.longitude +
-                        '&key=AuyOR02DEFnwiMP6JtAl7NGv13blWWydEy_fQI9qZoCZ5Y_E99Hdb-JTEL9g3Y9Z'
-                    }
-                />
+                <a href={bingMapsUrlAddress} target="_blank" rel="noopener noreferrer">
+                    {content.address}
+                </a>
             </div>
-            <div>{content.address}</div>
             <div>
-                {content.latitude} {content.longitude}
+                <a href={bingMapsUrlLatLong} target="_blank" rel="noopener noreferrer">
+                    {content.latitude} {content.longitude}
+                </a>
             </div>
         </>
     );
