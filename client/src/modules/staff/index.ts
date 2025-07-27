@@ -220,7 +220,7 @@ export const compareAnswers = (answer1: Answer, answer2: Answer) => {
         return compareTextResult;
     }
 
-    if (answer1.teamId !== undefined && answer2.teamId !== undefined) {
+    if (answer1.teamId !== undefined && answer2.teamId !== undefined && answer1.teamId !== null && answer2.teamId !== null) {
         const compareTeamIdResult = answer1.teamId.localeCompare(answer2.teamId);
         if (compareTeamIdResult !== 0) {
             return compareTeamIdResult;

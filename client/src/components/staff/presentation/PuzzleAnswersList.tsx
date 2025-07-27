@@ -171,8 +171,8 @@ const PuzzleAnswersList = ({ clue }: Props) => {
 
     const renderGroupUnlocks = (groupedAnswer: GroupedAnswer) => {
         const unlockableClues = cluesModule.data.filter(
-            (clue) =>
-                clue.tableOfContentId !== clue.tableOfContentId && groupedAnswer.unlockedClues.find((unlock) => unlock.tableOfContentId === clue.tableOfContentId) === undefined
+            (nextClue) =>
+                nextClue.tableOfContentId !== clue.tableOfContentId && groupedAnswer.unlockedClues.find((unlock) => unlock.tableOfContentId === nextClue.tableOfContentId) === undefined
         );
 
         if (groupedAnswer.unlockedClues !== null) {
