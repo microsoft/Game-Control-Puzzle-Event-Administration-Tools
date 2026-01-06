@@ -13,8 +13,21 @@ do
     fi
 done
 
+for i in {1..50};
+do
+    /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -d master -i pregame.sql
+    if [ $? -eq 0 ]
+    then
+        echo "Pregame database created."
+        break
+    else
+        echo "Pregame database not ready yet."
+        sleep 1
+    fi
+done
+
 echo "Creating login user..."
-sed "s/!!!GCUSERNAME!!!/gc/g;s/!!!GCPASSWORD!!!/${GC_PASSWORD}/g" createlogin.sql > /tmp/createlogin.sql
+sed "s/!!!GCUSERNAME!!!/gc/g;s/!!!GCPASSWORD!!!/${GC_PASSWORD}/g;s/!!!PGUSERNAME!!!/pg/g;s/!!!PGPASSWORD!!!/${PG_PASSWORD}/g" createlogin.sql > /tmp/createlogin.sql
 for i in {1..50};
 do
     /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -d master -i /tmp/createlogin.sql
@@ -43,7 +56,6 @@ do
     fi
 done
 rm /tmp/defaultdata.sql
-
 
 echo "Waiting for SQL Server to terminate and restart..."
 pkill -P $$

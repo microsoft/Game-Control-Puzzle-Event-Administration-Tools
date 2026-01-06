@@ -136,6 +136,22 @@ function main() {
                 let clientEnv = [];
                 let serverEnv = [];
                 let databaseEnv = [];
+                let pregameEnv = [
+                    "OrchardCore__OrchardCore_AutoSetup__Tenants__0__ShellName=Default",
+                    "OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteName=Pregame",
+                    "OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteTimeZone=America/Los_Angeles",
+                    "OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail=example@example.com",
+                    "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider=SqlConnection",
+                    "OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName=Blank",
+                    // WARNING: these next few values should only be for local development
+                    "Identity__Password__RequireDigit=false",
+                    "Identity__Password__RequireLowercase=false",
+                    "Identity__Password__RequireUppercase=false",
+                    "Identity__Password__RequireNonAlphanumeric=false",
+                    "Identity__Password__RequiredUniqueChars=1",
+                    "Identity__Password__RequiredLength=1"
+                    // End warning
+                ];
 
                 let appSettings = {
                     "Logging": {
@@ -161,9 +177,11 @@ function main() {
                         env.push("COMPOSE_PROFILES=everything");
                         const saPassword = answers.saPassword ? answers.saPassword : v4();
                         const gcPassword = v4();
+                        const pgPassword = v4();
 
                         databaseEnv.push("SA_PASSWORD=" + saPassword);
                         databaseEnv.push("GC_PASSWORD=" + gcPassword);
+                        databaseEnv.push("PG_PASSWORD=" + pgPassword);
 
                         const {password, salt} = hashPassword(answers.password);
                         databaseEnv.push("LOGIN_USERNAME="+ answers.username);
@@ -173,6 +191,9 @@ function main() {
                         const connectionString = "Data Source=database;Initial Catalog=gamecontrol;Integrated Security=false;User ID=gc;Password=" + gcPassword + ";Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;MultipleActiveResultSets=true"
                         serverEnv.push("ConnectionStrings__DefaultConnection=" + connectionString);
                         appSettings.ConnectionStrings.DefaultConnection = connectionString;
+
+                        const pregameConnectionString = "Data Source=database;Initial Catalog=pregame;Integrated Security=false;User ID=pg;Password=" + pgPassword + ";Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;MultipleActiveResultSets=true"
+                        pregameEnv.push("OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseConnectionString=" + pregameConnectionString);
                     }
                     else if (answers.dbtype === "external") {
                         env.push("COMPOSE_PROFILES=clientserver");
@@ -207,6 +228,10 @@ function main() {
                     serverEnv.push("GameControl__BlobStorageBaseUrl=" + answers.blobBaseUrl);
                     appSettings.GameControl.BlobStorageBaseUrl = answers.blobBaseUrl;
 
+                    // There is probably a more secure way to do this
+                    pregameEnv.push("OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminUsername=" + answers.username);
+                    pregameEnv.push("OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword=" + answers.password);
+
                     fs.writeFileSync(".env", env.join(os.EOL));
                     if (answers.dbtype === "sqlcontainer") {
                         fs.writeFileSync("database.env", databaseEnv.join(os.EOL));
@@ -214,6 +239,7 @@ function main() {
                     fs.writeFileSync("client.env", clientEnv.join(os.EOL));
                     fs.writeFileSync("client/.env", clientEnv.join(os.EOL));
                     fs.writeFileSync("server.env", serverEnv.join(os.EOL));
+                    fs.writeFileSync("pregame.env", pregameEnv.join(os.EOL));
 
                     console.log("Writing server/appsettings.Development.json file...");
                     fs.writeFileSync("./server/appsettings.Development.json", JSON.stringify(appSettings));

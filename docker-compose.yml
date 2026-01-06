@@ -24,5 +24,13 @@ services:
       - ASPNETCORE_URLS=http://+:5000
     env_file:
       - server.env
+  pregame:
+    build: ./pregame
+    ports:
+      - "5000"
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+    env_file:
+      - pregame.env
 volumes:
   db: {}
