@@ -67,7 +67,7 @@
         "@types/react-router-bootstrap": "^0.24.5",
         "@types/react-router-redux": "^5.0.27",
         "@types/redux-auth-wrapper": "^2.0.16",
-        "ajv": "^8.17.1",
+        "ajv": "^8.18.0",
         "eslint": "^9.20.1",
         "eslint-plugin-react": "^7.37.4",
         "jest": "^29.7.0",
