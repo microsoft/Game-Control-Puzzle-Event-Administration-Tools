@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, BrowserRouterProps } from 'react-router-dom';
@@ -12,13 +14,17 @@ const routerProps: BrowserRouterProps = {};
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
+const queryClient = new QueryClient();
 
 root.render(
-    <Provider store={store}>
-        <BrowserRouter {...routerProps}>
-            <App />
-        </BrowserRouter>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
+        <Provider store={store}>
+            <BrowserRouter {...routerProps}>
+                <App />
+            </BrowserRouter>
+        </Provider>
+    </QueryClientProvider>
 );
 
 unregisterServiceWorker();
