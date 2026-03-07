@@ -211,8 +211,9 @@ const StaffActionCenter = () => {
             teams = data.teams.map((team) => {
                 const activeCall = team.callHistory.find((x) => !x.callEnd);
                 const activeCallAge = activeCall && activeCall.callStart ? <LiveTimerControl timestamp={activeCall.callStart.toLocaleString()} /> : 'unknown time';
+                const completedCalls = team.callHistory.filter(x => x.callEnd);
                 const mostRecentCall =
-                    team.callHistory.length > 0 ? team.callHistory.sort((a, b) => Date.parse(b.callEnd!.toLocaleString()) - Date.parse(a.callEnd!.toLocaleString()))[0] : undefined;
+                    completedCalls.length > 0 ? completedCalls.sort((a, b) => Date.parse(b.callEnd!.toLocaleString()) - Date.parse(a.callEnd!.toLocaleString()))[0] : undefined;
                 const mostRecentCallEnd = mostRecentCall?.callEnd;
                 const minutesSinceMostRecentCallStart = mostRecentCall ? moment.duration(moment.utc().diff(moment.utc(mostRecentCall.callStart))).asMinutes() : 999999;
                 const minutesSinceLastCall = activeCall
