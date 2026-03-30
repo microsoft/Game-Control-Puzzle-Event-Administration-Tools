@@ -1,11 +1,11 @@
 import React from 'react';
 import { ListGroup, ListGroupItem, Row, Col, Button } from 'react-bootstrap';
 import { FaPencilAlt, FaPlus, FaTrashAlt } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import DialogRenderProp from '../dialogs/DialogRenderProp';
 import { PuzzleInstanceForm } from "../dialogs/PuzzleInstanceForm";
-import { getStaffTeams } from 'modules/staff';
+import { useStaffTeamQuery, useStaffTeamsQuery } from 'modules/staff/teams/queries';
 import { ClueInstance, ClueInstanceTemplate } from 'modules/staff/clues';
 import { deleteClueInstance, updateClueInstance } from 'modules/staff/clues/service';
 
@@ -16,8 +16,8 @@ type InstanceProps = Readonly<{
 }>;
 
 const PuzzleInstance = ({ instance, onEditInstance, onDeleteInstance }: InstanceProps) => {
-    const allTeams = useSelector(getStaffTeams).data;
-    const currentTeam = allTeams && allTeams.find(x => x.teamId === instance.currentTeam);
+    const { data: currentTeam } = useStaffTeamQuery(instance.currentTeam);
+    const { data: allTeams = [] } = useStaffTeamsQuery();
 
     let formatting = "instance-available";
     if (instance.needsReset) {formatting = "instance-needsreset";}
@@ -83,7 +83,7 @@ type Props = Readonly<{
 }>;
 
 export const PuzzleInstances = ({ tableOfContentId, instances }: Props) => {
-    const allTeams = useSelector(getStaffTeams);
+    const { data: allTeams = [] } = useStaffTeamsQuery();
     const dispatch = useDispatch();
     const updateInstance = (tableOfContentId: string, instance: ClueInstanceTemplate) => dispatch(updateClueInstance(tableOfContentId, instance));
     const deleteInstance = (tableOfContentId: string, instanceId: string) => dispatch(deleteClueInstance(tableOfContentId, instanceId));
@@ -96,7 +96,7 @@ export const PuzzleInstances = ({ tableOfContentId, instances }: Props) => {
                 renderButton={() => <><FaPlus/> Add Instance</>}
                 renderBody={(onComplete: any) =>
                     <PuzzleInstanceForm
-                        allTeams={allTeams.data}
+                        allTeams={allTeams}
                         onUpdate={instance => {
                             updateInstance(tableOfContentId, instance);
                             onComplete();

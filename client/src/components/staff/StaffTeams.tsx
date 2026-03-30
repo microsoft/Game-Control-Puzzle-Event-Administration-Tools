@@ -5,60 +5,56 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 import DialogRenderProp from './dialogs/DialogRenderProp';
 import { TeamForm } from './dialogs';
-import { StaffTeam, StaffTeamState, useStaffTeams } from 'modules/staff';
+import { StaffTeam } from 'modules/staff';
+import { useAddOrUpdateTeamMutation, useStaffTeamsQuery } from 'modules/staff/teams/queries';
 
-const StaffTeamsList = ({ teams }: { teams: StaffTeamState }) => {
-    if (teams.isLoading) {
-        return <div>Loading...</div>
-    } 
-    else if (teams.lastFetched && teams.data.length === 0) {
+const StaffTeamsList = ({ teams, isLoaded }: { teams: StaffTeam[]; isLoaded: boolean }) => {
+    if (isLoaded && teams.length === 0) {
         return <div>There are currently no teams for this event</div>;
     }
-    else if (teams.data !== null) {
-        return <ListGroup className="clickable">
-                {teams.data.map((team: StaffTeam) => 
-                    <LinkContainer key={team.teamId}
-                                   to={'/staff/teams/' + team.teamId}>
-                        <ListGroupItem key={ team.teamId }>
-                            { !!team.isTestTeam && <><FaWrench />&nbsp;</> }
-                            { team.name }
-                        </ListGroupItem>
-                    </LinkContainer>)}
-            </ListGroup>
-    } else {
-        return null;
-    }
+
+    return (
+        <ListGroup className="clickable">
+            {teams.map((team: StaffTeam) => (
+                <LinkContainer key={team.teamId} to={'/staff/teams/' + team.teamId}>
+                    <ListGroupItem key={team.teamId}>
+                        {!!team.isTestTeam && <><FaWrench />&nbsp;</>}
+                        {team.name}
+                    </ListGroupItem>
+                </LinkContainer>
+            ))}
+        </ListGroup>
+    );
 };
 
 export const StaffTeams = () => {
-    const { teams, addOrUpdateTeam } = useStaffTeams();
-    document.title = "Game Control - Teams";
+    const { data: teams = [], isLoading, isSuccess, error } = useStaffTeamsQuery();
+    const addOrUpdateTeam = useAddOrUpdateTeamMutation();
+    document.title = 'Game Control - Teams';
 
     return (
         <div>
-              <Breadcrumb>
-                    <Breadcrumb.Item>Teams</Breadcrumb.Item>
-                </Breadcrumb>
+            <Breadcrumb>
+                <Breadcrumb.Item>Teams</Breadcrumb.Item>
+            </Breadcrumb>
             <h5>
                 All Teams
                 &nbsp;
                 <DialogRenderProp
-                    disabled={ teams.isLoading }
-                    renderTitle={() => "Add New Team"}
-                    renderButton={() => <FaPlus/>}
-                    renderBody={(onComplete: () => void) =>
-                        <TeamForm                        
-                            onSubmit={ addOrUpdateTeam }
-                            onComplete = {onComplete}
+                    disabled={isLoading}
+                    renderTitle={() => 'Add New Team'}
+                    renderButton={() => <FaPlus />}
+                    renderBody={(onComplete: () => void) => (
+                        <TeamForm
+                            onSubmit={(template) => addOrUpdateTeam.mutateAsync(template).then(onComplete)}
+                            onComplete={onComplete}
                         />
-                    }
+                    )}
                 />
             </h5>
-            {
-                !!teams.lastError &&
-                <Alert variant="danger">{teams.lastError}</Alert>
-            }
-            <StaffTeamsList teams={teams} />
+            {isLoading && <div>Loading...</div>}
+            {!!error && <Alert variant="danger">{(error as Error).message}</Alert>}
+            <StaffTeamsList teams={teams} isLoaded={isSuccess} />
         </div>
     );
 };

@@ -1,9 +1,10 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, BrowserRouterProps } from 'react-router-dom';
 
+import { queryClient } from './lib/queryClient';
 import store from './store';
 import './index.css';
 import App from './components/App';
@@ -14,7 +15,6 @@ const routerProps: BrowserRouterProps = {};
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
-const queryClient = new QueryClient();
 
 root.render(
     <QueryClientProvider client={queryClient}>

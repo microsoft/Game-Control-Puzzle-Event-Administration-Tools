@@ -8,7 +8,6 @@ import { feedReducer } from './feed/reducer';
 import { gridReducer } from './grid/staffGridModule';
 import { challengesReducer } from './challenges/reducer';
 import { messagesReducer } from './messages/messagesModule';
-import { staffTeamsReducer } from './teams/staffTeamsModule';
 import { StaffCluesState } from './clues/staffCluesModule';
 import { Answer, StaffClue } from './clues';
 import { Achievement, Content } from 'modules/types';
@@ -24,7 +23,6 @@ export default combineReducers({
     grid: gridReducer,
     challenges: challengesReducer,
     messages: messagesReducer,
-    teams: staffTeamsReducer,
 });
 
 export const getFeedModule = (state: any) => {

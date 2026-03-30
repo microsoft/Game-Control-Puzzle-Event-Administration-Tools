@@ -5,7 +5,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getIsUserAdmin, getStaffPuzzleDetails } from 'modules';
-import { useStaffTeams } from 'modules/staff';
+import { useStaffTeamsQuery } from 'modules/staff/teams/queries';
 import { addAnswerToClue, addContentToClue, addLocationToClue, createClue, deleteClue, deleteContent, fetchStaffClueDetails, relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
 import { useStaffAchievements } from 'modules/staff/achievements';
 
@@ -16,7 +16,6 @@ import { PuzzleInstances, PuzzlePlayerManifest, StaffClueContent, ClueRatings, C
 import { TeamStatusList } from './presentation/TeamStatusList';
 import PuzzleAnswersList from './presentation/PuzzleAnswersList';
 
-import { getStaffClues } from 'modules/staff/clues/selectors';
 import { useHistory, useParams } from 'react-router';
 import { AnswerTemplate, ContentTemplate, LocationTemplate, StaffClue, StaffClueTemplate, useStaffClues } from 'modules/staff/clues';
 
@@ -30,7 +29,7 @@ const StaffClueDetails = () => {
 
     const { cluesModule } = useStaffClues();
     const { staffAchievementsModule } = useStaffAchievements();
-    const { teams } = useStaffTeams();
+    const { data: teams = [] } = useStaffTeamsQuery();
     const isUserAdmin = useSelector(getIsUserAdmin);
     const currentClue = useSelector((state) => getStaffPuzzleDetails(state, id));
 
@@ -160,7 +159,7 @@ const StaffClueDetails = () => {
                             disabled={cluesModule.isAddingAnswer}
                             renderBody={(onComplete) => (
                                 <AnswerForm
-                                    teams={teams.data}
+                                    teams={teams}
                                     onSubmit={(answer) => {
                                         dispatchAddAnswerToClue(id, answer);
                                         onComplete();

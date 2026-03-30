@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
 import { FaEdit, FaPlus, FaRegCopy, FaTrashAlt } from 'react-icons/fa';
-import { connect, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { areAnswersEqual, compareAnswers, getCluesModule, getStaffTeams, StaffTeam, useStaffTeams } from 'modules/staff';
+import { areAnswersEqual, compareAnswers, getCluesModule, StaffTeam } from 'modules/staff';
 import { addAnswerToClue, addContentToAnswer, addPuzzleUnlock, deleteClueAnswer, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
 import { fetchStaffAchievements, getAchievementsModule, addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer, useStaffAchievements } from 'modules/staff/achievements';
 
@@ -15,6 +15,7 @@ import SimpleListFormGroupApply from '../dialogs/SimpleListFormGroupApply';
 import DialogRenderProp from '../dialogs/DialogRenderProp';
 
 import { AnswerText } from './answers/AnswerText';
+import { useStaffTeamsQuery } from 'modules/staff/teams/queries';
 import { Answer, StaffClue, useStaffClues } from 'modules/staff/clues';
 import { Achievement } from 'modules/types';
 import { PuzzleUnlocks } from './answers/PuzzleUnlocks';
@@ -32,7 +33,7 @@ type GroupedAnswer = Answer &
 const PuzzleAnswersList = ({ clue }: Props) => {
     const [enableGrouping, setEnableGrouping] = useState(true);
     const { staffAchievementsModule } = useStaffAchievements();
-    const { teams } = useStaffTeams();
+    const { data: teamsData = [] } = useStaffTeamsQuery();
     const { cluesModule } = useStaffClues();
     const dispatch = useDispatch();
 
@@ -61,13 +62,13 @@ const PuzzleAnswersList = ({ clue }: Props) => {
     };
 
     const FindTeamName = (teamId: string) => {
-        return teams.data.find((team) => team.teamId === teamId)?.name ?? 'UNKNOWN';
+        return teamsData.find((team) => team.teamId === teamId)?.name ?? 'UNKNOWN';
     };
 
     const GetTeamSet = (teamIds: string[]) => {
         const teamSet = [];
         for (var i = 0; i < teamIds.length; i++) {
-            const team = teams.data.find((team) => team.teamId === teamIds[i]);
+            const team = teamsData.find((team) => team.teamId === teamIds[i]);
             if (!!team) {
                 teamSet.push(team);
             }
@@ -317,7 +318,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                     renderBody={(onComplete) => (
                                         <AnswerForm
                                             answer={{ ...answer, isTeamSpecific: !!answer.teamId }}
-                                            teams={teams.data}
+                                            teams={teamsData}
                                             onSubmit={(updatedAnswer) => {
                                                 dispatch(addAnswerToClue(clue.tableOfContentId, updatedAnswer));
                                                 onComplete();
@@ -336,7 +337,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                     renderBody={(onComplete) => (
                                         <AnswerForm
                                             answer={{ ...answer, answerId: undefined, isTeamSpecific: !!answer.teamId }}
-                                            teams={teams.data}
+                                            teams={teamsData}
                                             onSubmit={(updatedAnswer) => {
                                                 dispatch(addAnswerToClue(clue.tableOfContentId, updatedAnswer));
                                                 onComplete();

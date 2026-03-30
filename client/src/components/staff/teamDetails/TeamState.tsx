@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import { Content, SkipPlot, SolvedPlot, UnsolvedPlot } from 'modules/types';
-import { getCluesModule, getStaffTeam, SortOrderOverride } from 'modules/staff';
+import { getCluesModule, SortOrderOverride } from 'modules/staff';
 import { SolveStatus, StaffClue } from 'modules/staff/clues';
 import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
-import { updateTeamAdditionalData } from 'modules/staff/teams/service';
+import { useStaffTeamQuery, useUpdateTeamDataMutation } from 'modules/staff/teams/queries';
 import { AdditionalContent } from '../presentation/AdditionalContent';
 import DialogRenderProp from '../dialogs/DialogRenderProp';
 import { SortOrderForm } from '../dialogs/SortOrderForm';
@@ -123,8 +123,9 @@ const CluePlotContent = ({ status, contentList }: { status: SolveStatus; content
 
 export const TeamState = ({ teamId }: { teamId: string }) => {
     const cluesModule = useSelector(getCluesModule);
-    const currentTeam = useSelector((state: any) => getStaffTeam(state, teamId));
+    const { data: currentTeam } = useStaffTeamQuery(teamId);
     const teamSortOverrides = currentTeam?.additionalData?.sortOverride;
+    const updateTeamData = useUpdateTeamDataMutation();
     const dispatch = useDispatch();
 
     const [hideContent, setHideContent] = useState(true);
@@ -223,7 +224,7 @@ export const TeamState = ({ teamId }: { teamId: string }) => {
                                                                 sortOverride.push({ tableOfContentId, sortOrder });
                                                             }
 
-                                                            dispatch(updateTeamAdditionalData(teamId, { sortOverride }));
+                                                            updateTeamData.mutate({ teamId, additionalData: { sortOverride } });
                                                         }}
                                                     />
                                                 </Col>

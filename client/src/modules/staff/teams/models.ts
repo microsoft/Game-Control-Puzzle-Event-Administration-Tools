@@ -1,10 +1,5 @@
 import { Moment } from 'moment';
-import { Module, PlayerSubmission } from 'modules/types';
-
-export type StaffTeamState = Readonly<{
-    isEditingCall: boolean;
-}> &
-    Module<StaffTeam[]>;
+import { PlayerSubmission } from 'modules/types';
 
 export type StaffTeam = Readonly<{
     teamId: string;

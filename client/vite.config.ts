@@ -20,6 +20,7 @@ export default defineConfig({
             modules: '/src/modules',
             components: '/src/components',
             utils: '/src/utils',
+            lib: '/src/lib',
         },
     },
 });

@@ -1,7 +1,6 @@
 import { withCallbacks, LogLevel, HttpTransportType } from './redux-signalr/index';
 import signalMiddleware from './redux-signalr/index';
 import { APPLICATION_URL } from '../../constants';
-import { fetchStaffTeams } from '../staff/teams/service';
 import { getChallenges } from 'modules/staff/challenges/service';
 import { fetchPlayerAchievements } from 'modules/player/achievements/service';
 import { fetchPlayerCalls } from 'modules/player/calls/service';
@@ -10,6 +9,9 @@ import { fetchPlayerClues } from 'modules/player/clues/service';
 import { fetchPlayerMessages } from 'modules/player/messages/service';
 import { fetchStaffClues, fetchStaffClueDetails } from 'modules/staff/clues/service';
 import { getStaffGrid } from 'modules/staff/grid/service';
+import { queryClient } from 'lib/queryClient';
+import { queryKeys } from 'lib/queryKeys';
+import { getEventInstanceId } from 'modules/user/selectors';
 
 export const createSignalMiddleware = (history: any) => {
     const isOnPage = (url: string) => {
@@ -22,17 +24,17 @@ export const createSignalMiddleware = (history: any) => {
         })
         .add('admin_submission', (teamId: string) => (dispatch: any, getState: any) => {
             if (isOnPage('/staff/grid') || isOnPage('/staff/actioncenter') || isOnPage('/staff/clues') || isOnPage('/staff/teams')) {
-                dispatch(fetchStaffTeams());
                 dispatch(getStaffGrid());
+                const eventInstanceId = getEventInstanceId(getState());
+                queryClient.invalidateQueries({ queryKey: queryKeys.staff.teams(eventInstanceId) });
             }
         })
         .add('admin_pulse', (teamId: string) => (dispatch: any, getState: any) => {})
         .add('admin_call', (teamId: string) => (dispatch: any, getState: any) => {
             if (isOnPage('/staff/grid') || isOnPage('/staff/actioncenter') || isOnPage('/staff/clues') || isOnPage('/staff/teams')) {
-                dispatch(fetchStaffTeams());
                 dispatch(getStaffGrid());
-            } else {
-                // Don't attempt to refresh calls because we are not on the grid or action center.
+                const eventInstanceId = getEventInstanceId(getState());
+                queryClient.invalidateQueries({ queryKey: queryKeys.staff.teams(eventInstanceId) });
             }
         })
         .add('admin_instance', (clueId: string) => (dispatch: any, getState: any) => {

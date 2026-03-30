@@ -12,7 +12,7 @@ import moment from 'moment';
 import { ExtendedGridCellData, ExtendedGridTeam, useStaffGridData } from '../../actions/staff/gridDataHooks';
 import { LiveTimerControl } from '../shared/LiveTimerControl';
 import { unlockClueForTeam } from 'modules/staff/clues/service';
-import { updateCallForTeam } from 'modules/staff/teams/service';
+import { useUpdateCallMutation } from 'modules/staff/teams/queries';
 import { TanstackTable } from 'components/shared/TanstackTable';
 import { CallTemplate } from 'modules/types';
 import { TeamCall } from 'modules/staff';
@@ -163,29 +163,28 @@ const StaffActionCenter = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    const acknowledge = (teamId: string, call: CallTemplate, notes: string) => {
-        let updatedCall = { ...call, publicNotes: notes };
+    const updateCall = useUpdateCallMutation();
 
-        dispatch(updateCallForTeam(teamId, updatedCall));
+    const acknowledge = (teamId: string, call: CallTemplate, notes: string) => {
+        const updatedCall = { ...call, publicNotes: notes };
+        updateCall.mutate({ teamId, callTemplate: updatedCall });
         setTimeout(refresh, 500);
     };
 
-    const switchToGcCall = (team: ExtraExtendedGridTeam, call: CallTemplate) => {
+    const switchToGcCall = async (team: ExtraExtendedGridTeam, call: CallTemplate) => {
         const teamId = team.id;
         const updatedCall = { ...call, callEnd: moment.utc() };
-        dispatch(
-            updateCallForTeam(teamId, updatedCall, () => {
-                dispatch(
-                    updateCallForTeam(teamId, {
-                        callType: 'Hint',
-                        callSubType: 'None',
-                        tableOfContentsEntry: team.currentTocId,
-                        notes: 'Created by ' + user.data.displayName,
-                    })
-                );
-                history.push('/staff/teams/' + teamId);
-            })
-        );
+        await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+        await updateCall.mutateAsync({
+            teamId,
+            callTemplate: {
+                callType: 'Hint',
+                callSubType: 'None',
+                tableOfContentsEntry: team.currentTocId,
+                notes: 'Created by ' + user.data.displayName,
+            },
+        });
+        history.push('/staff/teams/' + teamId);
     };
 
     const unlockPuzzleAndEndCall = (teamId: string, tableOfContentId: string, puzzleName: string, call: CallTemplate) => {
@@ -193,14 +192,14 @@ const StaffActionCenter = () => {
         endCall(teamId, { ...call, publicNotes: puzzleName + ' unlocked.' });
     };
 
-    const checkInWithTeam = (teamId: string, message: string) => {
-        dispatch(updateCallForTeam(teamId, { callEnd: moment.utc(), callType: 'Checkin' }));
+    const checkInWithTeam = (teamId: string, _message: string) => {
+        updateCall.mutate({ teamId, callTemplate: { callEnd: moment.utc(), callType: 'Checkin' } });
         setTimeout(refresh, 500);
     };
 
     const endCall = (teamId: string, call: CallTemplate) => {
         const updatedCall = { ...call, callEnd: moment.utc() };
-        dispatch(updateCallForTeam(teamId, updatedCall));
+        updateCall.mutate({ teamId, callTemplate: updatedCall });
         setTimeout(refresh, 500);
     };
 

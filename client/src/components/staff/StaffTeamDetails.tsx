@@ -13,38 +13,51 @@ import { CallHistory, TeamAchievements, TeamChallenges, TeamRoster, TeamState } 
 
 import DialogRenderProp from './dialogs/DialogRenderProp';
 import { TeamForm } from './dialogs';
-import { getStaffTeam, useStaffTeams } from 'modules/staff';
 import { useStaffClues } from 'modules/staff/clues/hooks';
-import { getLastDeleteError, getIsDeletingSubmission } from 'modules/admin';
 import { updateUserInfo } from 'modules/admin/users/service';
-import { deletePlayerSubmission } from 'modules/admin/player/service';
+import { useDeleteSubmissionMutation } from 'modules/admin/player/queries';
 import { CallTemplate } from 'modules/types';
+import {
+    useStaffTeamQuery,
+    useAddOrUpdateTeamMutation,
+    useDeleteTeamMutation,
+    useUpdateCallMutation,
+    useUpdatePointsMutation,
+} from 'modules/staff/teams/queries';
 
 export const StaffTeamDetails = () => {
     const { id, tab } = useParams<{ id: string; tab: string }>();
 
     const { cluesModule } = useStaffClues();
-    const { teams, addOrUpdateTeam, deleteTeam, updatePoints, updateCallForTeam } = useStaffTeams();
-    const currentTeam = useSelector((state) => getStaffTeam(state, id));
+    const { data: currentTeam, isLoading: teamsLoading } = useStaffTeamQuery(id);
+
+    const addOrUpdateTeam = useAddOrUpdateTeamMutation();
+    const deleteTeam = useDeleteTeamMutation();
+    const updatePoints = useUpdatePointsMutation();
+    const updateCall = useUpdateCallMutation();
+    const deleteSubmission = useDeleteSubmissionMutation();
+
     const [key, setKey] = useState(tab);
     const isAdmin = useSelector(getIsUserAdmin);
     const pointsSettingName = useSelector(getPointsNameSetting);
-
-    const isDeletingSubmission = useSelector(getIsDeletingSubmission);
-    const lastDeleteError = useSelector(getLastDeleteError);
 
     const dispatch = useDispatch();
     const history = useHistory();
 
     const clues = cluesModule;
 
-    const handleCallUpdate = (updatedCall: CallTemplate) => updateCallForTeam(id, updatedCall);
+    const handleCallUpdate = (updatedCall: CallTemplate) =>
+        updateCall.mutate({ teamId: id, callTemplate: updatedCall });
 
     const updateCurrentTab = (k: string) => {
         setKey(k);
         history.replace('/staff/teams/' + id + '/' + k);
     };
     const startCall = () => handleCallUpdate({ callType: 'None' });
+
+    if (teamsLoading) {
+        return <div>Loading...</div>;
+    }
 
     if (currentTeam) {
         let activeCall = currentTeam.callHistory ? currentTeam.callHistory.find((x) => x.callEnd === null) : undefined;
@@ -75,7 +88,13 @@ export const StaffTeamDetails = () => {
                                 <FaPencilAlt /> Edit
                             </>
                         )}
-                        renderBody={(onComplete) => <TeamForm team={currentTeam} onSubmit={addOrUpdateTeam} onComplete={onComplete} />}
+                        renderBody={(onComplete) => (
+                            <TeamForm
+                                team={currentTeam}
+                                onSubmit={(template) => addOrUpdateTeam.mutateAsync(template).then(onComplete)}
+                                onComplete={onComplete}
+                            />
+                        )}
                     />
                     <DialogRenderProp
                         variant="outline-primary"
@@ -89,8 +108,12 @@ export const StaffTeamDetails = () => {
                         renderBody={(onComplete) => (
                             <GrantPointsForm
                                 onSubmit={(points, reason) => {
-                                    updatePoints(currentTeam.teamId, { pointValue: points, reason });
-                                    onComplete();
+                                    updatePoints
+                                        .mutateAsync({
+                                            teamId: currentTeam.teamId,
+                                            pointsTemplate: { pointValue: points, reason },
+                                        })
+                                        .then(onComplete);
                                 }}
                             />
                         )}
@@ -125,13 +148,13 @@ export const StaffTeamDetails = () => {
                     {!!isAdmin && (
                         <Tab eventKey={6} title="Submissions">
                             <ListGroup>
-                                {!!lastDeleteError && <Alert variant="danger">{lastDeleteError}</Alert>}
+                                {!!deleteSubmission.error && <Alert variant="danger">{String(deleteSubmission.error)}</Alert>}
                                 {currentTeam.submissionHistory.map((submission) => (
                                     <ListGroupItem key={submission.submissionId}>
                                         <Container>
                                             <Row>{submission.submission}</Row>
                                             <Row>
-                                                <Button disabled={isDeletingSubmission} onClick={() => dispatch(deletePlayerSubmission(submission.submissionId))} variant="danger">
+                                                <Button disabled={deleteSubmission.isPending} onClick={() => deleteSubmission.mutate(submission.submissionId)} variant="danger">
                                                     Delete
                                                 </Button>
                                             </Row>
@@ -143,7 +166,7 @@ export const StaffTeamDetails = () => {
                     )}
                     {!!isAdmin && (
                         <Tab eventKey={7} title="Admin">
-                            <Button onClick={() => deleteTeam(id)}>Delete</Button>
+                            <Button onClick={() => deleteTeam.mutate(id)}>Delete</Button>
                         </Tab>
                     )}
                 </Tabs>
