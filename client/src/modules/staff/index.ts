@@ -4,7 +4,6 @@ import 'moment-timezone';
 
 import { achievementsReducer, teamAchievementsReducer } from './achievements/reducer';
 
-import { feedReducer } from './feed/reducer';
 import { gridReducer } from './grid/staffGridModule';
 import { challengesReducer } from './challenges/reducer';
 import { messagesReducer } from './messages/messagesModule';
@@ -19,15 +18,10 @@ export * from './challenges/hooks';
 export default combineReducers({
     achievements: achievementsReducer,
     teamAchievements: teamAchievementsReducer,
-    feed: feedReducer,
     grid: gridReducer,
     challenges: challengesReducer,
     messages: messagesReducer,
 });
-
-export const getFeedModule = (state: any) => {
-    return state.staff.feed;
-};
 
 export const getCluesModule = (state: any) => {
     return state.staffClues;

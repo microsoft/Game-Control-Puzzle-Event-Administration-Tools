@@ -1,15 +1,11 @@
 import React from 'react';
 import { Col, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
 import { FaRegAngry, FaSadTear, FaRegMeh, FaSmile, FaRegSmileBeam, FaGift, FaQuestionCircle } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
 import * as constants from '../../constants';
-import { getStaffFeed } from 'modules/staff/feed/service';
-import { Module } from 'modules/types';
 import { AggregatedContent } from 'modules/types/models';
-import { getFeedModule } from 'modules/staff';
-import { useInterval } from 'utils/hooks';
+import { useStaffFeedQuery } from 'modules/staff/feed/queries';
 
 import { PointsFeedItem } from '../player/PlayerFeed';
 
@@ -359,13 +355,13 @@ const TeamUnlockFeedItem = ({ feedItem }: FeedItemProps) => {
     );
 };
 
-const FeedContent = ({ feedModule }: { feedModule: Module<AggregatedContent[]> }) => {
-    if (feedModule.isLoading && feedModule.data.length === 0) {
+const FeedContent = ({ data, isLoading }: { data: AggregatedContent[]; isLoading: boolean }) => {
+    if (isLoading && data.length === 0) {
         return <div>Loading...</div>;
-    } else if (feedModule.data.length > 0) {
+    } else if (data.length > 0) {
         return (
             <ListGroup>
-                {feedModule.data.map((feedItem: AggregatedContent) => (
+                {data.map((feedItem: AggregatedContent) => (
                     <ListGroupItem key={`${feedItem.id}-${feedItem.aggregatedContentType.trim()}-${feedItem.lastUpdated}`}>
                         <AbstractFeedItem feedItem={feedItem} />
                     </ListGroupItem>
@@ -380,21 +376,12 @@ const FeedContent = ({ feedModule }: { feedModule: Module<AggregatedContent[]> }
 export const StaffFeed = () => {
     document.title = 'Game Control - Activity Feed';
 
-    const feedModule = useSelector(getFeedModule);
-    const dispatch = useDispatch();
-
-    useInterval(
-        () => {
-            dispatch(getStaffFeed());
-        },
-        // If we have never fetched, include a slight delay to account for the time to run the action.
-        !feedModule.lastFetched && !feedModule.isLoading ? 50 : 15000
-    );
+    const { data = [], isLoading } = useStaffFeedQuery();
 
     return (
         <div>
             <h4>Activity Feed</h4>
-            <FeedContent feedModule={feedModule} />
+            <FeedContent data={data} isLoading={isLoading} />
         </div>
     );
 };
