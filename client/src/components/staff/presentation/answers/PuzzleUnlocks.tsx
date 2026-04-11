@@ -5,7 +5,8 @@ import { Answer, StaffClue } from 'modules/staff/clues';
 import { FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { UnlockedPuzzle } from '../UnlockedPuzzle';
-import { addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer, getAchievementsModule } from 'modules/staff/achievements';
+import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
+import { addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from 'modules/staff/clues/service';
 import { AnswerContent } from './AnswerContent';
 import { ContentForm } from 'components/staff/dialogs';
 import { addContentToAnswer, addPuzzleUnlock, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
@@ -18,7 +19,7 @@ type Props = Readonly<{
 
 export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
     const clues = useSelector(getCluesModule);
-    const achievements = useSelector(getAchievementsModule);
+    const { data: achievements = [] } = useStaffAchievementsQuery();
     const dispatch = useDispatch();
 
     const unlockableClues = clues.data.filter(
@@ -65,7 +66,7 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
                             <SimpleListForm
                                 label="Add Achievement Unlock"
                                 submitText="Add"
-                                collection={achievements.data}
+                                collection={achievements}
                                 getItemKey={(achievement) => achievement.achievementId}
                                 getItemValue={(achievement) => achievement.achievementId}
                                 getItemLabel={(achievement) => achievement.name}

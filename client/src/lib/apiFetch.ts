@@ -49,7 +49,9 @@ export async function apiMutate<TBody, TResponse = void>(
     config?: AxiosRequestConfig,
 ): Promise<TResponse> {
     try {
-        const response = await Axios[method]<TResponse>(url, body, config);
+        const response = method === 'delete'
+            ? await Axios.delete<TResponse>(url, { data: body, ...config })
+            : await Axios[method]<TResponse>(url, body, config);
         return response.data;
     } catch (error: any) {
         throw normaliseError(error);

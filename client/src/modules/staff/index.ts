@@ -2,8 +2,6 @@ import { combineReducers } from 'redux';
 import moment from 'moment';
 import 'moment-timezone';
 
-import { achievementsReducer, teamAchievementsReducer } from './achievements/reducer';
-
 import { gridReducer } from './grid/staffGridModule';
 import { challengesReducer } from './challenges/reducer';
 import { messagesReducer } from './messages/messagesModule';
@@ -16,8 +14,6 @@ export * from './teams';
 export * from './challenges/hooks';
 
 export default combineReducers({
-    achievements: achievementsReducer,
-    teamAchievements: teamAchievementsReducer,
     grid: gridReducer,
     challenges: challengesReducer,
     messages: messagesReducer,
@@ -26,8 +22,6 @@ export default combineReducers({
 export const getCluesModule = (state: any) => {
     return state.staffClues;
 };
-
-export const getTeamAchievementsModule = (state: any) => state.staff.teamAchievements;
 
 export function shouldRefreshClues(staffCluesModule: StaffCluesState) {
     return !staffCluesModule.lastFetched || moment.utc().diff(staffCluesModule.lastFetched, 'seconds') > 15;

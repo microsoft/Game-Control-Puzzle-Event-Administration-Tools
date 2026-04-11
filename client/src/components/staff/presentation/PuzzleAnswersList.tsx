@@ -5,7 +5,8 @@ import { useDispatch } from 'react-redux';
 
 import { areAnswersEqual, compareAnswers, getCluesModule, StaffTeam } from 'modules/staff';
 import { addAnswerToClue, addContentToAnswer, addPuzzleUnlock, deleteClueAnswer, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
-import { fetchStaffAchievements, getAchievementsModule, addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer, useStaffAchievements } from 'modules/staff/achievements';
+import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
+import { addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from 'modules/staff/clues/service';
 
 import { AdditionalContent } from './AdditionalContent';
 import { AnswerForm, ContentForm } from '../dialogs';
@@ -32,7 +33,7 @@ type GroupedAnswer = Answer &
 
 const PuzzleAnswersList = ({ clue }: Props) => {
     const [enableGrouping, setEnableGrouping] = useState(true);
-    const { staffAchievementsModule } = useStaffAchievements();
+    const { data: achievements = [] } = useStaffAchievementsQuery();
     const { data: teamsData = [] } = useStaffTeamsQuery();
     const { cluesModule } = useStaffClues();
     const dispatch = useDispatch();
@@ -218,7 +219,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                     label="Add Achievement Unlock"
                                     submitText="Add"
                                     groupLabel="teams"
-                                    collection={staffAchievementsModule.data}
+                                    collection={achievements}
                                     applyCollection={GetTeamApplyCollection(groupedAnswer.teamIds, groupedAnswer.answerIds)}
                                     getItemKey={(achievement: Achievement) => achievement.achievementId}
                                     getItemValue={(achievement: Achievement) => achievement.achievementId}

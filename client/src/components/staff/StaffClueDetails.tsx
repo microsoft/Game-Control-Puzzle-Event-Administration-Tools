@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getIsUserAdmin, getStaffPuzzleDetails } from 'modules';
 import { useStaffTeamsQuery } from 'modules/staff/teams/queries';
 import { addAnswerToClue, addContentToClue, addLocationToClue, createClue, deleteClue, deleteContent, fetchStaffClueDetails, relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
-import { useStaffAchievements } from 'modules/staff/achievements';
+import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
 
 import { AnswerForm, ClueForm, ContentForm, LocationForm } from './dialogs';
 import DialogRenderProp from './dialogs/DialogRenderProp';
@@ -28,7 +28,7 @@ const StaffClueDetails = () => {
     const dispatch = useDispatch();
 
     const { cluesModule } = useStaffClues();
-    const { staffAchievementsModule } = useStaffAchievements();
+    const { data: achievements = [] } = useStaffAchievementsQuery();
     const { data: teams = [] } = useStaffTeamsQuery();
     const isUserAdmin = useSelector(getIsUserAdmin);
     const currentClue = useSelector((state) => getStaffPuzzleDetails(state, id));
@@ -112,7 +112,7 @@ const StaffClueDetails = () => {
                             )}
                             renderBody={(onComplete) => (
                                 <ContentForm
-                                    achievements={staffAchievementsModule.data}
+                                    achievements={achievements}
                                     onSubmit={(content) => {
                                         dispatchAddContentToClue(foundClue.tableOfContentId, content);
                                         onComplete();
@@ -140,7 +140,7 @@ const StaffClueDetails = () => {
                         />
                         <StaffClueContent
                             content={foundClue.content}
-                            achievements={staffAchievementsModule.data}
+                            achievements={achievements}
                             tableOfContentId={foundClue.tableOfContentId}
                             addContentToClue={dispatchAddContentToClue}
                             addLocationToClue={dispatchAddLocationToClue}

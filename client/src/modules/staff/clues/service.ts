@@ -220,3 +220,29 @@ export const deletePuzzleUnlock = (answerId: string, tableOfContentId: string) =
         actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
     );
 };
+
+// Moved from achievements/service.ts — these dispatch clue puzzle actions and
+// logically belong here. They will be converted to TanStack mutations in Phase 2.5.
+export const addAchievementUnlockToAnswer = (answerId: string, achievementId: string) => (dispatch: any, getState: any) => {
+    const eventInstanceId = getEventInstanceId(getState());
+
+    doServiceRequest(
+        dispatch,
+        () => Axios.put(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/achievements/${achievementId}`),
+        actions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
+        actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
+        actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
+    );
+};
+
+export const deleteAchievementUnlockFromAnswer = (answerId: string, achievementId: string) => (dispatch: any, getState: any) => {
+    const eventInstanceId = getEventInstanceId(getState());
+
+    doServiceRequest(
+        dispatch,
+        () => Axios.delete(`/api/staff/puzzles/${eventInstanceId}/answers/${answerId}/achievements/${achievementId}`),
+        actions.STAFF_PUZZLES_UPDATE_ANSWER_LOADING,
+        actions.STAFF_PUZZLES_UPDATE_ANSWER_SUCCEEDED,
+        actions.STAFF_PUZZLES_UPDATE_ANSWER_FAILED
+    );
+};

@@ -1,15 +1,15 @@
 import { EventSetting } from 'modules/admin';
-import { useStaffAchievements } from 'modules/staff/achievements';
+import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
 
 type Props = Readonly<{
     setting?: EventSetting;
 }>;
 
 export const AchievementSetting = ({ setting }: Props) => {
-    const { staffAchievementsModule } = useStaffAchievements();
+    const { data: achievements = [] } = useStaffAchievementsQuery();
 
     if (setting) {
-        let achievement = staffAchievementsModule.data.find((x) => x.achievementId === setting.stringValue);
+        let achievement = achievements.find((x) => x.achievementId === setting.stringValue);
 
         if (achievement) {
             return <div>{achievement.name}</div>;
