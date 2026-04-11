@@ -1,5 +1,6 @@
 import { QueryCache, QueryClient } from '@tanstack/react-query';
 
+import { SessionExpiredError } from './apiFetch';
 import store from '../store';
 import { USER_LOGGED_OUT } from '../modules/user/actions';
 
@@ -26,7 +27,7 @@ export const queryClient = new QueryClient({
             // Mirror the legacy handleServiceError behaviour: when a 401 is
             // detected, dispatch USER_LOGGED_OUT so all Redux reducers and
             // the SignalR middleware reset state properly.
-            if (error.message === 'Your session has expired. Please sign in again.') {
+            if (error instanceof SessionExpiredError) {
                 store.dispatch({ type: USER_LOGGED_OUT });
             }
         },

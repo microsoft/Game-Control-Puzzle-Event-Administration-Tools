@@ -59,17 +59,28 @@ export async function apiMutate<TBody, TResponse = void>(
 }
 
 /**
- * Converts an Axios error into a plain Error with a consistent message.
- * Mirrors the behaviour of `handleServiceError` in `modules/types/serviceCommon.ts`.
+ * Typed error for expired sessions so callers can use `instanceof` checks
+ * instead of fragile string matching.
  *
- * NOTE: The companion USER_LOGGED_OUT Redux dispatch for 401 errors lives in
+ * The companion USER_LOGGED_OUT Redux dispatch for 401 errors lives in
  * queryClient.ts (QueryCache.onError) so that all Redux reducers and the
  * SignalR middleware reset state properly.
+ */
+export class SessionExpiredError extends Error {
+    constructor() {
+        super('Your session has expired. Please sign in again.');
+        this.name = 'SessionExpiredError';
+    }
+}
+
+/**
+ * Converts an Axios error into a plain Error with a consistent message.
+ * Mirrors the behaviour of `handleServiceError` in `modules/types/serviceCommon.ts`.
  */
 function normaliseError(error: any): Error {
     if (error?.response?.status === 401) {
         localStorage.removeItem('userToken');
-        return new Error('Your session has expired. Please sign in again.');
+        return new SessionExpiredError();
     }
 
     if (error?.response?.status === 403) {

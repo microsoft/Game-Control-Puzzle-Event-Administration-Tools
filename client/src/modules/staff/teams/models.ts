@@ -1,6 +1,15 @@
 import { Moment } from 'moment';
 import { PlayerSubmission } from 'modules/types';
 
+export type RosterMember = Readonly<{
+    participantId: string;
+    firstName: string;
+    lastName: string;
+    displayName: string;
+    email: string;
+    contactNumber: string;
+}>;
+
 export type StaffTeam = Readonly<{
     teamId: string;
     name: string;
@@ -11,7 +20,7 @@ export type StaffTeam = Readonly<{
     gcNotes: string;
     points: number;
     callHistory: TeamCall[];
-    roster: any[];
+    roster: RosterMember[];
     submissionHistory: PlayerSubmission[];
     additionalData?: TeamAdditionalData;
 }>;
