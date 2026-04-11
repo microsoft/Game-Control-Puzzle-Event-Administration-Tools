@@ -356,7 +356,9 @@ const TeamUnlockFeedItem = ({ feedItem }: FeedItemProps) => {
     );
 };
 
-const FeedContent = ({ data, isLoading, error }: { data: AggregatedContent[]; isLoading: boolean; error: unknown }) => {
+const FeedContent = () => {
+    const { data = [], isLoading, error } = useStaffFeedQuery();
+
     if (isLoading && data.length === 0) {
         return <div>Loading...</div>;
     } else if (!!error) {
@@ -379,12 +381,10 @@ const FeedContent = ({ data, isLoading, error }: { data: AggregatedContent[]; is
 export const StaffFeed = () => {
     document.title = 'Game Control - Activity Feed';
 
-    const { data = [], isLoading, error } = useStaffFeedQuery();
-
     return (
         <div>
             <h4>Activity Feed</h4>
-            <FeedContent data={data} isLoading={isLoading} error={error} />
+            <FeedContent />
         </div>
     );
 };

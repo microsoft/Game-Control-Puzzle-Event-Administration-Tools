@@ -1,11 +1,12 @@
 /**
  * Centralised, typed query-key factory for TanStack Query.
  *
- * Key structure: [domain, subdomain, ...params]
+ * Key structure: [domain, eventInstanceId, resource, ...ids]
  *
- *   domain     = broad area ('staff' | 'player' | 'admin')
- *   subdomain  = specific resource ('teams' | 'clues' | ...)
- *   params     = eventInstanceId, then any resource-specific ids
+ *   domain          = broad area ('staff' | 'player' | 'admin')
+ *   eventInstanceId = scoping parameter for the current event
+ *   resource        = specific resource ('teams' | 'clues' | ...)
+ *   ids             = any resource-specific identifiers (teamId, clueId, …)
  *
  * This layering lets callers invalidate at any level of granularity:
  *
@@ -14,9 +15,6 @@
  *
  *   // Bust only the teams list
  *   queryClient.invalidateQueries({ queryKey: queryKeys.staff.teams(eventInstanceId) })
- *
- *   // Bust a single team
- *   queryClient.invalidateQueries({ queryKey: queryKeys.staff.team(eventInstanceId, teamId) })
  *
  * Use `as const` so TypeScript infers the narrowest tuple type, enabling
  * correct prefix-matching in invalidateQueries.
@@ -29,9 +27,6 @@ export const queryKeys = {
 
         teams: (eventInstanceId: string) =>
             ['staff', eventInstanceId, 'teams'] as const,
-
-        team: (eventInstanceId: string, teamId: string) =>
-            ['staff', eventInstanceId, 'teams', teamId] as const,
 
         clues: (eventInstanceId: string) =>
             ['staff', eventInstanceId, 'clues'] as const,

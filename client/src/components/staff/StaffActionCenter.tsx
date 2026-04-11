@@ -13,6 +13,7 @@ import { ExtendedGridCellData, ExtendedGridTeam, useStaffGridData } from '../../
 import { LiveTimerControl } from '../shared/LiveTimerControl';
 import { unlockClueForTeam } from 'modules/staff/clues/service';
 import { useUpdateCallMutation } from 'modules/staff/teams/queries';
+import { getErrorMessage } from 'lib/apiFetch';
 import { TanstackTable } from 'components/shared/TanstackTable';
 import { CallTemplate } from 'modules/types';
 import { TeamCall } from 'modules/staff';
@@ -167,24 +168,28 @@ const StaffActionCenter = () => {
 
     const acknowledge = async (teamId: string, call: CallTemplate, notes: string) => {
         const updatedCall = { ...call, publicNotes: notes };
-        await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
-        refresh();
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+            refresh();
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
     const switchToGcCall = async (team: ExtraExtendedGridTeam, call: CallTemplate) => {
         const teamId = team.id;
         const updatedCall = { ...call, callEnd: moment.utc() };
-        await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
-        await updateCall.mutateAsync({
-            teamId,
-            callTemplate: {
-                callType: 'Hint',
-                callSubType: 'None',
-                tableOfContentsEntry: team.currentTocId,
-                notes: 'Created by ' + user.data.displayName,
-            },
-        });
-        history.push('/staff/teams/' + teamId);
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+            await updateCall.mutateAsync({
+                teamId,
+                callTemplate: {
+                    callType: 'Hint',
+                    callSubType: 'None',
+                    tableOfContentsEntry: team.currentTocId,
+                    notes: 'Created by ' + user.data.displayName,
+                },
+            });
+            history.push('/staff/teams/' + teamId);
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
     const unlockPuzzleAndEndCall = (teamId: string, tableOfContentId: string, puzzleName: string, call: CallTemplate) => {
@@ -193,14 +198,18 @@ const StaffActionCenter = () => {
     };
 
     const checkInWithTeam = async (teamId: string, _message: string) => {
-        await updateCall.mutateAsync({ teamId, callTemplate: { callEnd: moment.utc(), callType: 'Checkin' } });
-        refresh();
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: { callEnd: moment.utc(), callType: 'Checkin' } });
+            refresh();
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
     const endCall = async (teamId: string, call: CallTemplate) => {
         const updatedCall = { ...call, callEnd: moment.utc() };
-        await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
-        refresh();
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+            refresh();
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
     const teams: ExtraExtendedGridTeam[] = useMemo(() => {
@@ -254,6 +263,7 @@ const StaffActionCenter = () => {
     } else {
         return (
             <>
+                {!!updateCall.error && <Alert variant="danger">{getErrorMessage(updateCall.error)}</Alert>}
                 <Card className="text-left">
                     <Card.Header>Open Calls</Card.Header>
                     <Card.Body>

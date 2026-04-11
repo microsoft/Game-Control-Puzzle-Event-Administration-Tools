@@ -92,7 +92,7 @@ export const StaffTeamDetails = () => {
                         renderBody={(onComplete) => (
                             <TeamForm
                                 team={currentTeam}
-                                onSubmit={(template) => addOrUpdateTeam.mutateAsync(template).then(onComplete)}
+                                onSubmit={(template) => addOrUpdateTeam.mutate(template, { onSuccess: onComplete })}
                                 onComplete={onComplete}
                             />
                         )}
@@ -109,17 +109,19 @@ export const StaffTeamDetails = () => {
                         renderBody={(onComplete) => (
                             <GrantPointsForm
                                 onSubmit={(points, reason) => {
-                                    updatePoints
-                                        .mutateAsync({
-                                            teamId: currentTeam.teamId,
-                                            pointsTemplate: { pointValue: points, reason },
-                                        })
-                                        .then(onComplete);
+                                    updatePoints.mutate(
+                                        { teamId: currentTeam.teamId, pointsTemplate: { pointValue: points, reason } },
+                                        { onSuccess: onComplete },
+                                    );
                                 }}
                             />
                         )}
                     />
                 </div>
+                {!!addOrUpdateTeam.error && <Alert variant="danger">{getErrorMessage(addOrUpdateTeam.error)}</Alert>}
+                {!!updatePoints.error && <Alert variant="danger">{getErrorMessage(updatePoints.error)}</Alert>}
+                {!!updateCall.error && <Alert variant="danger">{getErrorMessage(updateCall.error)}</Alert>}
+                {!!deleteTeam.error && <Alert variant="danger">{getErrorMessage(deleteTeam.error)}</Alert>}
                 {currentTeam.gcNotes && <Alert variant="info">NOTE: {currentTeam.gcNotes}</Alert>}
 
                 <Tabs defaultActiveKey={1} id="team-detals-tabs" activeKey={key} onSelect={(eventKey) => updateCurrentTab(eventKey ?? '')}>
@@ -167,7 +169,7 @@ export const StaffTeamDetails = () => {
                     )}
                     {!!isAdmin && (
                         <Tab eventKey={7} title="Admin">
-                            <Button onClick={() => deleteTeam.mutate(id)}>Delete</Button>
+                            <Button onClick={() => deleteTeam.mutate(id, { onSuccess: () => history.push('/staff/teams') })}>Delete</Button>
                         </Tab>
                     )}
                 </Tabs>

@@ -47,7 +47,7 @@ export const StaffTeams = () => {
                     renderButton={() => <FaPlus />}
                     renderBody={(onComplete: () => void) => (
                         <TeamForm
-                            onSubmit={(template) => addOrUpdateTeam.mutateAsync(template).then(onComplete)}
+                            onSubmit={(template) => addOrUpdateTeam.mutate(template, { onSuccess: onComplete })}
                             onComplete={onComplete}
                         />
                     )}
@@ -55,6 +55,7 @@ export const StaffTeams = () => {
             </h5>
             {isLoading && teams.length === 0 && <div>Loading...</div>}
             {!!error && <Alert variant="danger">{getErrorMessage(error)}</Alert>}
+            {!!addOrUpdateTeam.error && <Alert variant="danger">{getErrorMessage(addOrUpdateTeam.error)}</Alert>}
             <StaffTeamsList teams={teams} isLoaded={isSuccess} />
         </div>
     );

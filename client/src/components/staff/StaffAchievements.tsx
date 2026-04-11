@@ -11,15 +11,9 @@ import { AchievementTemplate } from "modules/staff/achievements/models";
 import { Achievement } from 'modules/types';
 import { getErrorMessage } from 'lib/apiFetch';
 
-type Props = Readonly<{
-    achievements: Achievement[];
-    isLoading: boolean;
-    isSuccess: boolean;
-    error: unknown;
-    addAchievement: (achievement: AchievementTemplate) => void;
-}>;
+const AchievementsList = ({ addAchievement }: { addAchievement: (achievement: AchievementTemplate) => void }) => {
+    const { data: achievements = [], isLoading, isSuccess, error } = useStaffAchievementsQuery();
 
-const AchievementsList = ({ achievements, isLoading, isSuccess, error, addAchievement }: Props) => {
     if (isLoading && achievements.length === 0) {
         return <div>Loading...</div>;
     } else if (!!error) {
@@ -51,7 +45,6 @@ const AchievementsList = ({ achievements, isLoading, isSuccess, error, addAchiev
 
 export const StaffAchievements = () => {
     document.title = "Game Control - Achievements";
-    const { data: achievements = [], isLoading, isSuccess, error } = useStaffAchievementsQuery();
     const addAchievementMutation = useAddOrUpdateAchievementMutation();
     const addAchievement = (achievement: AchievementTemplate) => addAchievementMutation.mutate(achievement);
 
@@ -70,7 +63,8 @@ export const StaffAchievements = () => {
                     }
                 />
             </h5>
-            <AchievementsList achievements={achievements} isLoading={isLoading} isSuccess={isSuccess} error={error} addAchievement={addAchievement} />
+            {!!addAchievementMutation.error && <Alert variant="danger">{getErrorMessage(addAchievementMutation.error)}</Alert>}
+            <AchievementsList addAchievement={addAchievement} />
         </div>
     );
 };

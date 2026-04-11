@@ -9,6 +9,8 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
+// Redux 4.x does not export legacy_createStore; suppress deprecation warning.
+// createStore usage here is temporary — it will be removed when Redux is fully migrated out.
 import { createStore } from 'redux';
 
 export const EVENT_INSTANCE_ID = 'aaaaaaaa-0000-0000-0000-000000000001';
