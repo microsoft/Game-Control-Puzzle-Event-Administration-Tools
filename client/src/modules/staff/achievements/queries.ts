@@ -6,7 +6,7 @@ import { queryKeys } from 'lib/queryKeys';
 import { Achievement } from 'modules/types';
 import { AchievementTemplate } from './models';
 
-// ─── Queries ──────────────────────────────────────────────────────────────────
+// ─── Query ────────────────────────────────────────────────────────────────────
 
 /**
  * Fetches the full list of achievements for the current event instance.

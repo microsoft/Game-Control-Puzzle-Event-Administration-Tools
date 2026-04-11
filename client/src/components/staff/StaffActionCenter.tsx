@@ -165,10 +165,10 @@ const StaffActionCenter = () => {
 
     const updateCall = useUpdateCallMutation();
 
-    const acknowledge = (teamId: string, call: CallTemplate, notes: string) => {
+    const acknowledge = async (teamId: string, call: CallTemplate, notes: string) => {
         const updatedCall = { ...call, publicNotes: notes };
-        updateCall.mutate({ teamId, callTemplate: updatedCall });
-        setTimeout(refresh, 500);
+        await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+        refresh();
     };
 
     const switchToGcCall = async (team: ExtraExtendedGridTeam, call: CallTemplate) => {
@@ -192,15 +192,15 @@ const StaffActionCenter = () => {
         endCall(teamId, { ...call, publicNotes: puzzleName + ' unlocked.' });
     };
 
-    const checkInWithTeam = (teamId: string, _message: string) => {
-        updateCall.mutate({ teamId, callTemplate: { callEnd: moment.utc(), callType: 'Checkin' } });
-        setTimeout(refresh, 500);
+    const checkInWithTeam = async (teamId: string, _message: string) => {
+        await updateCall.mutateAsync({ teamId, callTemplate: { callEnd: moment.utc(), callType: 'Checkin' } });
+        refresh();
     };
 
-    const endCall = (teamId: string, call: CallTemplate) => {
+    const endCall = async (teamId: string, call: CallTemplate) => {
         const updatedCall = { ...call, callEnd: moment.utc() };
-        updateCall.mutate({ teamId, callTemplate: updatedCall });
-        setTimeout(refresh, 500);
+        await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+        refresh();
     };
 
     const teams: ExtraExtendedGridTeam[] = useMemo(() => {

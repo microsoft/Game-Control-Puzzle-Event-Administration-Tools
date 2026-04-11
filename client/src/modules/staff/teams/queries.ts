@@ -25,8 +25,10 @@ export const useStaffTeamsQuery = () => {
 /**
  * Returns a single team by id, derived from the shared teams list query.
  *
- * Because it uses `select` on top of `useStaffTeamsQuery`, no extra network
- * request is made — the data comes from the same cache entry as the full list.
+ * Because it uses `select` on top of the same queryKey/queryFn as
+ * `useStaffTeamsQuery`, no extra network request is made — the data comes
+ * from the same cache entry as the full list. The key and fetcher are
+ * intentionally duplicated here so the hook is self-contained.
  */
 export const useStaffTeamQuery = (teamId: string | undefined) => {
     const eventInstanceId = useEventInstanceId();
@@ -114,6 +116,8 @@ export const useUpdatePointsMutation = () => {
                 `/api/staff/teams/${eventInstanceId}/teams/${teamId}/points`,
                 pointsTemplate,
             ),
+        // The points endpoint returns the full updated teams array, so we
+        // update the cache directly instead of refetching.
         onSuccess: (updatedTeams) => {
             queryClient.setQueryData(
                 queryKeys.staff.teams(eventInstanceId),

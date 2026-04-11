@@ -148,7 +148,7 @@ export const StaffTeamDetails = () => {
                     {!!isAdmin && (
                         <Tab eventKey={6} title="Submissions">
                             <ListGroup>
-                                {!!deleteSubmission.error && <Alert variant="danger">{String(deleteSubmission.error)}</Alert>}
+                                {!!deleteSubmission.error && <Alert variant="danger">{(deleteSubmission.error as Error).message}</Alert>}
                                 {currentTeam.submissionHistory.map((submission) => (
                                     <ListGroupItem key={submission.submissionId}>
                                         <Container>
