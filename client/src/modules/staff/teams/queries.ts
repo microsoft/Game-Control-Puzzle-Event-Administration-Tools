@@ -1,19 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
 
 import { apiFetch, apiMutate } from 'lib/apiFetch';
+import { useEventInstanceId } from 'lib/hooks';
 import { queryKeys } from 'lib/queryKeys';
-import { getEventInstanceId } from 'modules/user/selectors';
 import { PointsTemplate, StaffTeam, TeamAdditionalData, TeamTemplate } from './models';
 import { CallTemplate } from 'modules/types';
-
-// ─── Selectors ────────────────────────────────────────────────────────────────
-
-/**
- * Re-usable hook that reads the current eventInstanceId from Redux state.
- * Once the user module is migrated this can be replaced with a context read.
- */
-const useEventInstanceId = () => useSelector(getEventInstanceId) as string;
 
 // ─── Query ────────────────────────────────────────────────────────────────────
 
@@ -55,14 +46,14 @@ export const useStaffTeamQuery = (teamId: string | undefined) => {
  * query automatically re-fetches with the latest data.
  */
 export const useAddOrUpdateTeamMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
         mutationFn: (teamTemplate: TeamTemplate) =>
             apiMutate<TeamTemplate, StaffTeam>('put', `/api/staff/teams/${eventInstanceId}`, teamTemplate),
         onSuccess: () => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.teams(eventInstanceId),
             });
         },
@@ -73,14 +64,14 @@ export const useAddOrUpdateTeamMutation = () => {
  * Deletes a team by id. On success the teams list is invalidated.
  */
 export const useDeleteTeamMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
         mutationFn: (teamId: string) =>
             apiMutate('delete', `/api/staff/teams/${eventInstanceId}/teams/${teamId}`),
         onSuccess: () => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.teams(eventInstanceId),
             });
         },
@@ -91,7 +82,7 @@ export const useDeleteTeamMutation = () => {
  * Updates the active call record for a team.
  */
 export const useUpdateCallMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
@@ -102,7 +93,7 @@ export const useUpdateCallMutation = () => {
                 callTemplate,
             ),
         onSuccess: () => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.teams(eventInstanceId),
             });
         },
@@ -113,7 +104,7 @@ export const useUpdateCallMutation = () => {
  * Grants or adjusts points for a team.
  */
 export const useUpdatePointsMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
@@ -124,7 +115,7 @@ export const useUpdatePointsMutation = () => {
                 pointsTemplate,
             ),
         onSuccess: (updatedTeams) => {
-            queryClientInstance.setQueryData(
+            queryClient.setQueryData(
                 queryKeys.staff.teams(eventInstanceId),
                 updatedTeams,
             );
@@ -136,7 +127,7 @@ export const useUpdatePointsMutation = () => {
  * Updates the additional (freeform) data blob for a team.
  */
 export const useUpdateTeamDataMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
@@ -153,7 +144,7 @@ export const useUpdateTeamDataMutation = () => {
                 additionalData,
             ),
         onSuccess: () => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.teams(eventInstanceId),
             });
         },

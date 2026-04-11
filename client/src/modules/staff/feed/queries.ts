@@ -1,14 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
 
 import { apiFetch } from 'lib/apiFetch';
+import { useEventInstanceId } from 'lib/hooks';
 import { queryKeys } from 'lib/queryKeys';
-import { getEventInstanceId } from 'modules/user/selectors';
 import { AggregatedContent } from 'modules/types/models';
-
-// ─── Selectors ────────────────────────────────────────────────────────────────
-
-const useEventInstanceId = () => useSelector(getEventInstanceId) as string;
 
 // ─── Query ────────────────────────────────────────────────────────────────────
 

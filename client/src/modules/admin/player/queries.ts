@@ -1,11 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
 
 import { apiMutate } from 'lib/apiFetch';
+import { useEventInstanceId } from 'lib/hooks';
 import { queryKeys } from 'lib/queryKeys';
-import { getEventInstanceId } from 'modules/user/selectors';
-
-const useEventInstanceId = () => useSelector(getEventInstanceId) as string;
 
 /**
  * Deletes a player submission and invalidates the teams cache so the

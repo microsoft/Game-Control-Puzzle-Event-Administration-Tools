@@ -10,11 +10,7 @@
  *    can return a stable eventInstanceId during this migration phase.
  */
 
-import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 
 jest.mock('lib/apiFetch', () => ({
     apiFetch: jest.fn(),
@@ -32,13 +28,13 @@ import {
 import { Achievement } from 'modules/types';
 import { AchievementTemplate } from './models';
 import moment from 'moment';
+import { EVENT_INSTANCE_ID, makeWrapper, makeEmptyWrapper } from 'test-utils';
 
 const mockApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 const mockApiMutate = apiMutate as jest.MockedFunction<typeof apiMutate>;
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const EVENT_INSTANCE_ID = 'aaaaaaaa-0000-0000-0000-000000000001';
 const TEAM_ID = 'cccccccc-0000-0000-0000-000000000001';
 
 const makeAchievement = (overrides: Partial<Achievement> = {}): Achievement => ({
@@ -48,44 +44,6 @@ const makeAchievement = (overrides: Partial<Achievement> = {}): Achievement => (
     lastUpdated: moment.utc(),
     ...overrides,
 });
-
-// ─── Redux minimal store ───────────────────────────────────────────────────────
-
-const minimalReducer = () => ({
-    user: {
-        eventId: EVENT_INSTANCE_ID,
-        data: { token: 'test-token' },
-        isStaff: true,
-        isAdmin: false,
-        eventSettings: [],
-    },
-});
-
-const makeStore = () => createStore(minimalReducer as any);
-
-// ─── Test wrapper factory ──────────────────────────────────────────────────────
-
-function makeWrapper() {
-    const testQueryClient = new QueryClient({
-        defaultOptions: {
-            queries: { retry: false },
-            mutations: { retry: false },
-        },
-    });
-    const store = makeStore();
-
-    function Wrapper({ children }: { children: React.ReactNode }) {
-        return (
-            <Provider store={store}>
-                <QueryClientProvider client={testQueryClient}>
-                    {children}
-                </QueryClientProvider>
-            </Provider>
-        );
-    }
-
-    return { wrapper: Wrapper, queryClient: testQueryClient };
-}
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -118,19 +76,9 @@ describe('useStaffAchievementsQuery', () => {
     });
 
     it('is disabled when eventInstanceId is empty', () => {
-        const emptyReducer = () => ({ user: { eventId: '', data: null, eventSettings: [] } });
-        const emptyStore = createStore(emptyReducer as any);
-        const emptyQC = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        const { wrapper } = makeEmptyWrapper();
 
-        function EmptyWrapper({ children }: { children: React.ReactNode }) {
-            return (
-                <Provider store={emptyStore}>
-                    <QueryClientProvider client={emptyQC}>{children}</QueryClientProvider>
-                </Provider>
-            );
-        }
-
-        const { result } = renderHook(() => useStaffAchievementsQuery(), { wrapper: EmptyWrapper });
+        const { result } = renderHook(() => useStaffAchievementsQuery(), { wrapper });
 
         expect(result.current.status).toBe('pending');
         expect(result.current.fetchStatus).toBe('idle');

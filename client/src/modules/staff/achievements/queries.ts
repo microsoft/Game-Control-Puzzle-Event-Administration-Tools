@@ -1,15 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
 
 import { apiFetch, apiMutate } from 'lib/apiFetch';
+import { useEventInstanceId } from 'lib/hooks';
 import { queryKeys } from 'lib/queryKeys';
-import { getEventInstanceId } from 'modules/user/selectors';
 import { Achievement } from 'modules/types';
 import { AchievementTemplate } from './models';
-
-// ─── Selectors ────────────────────────────────────────────────────────────────
-
-const useEventInstanceId = () => useSelector(getEventInstanceId) as string;
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
@@ -51,7 +46,7 @@ export const useTeamAchievementsQuery = (teamId: string) => {
  * invalidated so it re-fetches with the latest data.
  */
 export const useAddOrUpdateAchievementMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
@@ -72,7 +67,7 @@ export const useAddOrUpdateAchievementMutation = () => {
             );
         },
         onSuccess: () => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.achievements(eventInstanceId),
             });
         },
@@ -84,14 +79,14 @@ export const useAddOrUpdateAchievementMutation = () => {
  * is invalidated.
  */
 export const useGrantAchievementMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
         mutationFn: ({ teamId, achievementId }: { teamId: string; achievementId: string }) =>
             apiMutate('put', `/api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements/${achievementId}`),
         onSuccess: (_data, { teamId }) => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.teamAchievements(eventInstanceId, teamId),
             });
         },
@@ -103,14 +98,14 @@ export const useGrantAchievementMutation = () => {
  * achievements list is invalidated.
  */
 export const useRevokeAchievementMutation = () => {
-    const queryClientInstance = useQueryClient();
+    const queryClient = useQueryClient();
     const eventInstanceId = useEventInstanceId();
 
     return useMutation({
         mutationFn: ({ teamId, achievementId }: { teamId: string; achievementId: string }) =>
             apiMutate('delete', `/api/staff/teams/${eventInstanceId}/teams/${teamId}/achievements/${achievementId}`),
         onSuccess: (_data, { teamId }) => {
-            queryClientInstance.invalidateQueries({
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.staff.teamAchievements(eventInstanceId, teamId),
             });
         },

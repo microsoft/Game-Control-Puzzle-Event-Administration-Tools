@@ -11,15 +11,8 @@
  *  - renderHook from @testing-library/react v14 is used throughout.
  */
 
-import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 
-// ─── Mock lib/apiFetch before any imports that transitively load constants ────
-// This avoids the `import.meta.env` syntax error in src/constants/index.ts
-// which is a Vite-specific construct not supported in the Jest/Node runtime.
 jest.mock('lib/apiFetch', () => ({
     apiFetch: jest.fn(),
     apiMutate: jest.fn(),
@@ -37,13 +30,12 @@ import {
 } from './queries';
 import { StaffTeam, TeamTemplate, PointsTemplate } from './models';
 import { CallTemplate } from 'modules/types';
+import { EVENT_INSTANCE_ID, makeWrapper, makeEmptyWrapper } from 'test-utils';
 
 const mockApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 const mockApiMutate = apiMutate as jest.MockedFunction<typeof apiMutate>;
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
-
-const EVENT_INSTANCE_ID = 'aaaaaaaa-0000-0000-0000-000000000001';
 
 const makeTeam = (overrides: Partial<StaffTeam> = {}): StaffTeam => ({
     teamId: 'bbbbbbbb-0000-0000-0000-000000000001',
@@ -59,45 +51,6 @@ const makeTeam = (overrides: Partial<StaffTeam> = {}): StaffTeam => ({
     submissionHistory: [],
     ...overrides,
 });
-
-// ─── Redux minimal store ───────────────────────────────────────────────────────
-
-const minimalReducer = () => ({
-    user: {
-        eventId: EVENT_INSTANCE_ID,
-        data: { token: 'test-token' },
-        isStaff: true,
-        isAdmin: false,
-        eventSettings: [],
-    },
-});
-
-const makeStore = () => createStore(minimalReducer as any);
-
-// ─── Test wrapper factory ──────────────────────────────────────────────────────
-
-function makeWrapper() {
-    const testQueryClient = new QueryClient({
-        defaultOptions: {
-            queries: { retry: false },
-            mutations: { retry: false },
-        },
-    });
-
-    const store = makeStore();
-
-    function Wrapper({ children }: { children: React.ReactNode }) {
-        return (
-            <Provider store={store}>
-                <QueryClientProvider client={testQueryClient}>
-                    {children}
-                </QueryClientProvider>
-            </Provider>
-        );
-    }
-
-    return { wrapper: Wrapper, queryClient: testQueryClient };
-}
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -132,26 +85,10 @@ describe('useStaffTeamsQuery', () => {
     });
 
     it('is disabled when eventInstanceId is empty', () => {
-        const emptyReducer = () => ({
-            user: { eventId: '', data: null, eventSettings: [] },
-        });
-        const emptyStore = createStore(emptyReducer as any);
-        const emptyQueryClient = new QueryClient({
-            defaultOptions: { queries: { retry: false } },
-        });
-
-        function EmptyWrapper({ children }: { children: React.ReactNode }) {
-            return (
-                <Provider store={emptyStore}>
-                    <QueryClientProvider client={emptyQueryClient}>
-                        {children}
-                    </QueryClientProvider>
-                </Provider>
-            );
-        }
+        const { wrapper } = makeEmptyWrapper();
 
         const { result } = renderHook(() => useStaffTeamsQuery(), {
-            wrapper: EmptyWrapper,
+            wrapper,
         });
 
         // Query is disabled — stays in pending/idle and never fetches
@@ -286,15 +223,15 @@ describe('useUpdateCallMutation', () => {
 describe('useUpdatePointsMutation', () => {
     afterEach(() => jest.clearAllMocks());
 
-    it('calls apiMutate with PUT on the points endpoint and invalidates teams on success', async () => {
+    it('calls apiMutate with PUT on the points endpoint and updates the cache directly on success', async () => {
         const teamId = 'bbbbbbbb-0000-0000-0000-000000000001';
         const pointsTemplate: PointsTemplate = { pointValue: 100, reason: 'Great job' };
+        const updatedTeams = [makeTeam({ points: 100 })];
 
-        mockApiMutate.mockResolvedValueOnce(undefined as any);
-        mockApiFetch.mockResolvedValueOnce([makeTeam()] as any);
+        mockApiMutate.mockResolvedValueOnce(updatedTeams as any);
 
         const { wrapper, queryClient } = makeWrapper();
-        const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+        const setQueryDataSpy = jest.spyOn(queryClient, 'setQueryData');
 
         const { result } = renderHook(() => useUpdatePointsMutation(), { wrapper });
 
@@ -307,7 +244,10 @@ describe('useUpdatePointsMutation', () => {
             `/api/staff/teams/${EVENT_INSTANCE_ID}/teams/${teamId}/points`,
             pointsTemplate,
         );
-        expect(invalidateSpy).toHaveBeenCalled();
+        expect(setQueryDataSpy).toHaveBeenCalledWith(
+            ['staff', EVENT_INSTANCE_ID, 'teams'],
+            updatedTeams,
+        );
     });
 });
 
