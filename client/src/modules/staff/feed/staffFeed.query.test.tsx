@@ -93,4 +93,19 @@ describe('useStaffFeedQuery', () => {
         expect(result.current.isLoading).toBe(true);
         expect(result.current.data).toBeUndefined();
     });
+
+    it('configures a 15-second refetch interval for polling', async () => {
+        mockApiFetch.mockResolvedValueOnce({ items: [] } as any);
+
+        const { wrapper, queryClient } = makeWrapper();
+        renderHook(() => useStaffFeedQuery(), { wrapper });
+
+        await waitFor(() => {
+            const feedQuery = queryClient.getQueryCache().findAll()
+                .find(q => q.queryKey.includes('feed'));
+            expect(feedQuery).toBeDefined();
+            const observer = feedQuery!.observers[0];
+            expect(observer?.options.refetchInterval).toBe(15_000);
+        });
+    });
 });

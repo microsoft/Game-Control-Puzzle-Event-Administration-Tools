@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Alert, Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 
 import {
     useStaffAchievementsQuery,
@@ -9,6 +9,7 @@ import {
 } from 'modules/staff/achievements/queries';
 import { Achievement } from 'modules/types';
 import { AchievementItem } from '../../shared/AchievementItem';
+import { getErrorMessage } from 'lib/apiFetch';
 
 type AchievementProps = Readonly<{
     achievement: Achievement;
@@ -42,7 +43,7 @@ type Props = Readonly<{
 
 export const TeamAchievements = ({ teamId }: Props) => {
     const { data: allAchievements = [] } = useStaffAchievementsQuery();
-    const { data: unlockedAchievements = [], isLoading, isSuccess } = useTeamAchievementsQuery(teamId);
+    const { data: unlockedAchievements = [], isLoading, isSuccess, error } = useTeamAchievementsQuery(teamId);
     const grantMutation = useGrantAchievementMutation();
     const revokeMutation = useRevokeAchievementMutation();
 
@@ -51,6 +52,8 @@ export const TeamAchievements = ({ teamId }: Props) => {
 
     if (isLoading && unlockedAchievements.length === 0) {
         return <div>Loading...</div>;
+    } else if (!!error) {
+        return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
     } else if (isSuccess) {
         return (
             <div>
@@ -69,6 +72,6 @@ export const TeamAchievements = ({ teamId }: Props) => {
             </div>
         );
     } else {
-        return <div>An unknown error occured</div>
+        return null;
     }
 }

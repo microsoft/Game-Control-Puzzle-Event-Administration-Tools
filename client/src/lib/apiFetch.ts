@@ -61,6 +61,10 @@ export async function apiMutate<TBody, TResponse = void>(
 /**
  * Converts an Axios error into a plain Error with a consistent message.
  * Mirrors the behaviour of `handleServiceError` in `modules/types/serviceCommon.ts`.
+ *
+ * NOTE: The companion USER_LOGGED_OUT Redux dispatch for 401 errors lives in
+ * queryClient.ts (QueryCache.onError) so that all Redux reducers and the
+ * SignalR middleware reset state properly.
  */
 function normaliseError(error: any): Error {
     if (error?.response?.status === 401) {
@@ -73,4 +77,10 @@ function normaliseError(error: any): Error {
     }
 
     return new Error(error?.message ?? 'An unexpected error occurred.');
+}
+
+/** Safely extracts a displayable message from an unknown error value. */
+export function getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    return String(error);
 }

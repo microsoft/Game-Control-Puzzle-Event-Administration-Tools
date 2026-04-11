@@ -1,4 +1,7 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryCache, QueryClient } from '@tanstack/react-query';
+
+import store from '../store';
+import { USER_LOGGED_OUT } from '../modules/user/actions';
 
 /**
  * Singleton QueryClient shared across the React tree and non-React code
@@ -18,4 +21,14 @@ export const queryClient = new QueryClient({
             retry: 1,
         },
     },
+    queryCache: new QueryCache({
+        onError: (error) => {
+            // Mirror the legacy handleServiceError behaviour: when a 401 is
+            // detected, dispatch USER_LOGGED_OUT so all Redux reducers and
+            // the SignalR middleware reset state properly.
+            if (error.message === 'Your session has expired. Please sign in again.') {
+                store.dispatch({ type: USER_LOGGED_OUT });
+            }
+        },
+    }),
 });

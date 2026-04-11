@@ -130,7 +130,27 @@ describe('useAddOrUpdateAchievementMutation', () => {
             `/api/staff/puzzles/${EVENT_INSTANCE_ID}/achievements`,
             expect.any(FormData),
         );
-        expect(invalidateSpy).toHaveBeenCalled();
+        expect(invalidateSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                queryKey: ['staff', EVENT_INSTANCE_ID, 'achievements'],
+            }),
+        );
+    });
+
+    it('surfaces an error when the mutation fails', async () => {
+        mockApiMutate.mockRejectedValueOnce(new Error('Update failed'));
+
+        const { wrapper } = makeWrapper();
+        const { result } = renderHook(() => useAddOrUpdateAchievementMutation(), { wrapper });
+
+        await act(async () => {
+            try {
+                await result.current.mutateAsync({ name: 'Fail', description: 'Desc' });
+            } catch { /* expected */ }
+        });
+
+        await waitFor(() => expect(result.current.isError).toBe(true));
+        expect(result.current.error).toEqual(new Error('Update failed'));
     });
 });
 
@@ -154,7 +174,27 @@ describe('useGrantAchievementMutation', () => {
             'put',
             `/api/staff/teams/${EVENT_INSTANCE_ID}/teams/${TEAM_ID}/achievements/ach-1`,
         );
-        expect(invalidateSpy).toHaveBeenCalled();
+        expect(invalidateSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                queryKey: ['staff', EVENT_INSTANCE_ID, 'achievements', TEAM_ID],
+            }),
+        );
+    });
+
+    it('surfaces an error when the mutation fails', async () => {
+        mockApiMutate.mockRejectedValueOnce(new Error('Grant failed'));
+
+        const { wrapper } = makeWrapper();
+        const { result } = renderHook(() => useGrantAchievementMutation(), { wrapper });
+
+        await act(async () => {
+            try {
+                await result.current.mutateAsync({ teamId: TEAM_ID, achievementId: 'ach-1' });
+            } catch { /* expected */ }
+        });
+
+        await waitFor(() => expect(result.current.isError).toBe(true));
+        expect(result.current.error).toEqual(new Error('Grant failed'));
     });
 });
 
@@ -178,6 +218,26 @@ describe('useRevokeAchievementMutation', () => {
             'delete',
             `/api/staff/teams/${EVENT_INSTANCE_ID}/teams/${TEAM_ID}/achievements/ach-1`,
         );
-        expect(invalidateSpy).toHaveBeenCalled();
+        expect(invalidateSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                queryKey: ['staff', EVENT_INSTANCE_ID, 'achievements', TEAM_ID],
+            }),
+        );
+    });
+
+    it('surfaces an error when the mutation fails', async () => {
+        mockApiMutate.mockRejectedValueOnce(new Error('Revoke failed'));
+
+        const { wrapper } = makeWrapper();
+        const { result } = renderHook(() => useRevokeAchievementMutation(), { wrapper });
+
+        await act(async () => {
+            try {
+                await result.current.mutateAsync({ teamId: TEAM_ID, achievementId: 'ach-1' });
+            } catch { /* expected */ }
+        });
+
+        await waitFor(() => expect(result.current.isError).toBe(true));
+        expect(result.current.error).toEqual(new Error('Revoke failed'));
     });
 });

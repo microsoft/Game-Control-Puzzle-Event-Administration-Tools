@@ -190,6 +190,22 @@ describe('useDeleteTeamMutation', () => {
             }),
         );
     });
+
+    it('surfaces an error when the mutation fails', async () => {
+        mockApiMutate.mockRejectedValueOnce(new Error('Delete failed'));
+
+        const { wrapper } = makeWrapper();
+        const { result } = renderHook(() => useDeleteTeamMutation(), { wrapper });
+
+        await act(async () => {
+            try {
+                await result.current.mutateAsync('some-team-id');
+            } catch { /* expected */ }
+        });
+
+        await waitFor(() => expect(result.current.isError).toBe(true));
+        expect(result.current.error).toEqual(new Error('Delete failed'));
+    });
 });
 
 describe('useUpdateCallMutation', () => {
@@ -216,7 +232,11 @@ describe('useUpdateCallMutation', () => {
             `/api/staff/teams/${EVENT_INSTANCE_ID}/teams/${teamId}/call`,
             callTemplate,
         );
-        expect(invalidateSpy).toHaveBeenCalled();
+        expect(invalidateSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                queryKey: ['staff', EVENT_INSTANCE_ID, 'teams'],
+            }),
+        );
     });
 });
 
@@ -277,6 +297,10 @@ describe('useUpdateTeamDataMutation', () => {
             `/api/staff/teams/${EVENT_INSTANCE_ID}/teams/${teamId}/data`,
             additionalData,
         );
-        expect(invalidateSpy).toHaveBeenCalled();
+        expect(invalidateSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                queryKey: ['staff', EVENT_INSTANCE_ID, 'teams'],
+            }),
+        );
     });
 });

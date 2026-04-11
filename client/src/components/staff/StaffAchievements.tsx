@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Alert, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { FaPlus, FaEdit } from 'react-icons/fa';
 
 import DialogRenderProp from './dialogs/DialogRenderProp';
@@ -9,17 +9,21 @@ import { AchievementItem } from '../shared/AchievementItem';
 import { useStaffAchievementsQuery, useAddOrUpdateAchievementMutation } from "modules/staff/achievements/queries";
 import { AchievementTemplate } from "modules/staff/achievements/models";
 import { Achievement } from 'modules/types';
+import { getErrorMessage } from 'lib/apiFetch';
 
 type Props = Readonly<{
     achievements: Achievement[];
     isLoading: boolean;
     isSuccess: boolean;
+    error: unknown;
     addAchievement: (achievement: AchievementTemplate) => void;
 }>;
 
-const AchievementsList = ({ achievements, isLoading, isSuccess, addAchievement }: Props) => {
-    if (isLoading) {
+const AchievementsList = ({ achievements, isLoading, isSuccess, error, addAchievement }: Props) => {
+    if (isLoading && achievements.length === 0) {
         return <div>Loading...</div>;
+    } else if (!!error) {
+        return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
     } else if (isSuccess && achievements.length === 0) {
         return <div>There are no achievements for this event</div>;
     } else if (achievements.length > 0) {
@@ -47,7 +51,7 @@ const AchievementsList = ({ achievements, isLoading, isSuccess, addAchievement }
 
 export const StaffAchievements = () => {
     document.title = "Game Control - Achievements";
-    const { data: achievements = [], isLoading, isSuccess } = useStaffAchievementsQuery();
+    const { data: achievements = [], isLoading, isSuccess, error } = useStaffAchievementsQuery();
     const addAchievementMutation = useAddOrUpdateAchievementMutation();
     const addAchievement = (achievement: AchievementTemplate) => addAchievementMutation.mutate(achievement);
 
@@ -66,7 +70,7 @@ export const StaffAchievements = () => {
                     }
                 />
             </h5>
-            <AchievementsList achievements={achievements} isLoading={isLoading} isSuccess={isSuccess} addAchievement={addAchievement} />
+            <AchievementsList achievements={achievements} isLoading={isLoading} isSuccess={isSuccess} error={error} addAchievement={addAchievement} />
         </div>
     );
 };

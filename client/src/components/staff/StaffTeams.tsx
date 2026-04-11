@@ -7,6 +7,7 @@ import DialogRenderProp from './dialogs/DialogRenderProp';
 import { TeamForm } from './dialogs';
 import { StaffTeam } from 'modules/staff';
 import { useAddOrUpdateTeamMutation, useStaffTeamsQuery } from 'modules/staff/teams/queries';
+import { getErrorMessage } from 'lib/apiFetch';
 
 const StaffTeamsList = ({ teams, isLoaded }: { teams: StaffTeam[]; isLoaded: boolean }) => {
     if (isLoaded && teams.length === 0) {
@@ -52,8 +53,8 @@ export const StaffTeams = () => {
                     )}
                 />
             </h5>
-            {isLoading && <div>Loading...</div>}
-            {!!error && <Alert variant="danger">{(error as Error).message}</Alert>}
+            {isLoading && teams.length === 0 && <div>Loading...</div>}
+            {!!error && <Alert variant="danger">{getErrorMessage(error)}</Alert>}
             <StaffTeamsList teams={teams} isLoaded={isSuccess} />
         </div>
     );

@@ -16,6 +16,7 @@ import { TeamForm } from './dialogs';
 import { useStaffClues } from 'modules/staff/clues/hooks';
 import { updateUserInfo } from 'modules/admin/users/service';
 import { useDeleteSubmissionMutation } from 'modules/admin/player/queries';
+import { getErrorMessage } from 'lib/apiFetch';
 import { CallTemplate } from 'modules/types';
 import {
     useStaffTeamQuery,
@@ -148,7 +149,7 @@ export const StaffTeamDetails = () => {
                     {!!isAdmin && (
                         <Tab eventKey={6} title="Submissions">
                             <ListGroup>
-                                {!!deleteSubmission.error && <Alert variant="danger">{(deleteSubmission.error as Error).message}</Alert>}
+                                {!!deleteSubmission.error && <Alert variant="danger">{getErrorMessage(deleteSubmission.error)}</Alert>}
                                 {currentTeam.submissionHistory.map((submission) => (
                                     <ListGroupItem key={submission.submissionId}>
                                         <Container>

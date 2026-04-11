@@ -1,11 +1,12 @@
 import React from 'react';
-import { Col, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
+import { Alert, Col, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
 import { FaRegAngry, FaSadTear, FaRegMeh, FaSmile, FaRegSmileBeam, FaGift, FaQuestionCircle } from 'react-icons/fa';
 import moment from 'moment';
 
 import * as constants from '../../constants';
 import { AggregatedContent } from 'modules/types/models';
 import { useStaffFeedQuery } from 'modules/staff/feed/queries';
+import { getErrorMessage } from 'lib/apiFetch';
 
 import { PointsFeedItem } from '../player/PlayerFeed';
 
@@ -355,9 +356,11 @@ const TeamUnlockFeedItem = ({ feedItem }: FeedItemProps) => {
     );
 };
 
-const FeedContent = ({ data, isLoading }: { data: AggregatedContent[]; isLoading: boolean }) => {
+const FeedContent = ({ data, isLoading, error }: { data: AggregatedContent[]; isLoading: boolean; error: unknown }) => {
     if (isLoading && data.length === 0) {
         return <div>Loading...</div>;
+    } else if (!!error) {
+        return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
     } else if (data.length > 0) {
         return (
             <ListGroup>
@@ -376,12 +379,12 @@ const FeedContent = ({ data, isLoading }: { data: AggregatedContent[]; isLoading
 export const StaffFeed = () => {
     document.title = 'Game Control - Activity Feed';
 
-    const { data = [], isLoading } = useStaffFeedQuery();
+    const { data = [], isLoading, error } = useStaffFeedQuery();
 
     return (
         <div>
             <h4>Activity Feed</h4>
-            <FeedContent data={data} isLoading={isLoading} />
+            <FeedContent data={data} isLoading={isLoading} error={error} />
         </div>
     );
 };
