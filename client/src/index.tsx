@@ -18,7 +18,7 @@ const root = createRoot(container!);
 
 root.render(
     <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
+        {import.meta.env.DEV ? <ReactQueryDevtools /> : null}
         <Provider store={store}>
             <BrowserRouter {...routerProps}>
                 <App />
