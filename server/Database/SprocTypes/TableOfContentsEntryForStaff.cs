@@ -27,5 +27,7 @@ namespace GameControl.Server.Database.SprocTypes
         public DateTime? ClosingTime { get; set; }
 
         public int? ParSolveTime { get; set; }
+
+        public string DefaultIncorrectResponse { get; set; }
     }
 }

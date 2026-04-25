@@ -22,6 +22,7 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
     const [parTime, setParTime] = useState(clue?.parSolveTime?.toString() ?? '0');
     const [openTime, setOpenTime] = useState<moment.Moment | undefined>(clue?.openTime);
     const [closingTime, setClosingTime] = useState<moment.Moment | undefined>(clue?.closingTime);
+    const [defaultIncorrectResponse, setDefaultIncorrectResponse] = useState(clue?.defaultIncorrectResponse ?? '');
 
     const isTitleValid = () => title.length > 0;
     const isSortOrderValid = () => !isNaN(parseInt(sortOrder));
@@ -86,6 +87,19 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
                 <Form.Control type="text" isInvalid={!isParTimeValid()} value={parTime} placeholder="Par Time" onChange={(event) => setParTime(event.target.value)} />
                 <Form.Control.Feedback type="invalid">Par Time must be an integer</Form.Control.Feedback>
             </Form.Group>
+            <Form.Group>
+                <Form.Label>Default Incorrect Response</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={defaultIncorrectResponse}
+                    placeholder="Optional message shown when a player submits an unrecognized answer"
+                    onChange={(event) => setDefaultIncorrectResponse(event.target.value)}
+                />
+                <Form.Text className="text-muted">
+                    Leave blank to show no message for unrecognized answers.
+                </Form.Text>
+            </Form.Group>
             <Button
                 disabled={!isSortOrderValid()}
                 onClick={() => {
@@ -97,6 +111,7 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
                         takeOver,
                         submittableType,
                         parTime: parseInt(parTime),
+                        defaultIncorrectResponse: defaultIncorrectResponse || undefined,
                     });
                     onComplete();
                 }}

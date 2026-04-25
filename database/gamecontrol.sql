@@ -253,7 +253,7 @@ SELECT
     dbo.Submission.Submission,
     dbo.Submittable.SubmittableId,
     dbo.Submission.SubmissionTime,
-    dbo.Answer.AnswerResponse,
+    ISNULL(dbo.Answer.AnswerResponse, dbo.TableOfContentsEntry.DefaultIncorrectResponse) AS AnswerResponse,
     ISNULL(dbo.Answer.IsCorrectAnswer, 0) AS IsCorrectAnswer,
     dbo.Team.TeamId,
     dbo.Answer.AnswerId,
@@ -266,6 +266,8 @@ SELECT
 FROM dbo.Submittable
 INNER JOIN dbo.Submission ON dbo.Submission.Submittable = dbo.Submittable.SubmittableId
 INNER JOIN dbo.Team ON dbo.Team.TeamId = dbo.Submission.Team
+INNER JOIN dbo.TableOfContentsEntry ON dbo.TableOfContentsEntry.Submittable = dbo.Submittable.SubmittableId
+    AND dbo.TableOfContentsEntry.EventInstance = dbo.Team.EventInstance
 LEFT OUTER JOIN dbo.Answer ON dbo.Answer.Submittable = dbo.Submittable.SubmittableId 
             AND dbo.Answer.AnswerText = dbo.Submission.Submission COLLATE Latin1_General_100_CI_AS_SC
             AND dbo.Team.EventInstance = dbo.Answer.EventInstance
@@ -426,6 +428,7 @@ CREATE TABLE [dbo].[TableOfContentsEntry](
     [OpenTime] [datetime] NULL,
     [ClosingTime] [datetime] NULL,
     [ParSolveTime] [int] NULL,
+    [DefaultIncorrectResponse] [nvarchar](max) NULL,
  CONSTRAINT [PK_TableOfContentsEntry] PRIMARY KEY CLUSTERED 
 (
     [TableOfContentId] ASC
@@ -2459,7 +2462,7 @@ RETURN (
         dbo.Submission.Submission,
         dbo.Submittable.SubmittableId,
         dbo.Submission.SubmissionTime,
-        dbo.Answer.AnswerResponse,
+        ISNULL(dbo.Answer.AnswerResponse, dbo.TableOfContentsEntry.DefaultIncorrectResponse) AS AnswerResponse,
         ISNULL(dbo.Answer.IsCorrectAnswer, 0) AS IsCorrectAnswer,
         dbo.Submission.Team as TeamId,
         dbo.Answer.AnswerId,
@@ -2473,6 +2476,8 @@ RETURN (
     FROM Submission
     INNER JOIN Submittable on Submittable.SubmittableId = Submission.Submittable
     INNER JOIN Team on Submission.Team = Team.TeamId AND Team.EventInstance = @eventInstance
+    INNER JOIN dbo.TableOfContentsEntry ON dbo.TableOfContentsEntry.Submittable = dbo.Submittable.SubmittableId
+        AND dbo.TableOfContentsEntry.EventInstance = @eventInstance
     LEFT OUTER JOIN Participation on Participation.ParticipationId = Submission.Participation AND Participation.EventInstance = @eventInstance
     LEFT OUTER JOIN Participant on Participant.ParticipantId = Participation.Participant
     LEFT OUTER JOIN dbo.Answer ON
@@ -2813,7 +2818,8 @@ BEGIN
 		   TableOfContentsEntry.SortOrder,
 		   TableOfContentsEntry.OpenTime,
 		   TableOfContentsEntry.ClosingTime,
-		   TableOfContentsEntry.ParSolveTime
+		   TableOfContentsEntry.ParSolveTime,
+		   TableOfContentsEntry.DefaultIncorrectResponse
 	FROM TableOfContentsEntry
 	INNER JOIN Submittable ON Submittable.SubmittableId = TableOfContentsEntry.Submittable
 	WHERE TableOfContentsEntry.EventInstance = @eventInstance

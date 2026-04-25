@@ -169,6 +169,16 @@ const StaffClueDetails = () => {
                             )}
                         />
                         <PuzzleAnswersList clue={foundClue} />
+                        {foundClue.defaultIncorrectResponse ? (
+                            <div className="mt-2 p-2 border rounded bg-light">
+                                <strong>Default response for unrecognized answers:</strong>{' '}
+                                <em>{foundClue.defaultIncorrectResponse}</em>
+                            </div>
+                        ) : (
+                            <div className="mt-2 text-muted">
+                                <small>No default response configured for unrecognized answers. Edit the puzzle to add one.</small>
+                            </div>
+                        )}
                     </Tab>
                     <Tab eventKey={4} title="Logistics">
                         <ClueLogistics clue={foundClue} />
