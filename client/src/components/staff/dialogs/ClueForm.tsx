@@ -111,7 +111,7 @@ export const ClueForm = ({ clue, onSubmit, onComplete }: Props) => {
                         takeOver,
                         submittableType,
                         parTime: parseInt(parTime),
-                        defaultIncorrectResponse: defaultIncorrectResponse || undefined,
+                        defaultIncorrectResponse: defaultIncorrectResponse.trim() || undefined,
                     });
                     onComplete();
                 }}
