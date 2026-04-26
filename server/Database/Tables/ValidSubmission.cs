@@ -31,5 +31,7 @@ namespace GameControl.Server.Database.Tables
         public Guid? AppliesToTeam { get; set; }
 
         public Guid? AdditionalContent { get; set; }
+
+        public string DefaultIncorrectResponse { get; set; }
     }
 }

@@ -253,7 +253,7 @@ SELECT
     dbo.Submission.Submission,
     dbo.Submittable.SubmittableId,
     dbo.Submission.SubmissionTime,
-    ISNULL(dbo.Answer.AnswerResponse, dbo.TableOfContentsEntry.DefaultIncorrectResponse) AS AnswerResponse,
+    dbo.Answer.AnswerResponse,
     ISNULL(dbo.Answer.IsCorrectAnswer, 0) AS IsCorrectAnswer,
     dbo.Team.TeamId,
     dbo.Answer.AnswerId,
@@ -262,7 +262,8 @@ SELECT
     dbo.Answer.AppliesToTeam,
     dbo.Answer.AdditionalContent,
     dbo.Answer.EventInstance,
-    ISNULL(dbo.Answer.IsHidden, 0) AS IsHidden
+    ISNULL(dbo.Answer.IsHidden, 0) AS IsHidden,
+    dbo.TableOfContentsEntry.DefaultIncorrectResponse
 FROM dbo.Submittable
 INNER JOIN dbo.Submission ON dbo.Submission.Submittable = dbo.Submittable.SubmittableId
 INNER JOIN dbo.Team ON dbo.Team.TeamId = dbo.Submission.Team
@@ -2462,7 +2463,7 @@ RETURN (
         dbo.Submission.Submission,
         dbo.Submittable.SubmittableId,
         dbo.Submission.SubmissionTime,
-        ISNULL(dbo.Answer.AnswerResponse, dbo.TableOfContentsEntry.DefaultIncorrectResponse) AS AnswerResponse,
+        dbo.Answer.AnswerResponse,
         ISNULL(dbo.Answer.IsCorrectAnswer, 0) AS IsCorrectAnswer,
         dbo.Submission.Team as TeamId,
         dbo.Answer.AnswerId,
@@ -2472,7 +2473,8 @@ RETURN (
         dbo.Answer.AppliesToTeam,
         dbo.Answer.AdditionalContent,
         dbo.Answer.EventInstance,
-        ISNULL(dbo.Answer.IsHidden, 0) AS IsHidden
+        ISNULL(dbo.Answer.IsHidden, 0) AS IsHidden,
+        dbo.TableOfContentsEntry.DefaultIncorrectResponse
     FROM Submission
     INNER JOIN Submittable on Submittable.SubmittableId = Submission.Submittable
     INNER JOIN Team on Submission.Team = Team.TeamId AND Team.EventInstance = @eventInstance
