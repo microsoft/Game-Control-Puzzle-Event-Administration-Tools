@@ -13,6 +13,6 @@
   "dependencies": {
     "commander": "^6.1.0",
     "inquirer": "^7.3.3",
-    "uuid": "^8.3.2"
+    "uuid": "^14.0.0"
   }
 }
