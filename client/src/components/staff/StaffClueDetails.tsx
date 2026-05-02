@@ -171,7 +171,7 @@ const StaffClueDetails = () => {
                         {foundClue.defaultIncorrectResponse ? (
                             <div className="mt-2 mb-2 p-2 border rounded bg-light">
                                 <strong>Default response for unrecognized answers:</strong>{' '}
-                                <em>{foundClue.defaultIncorrectResponse}</em>
+                                <em style={{ whiteSpace: 'pre-wrap', display: 'block' }}>{foundClue.defaultIncorrectResponse}</em>
                             </div>
                         ) : (
                             <div className="mt-2 mb-2 text-muted">

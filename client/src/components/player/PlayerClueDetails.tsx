@@ -73,7 +73,7 @@ const Submission = ({ submission, teamId, playerId }: { submission: PlayerSubmis
         listGroupItemType = 'danger';
     }
 
-    const displayResponse = submission.answerResponse || submission.defaultIncorrectResponse;
+    const displayResponse = submission.answerResponse ?? submission.defaultIncorrectResponse;
 
     return (
         <ListGroupItem key={submission.submissionId} variant={listGroupItemType}>
