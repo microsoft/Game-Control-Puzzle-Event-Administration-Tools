@@ -33,6 +33,7 @@ export type StaffClue = Readonly<{
     closingTime?: Moment;
     ratings: ClueRating[];
     instances: ClueInstance[];
+    defaultIncorrectResponse?: string;
 }>;
 
 export type StaffClueTemplate = Readonly<{
@@ -46,6 +47,7 @@ export type StaffClueTemplate = Readonly<{
     openTime?: Moment;
     closingTime?: Moment;
     parTime?: number;
+    defaultIncorrectResponse?: string;
 }>;
 
 export type ContentTemplate = Readonly<{

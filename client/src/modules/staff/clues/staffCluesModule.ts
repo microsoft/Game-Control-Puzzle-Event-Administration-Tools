@@ -37,6 +37,7 @@ function updateClueDetails(initialClues: StaffClue[], updatedClue: StaffClue) {
                       ratings: updatedClue.ratings,
                       content: updatedClue.content,
                       instances: updatedClue.instances,
+                      defaultIncorrectResponse: updatedClue.defaultIncorrectResponse,
                   }
                 : clue;
         });
@@ -95,6 +96,7 @@ function updateToc(currentClues: StaffClue[], updatedToc: StaffClue) {
                 openTime: updatedToc.openTime,
                 closingTime: updatedToc.closingTime,
                 parSolveTime: updatedToc.parSolveTime,
+                defaultIncorrectResponse: updatedToc.defaultIncorrectResponse,
                 shortTitle: updatedToc.shortTitle,
                 submittableId: updatedToc.submittableId,
                 submittableTitle: updatedToc.submittableTitle,
@@ -126,6 +128,7 @@ function updateToc(currentClues: StaffClue[], updatedToc: StaffClue) {
                     openTime: updatedToc.openTime,
                     closingTime: updatedToc.closingTime,
                     parSolveTime: updatedToc.parSolveTime,
+                    defaultIncorrectResponse: updatedToc.defaultIncorrectResponse,
                     submittableType: updatedToc.submittableType,
                     instances: updatedToc.instances,
                 };

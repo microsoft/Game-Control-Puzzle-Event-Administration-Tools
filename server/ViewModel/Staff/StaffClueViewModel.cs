@@ -15,6 +15,7 @@ namespace GameControl.Server.ViewModel.Staff
             this.ParSolveTime = toc.ParSolveTime;
             this.OpenTime = toc.OpenTime;
             this.ClosingTime = toc.ClosingTime;
+            this.DefaultIncorrectResponse = toc.DefaultIncorrectResponse;
             this.TeamsStatus = new List<SolveDataViewModel>();
             this.Answers = new List<AnswerViewModel>();
         }
@@ -33,6 +34,7 @@ namespace GameControl.Server.ViewModel.Staff
             ParSolveTime = tocForStaff.ParSolveTime;
             OpenTime = tocForStaff.OpenTime;
             ClosingTime = tocForStaff.ClosingTime;
+            DefaultIncorrectResponse = tocForStaff.DefaultIncorrectResponse;
         }
 
         public string ShortTitle { get; set; }
@@ -42,6 +44,8 @@ namespace GameControl.Server.ViewModel.Staff
         public DateTime? OpenTime { get; set; }
 
         public DateTime? ClosingTime { get; set; }
+
+        public string DefaultIncorrectResponse { get; set; }
 
         public int? AverageSolveTime { get; set; }
 

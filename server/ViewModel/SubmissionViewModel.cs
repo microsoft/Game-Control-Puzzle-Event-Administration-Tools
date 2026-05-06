@@ -33,6 +33,7 @@ namespace GameControl.Server.ViewModel
             this.UnlockedTocs = new List<UnlockedInfo>();
             this.UnlockedAchievements = new List<AchievementViewModel>();
             this.AdditionalContentId = dbSubmission.AdditionalContent;
+            this.DefaultIncorrectResponse = dbSubmission.DefaultIncorrectResponse;
         }
 
         public Guid SubmissionId { get; set; }
@@ -52,6 +53,8 @@ namespace GameControl.Server.ViewModel
         public bool IsCorrectAnswer { get; set; }
 
         public bool IsHidden { get; set; }
+
+        public string DefaultIncorrectResponse { get; set; }
 
         public List<UnlockedInfo> UnlockedTocs { get; set; }
 

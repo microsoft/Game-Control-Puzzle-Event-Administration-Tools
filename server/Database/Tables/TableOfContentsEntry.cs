@@ -23,5 +23,7 @@ namespace GameControl.Server.Database.Tables
         public DateTime? ClosingTime { get; set; }
 
         public int? ParSolveTime { get; set; }
+
+        public string DefaultIncorrectResponse { get; set; }
     }
 }
