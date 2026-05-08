@@ -23,5 +23,7 @@ namespace GameControl.Server.RequestTypes.Staff
         public DateTime? ClosingTime { get; set; }
 
         public int? ParTime { get; set; }
+
+        public string DefaultIncorrectResponse { get; set; }
     }
 }

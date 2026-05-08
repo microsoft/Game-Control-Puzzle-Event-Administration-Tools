@@ -73,11 +73,13 @@ const Submission = ({ submission, teamId, playerId }: { submission: PlayerSubmis
         listGroupItemType = 'danger';
     }
 
+    const displayResponse = submission.answerResponse ?? submission.defaultIncorrectResponse;
+
     return (
         <ListGroupItem key={submission.submissionId} variant={listGroupItemType}>
             {submission.isHidden ? <h5>You successfully solved this puzzle</h5> : <h5>{submission.submission}</h5>}
             <div>
-                <small>{submission.answerResponse}</small>
+                <small>{displayResponse}</small>
             </div>
             <div>
                 <small>{moment.utc(submission.submissionTime).fromNow()}</small>

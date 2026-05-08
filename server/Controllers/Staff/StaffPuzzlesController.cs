@@ -223,7 +223,8 @@ namespace GameControl.Server.Controllers
                         TakeOver = newClue.TakeOver,
                         OpenTime = newClue.OpenTime,
                         ClosingTime = newClue.ClosingTime,
-                        ParSolveTime = newClue.ParTime
+                        ParSolveTime = newClue.ParTime,
+                        DefaultIncorrectResponse = newClue.DefaultIncorrectResponse,
                     };
 
                     this.dbContext.TableOfContentsEntry.Add(newToc);
@@ -270,6 +271,7 @@ namespace GameControl.Server.Controllers
                     toc.OpenTime = newClue.OpenTime;
                     toc.ClosingTime = newClue.ClosingTime;
                     toc.ParSolveTime = newClue.ParTime;
+                    toc.DefaultIncorrectResponse = newClue.DefaultIncorrectResponse;
 
                     this.dbContext.TableOfContentsEntry.Update(toc);
                     this.dbContext.Submittable.Update(submittable);

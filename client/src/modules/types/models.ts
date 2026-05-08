@@ -62,6 +62,7 @@ export type PlayerSubmission = Readonly<{
     submissionTime: Moment;
     isCorrectAnswer: boolean;
     isHidden: boolean;
+    defaultIncorrectResponse?: string;
     unlockedClues?: UnlockedClue[];
     unlockedAchievements: Achievement[];
     additionalContent?: Content;
