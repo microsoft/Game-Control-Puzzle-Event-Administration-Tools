@@ -1,7 +1,6 @@
 import { withCallbacks, LogLevel, HttpTransportType } from './redux-signalr/index';
 import signalMiddleware from './redux-signalr/index';
 import { APPLICATION_URL } from '../../constants';
-import { getChallenges } from 'modules/staff/challenges/service';
 import { fetchPlayerAchievements } from 'modules/player/achievements/service';
 import { fetchPlayerCalls } from 'modules/player/calls/service';
 import { fetchPlayerChallenges } from 'modules/player/challenges/service';
@@ -20,7 +19,8 @@ export const createSignalMiddleware = (history: any) => {
 
     const callbacks = withCallbacks()
         .add('admin_challenge', (teamId: string) => (dispatch: any, getState: () => any) => {
-            dispatch(getChallenges());
+            const eventInstanceId = getEventInstanceId(getState());
+            queryClient.invalidateQueries({ queryKey: queryKeys.staff.challenges(eventInstanceId) });
         })
         .add('admin_submission', (teamId: string) => (dispatch: any, getState: any) => {
             if (isOnPage('/staff/grid') || isOnPage('/staff/actioncenter') || isOnPage('/staff/clues') || isOnPage('/staff/teams')) {

@@ -7,7 +7,8 @@ import moment from 'moment';
 import 'moment-timezone';
 
 import * as constants from '../../constants';
-import { useStaffChallengeDetails, ChallengeSubmission, Challenge, ChallengeApproval } from 'modules/staff/challenges';
+import { ChallengeSubmission, Challenge, ChallengeApproval } from 'modules/staff/challenges';
+import { useStaffChallengeDetailsQuery, useAddOrUpdateChallengeMutation, useUpdateChallengeSubmissionMutation } from 'modules/staff/challenges/queries';
 import { ChallengeApprovalForm, ChallengeForm } from './dialogs';
 import DialogRenderProp from './dialogs/DialogRenderProp';
 import { getChallengeSingularNameSetting, getPointsNameSetting } from 'modules';
@@ -101,7 +102,9 @@ const PreviousSubmissions = ({ challenge }: { challenge: Challenge }) => {
 
 export const StaffChallengeDetails = () => {
     const { id } = useParams<{ id: string }>();
-    const { challenge, updateApproval, updateChallenge } = useStaffChallengeDetails(id);
+    const { data: challenge } = useStaffChallengeDetailsQuery(id);
+    const addOrUpdateChallenge = useAddOrUpdateChallengeMutation();
+    const updateSubmission = useUpdateChallengeSubmissionMutation(id);
     const challengeSingularName = useSelector(getChallengeSingularNameSetting);
     const pointsNameSetting = useSelector(getPointsNameSetting);
 
@@ -115,7 +118,7 @@ export const StaffChallengeDetails = () => {
                         renderTitle={() => `Edit ${challengeSingularName}`}
                         renderButton={() => <FaEdit />}
                         renderBody={(onComplete: any) => (
-                            <ChallengeForm pointsName={pointsNameSetting} sourceChallenge={challenge} onSubmit={updateChallenge} onComplete={onComplete} />
+                            <ChallengeForm pointsName={pointsNameSetting} sourceChallenge={challenge} onSubmit={(c) => addOrUpdateChallenge.mutate(c)} onComplete={onComplete} />
                         )}
                     />
                 </h4>
@@ -140,7 +143,7 @@ export const StaffChallengeDetails = () => {
                 )}
                 <div>
                     <h5>Pending Submissions</h5>
-                    <PendingSubmissions challenge={challenge} updateApproval={updateApproval} />
+                    <PendingSubmissions challenge={challenge} updateApproval={(approval) => updateSubmission.mutate(approval)} />
                 </div>
                 <div>
                     <h5>Previous Submissions</h5>

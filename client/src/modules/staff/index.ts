@@ -3,7 +3,6 @@ import moment from 'moment';
 import 'moment-timezone';
 
 import { gridReducer } from './grid/staffGridModule';
-import { challengesReducer } from './challenges/reducer';
 import { messagesReducer } from './messages/messagesModule';
 import { StaffCluesState } from './clues/staffCluesModule';
 import { Answer, StaffClue } from './clues';
@@ -11,11 +10,9 @@ import { Achievement, Content } from 'modules/types';
 
 export * from './grid';
 export * from './teams';
-export * from './challenges/hooks';
 
 export default combineReducers({
     grid: gridReducer,
-    challenges: challengesReducer,
     messages: messagesReducer,
 });
 

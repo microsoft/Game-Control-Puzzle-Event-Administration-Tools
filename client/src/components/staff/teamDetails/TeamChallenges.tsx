@@ -1,7 +1,7 @@
-import { useStaffChallenges } from '../../../modules/staff';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Challenge } from 'modules/staff/challenges';
+import { useStaffChallengesQuery } from 'modules/staff/challenges/queries';
 
 const ChallengeRow = ({ challenge, teamId }: { challenge: Challenge; teamId: string }) => {
     let variant = undefined;
@@ -40,13 +40,13 @@ const ChallengesContent = ({ challenges, teamId }: { challenges: Challenge[]; te
 };
 
 export const TeamChallenges = ({ teamId }: { teamId: string }) => {
-    const { challengesModule } = useStaffChallenges();
+    const { data: challenges = [], isLoading } = useStaffChallengesQuery();
 
     return (
         <div>
             <h5>Challenges</h5>
-            {challengesModule.isLoading && <div>Loading...</div>}
-            {challengesModule.data.length > 0 && <ChallengesContent challenges={challengesModule.data} teamId={teamId} />}
+            {isLoading && <div>Loading...</div>}
+            {challenges.length > 0 && <ChallengesContent challenges={challenges} teamId={teamId} />}
         </div>
     );
 };
