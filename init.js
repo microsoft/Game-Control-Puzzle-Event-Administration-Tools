@@ -188,6 +188,7 @@ function main() {
 
                     if (process.platform === 'linux') {
                         env.push(`REACT_USER=${process.getuid()}:${process.getgid()}`);
+                        env.push(`HOST_DIR=${process.cwd()}`);
                     }
 
                     const origin = "http://" + answers.serverFqdn;
