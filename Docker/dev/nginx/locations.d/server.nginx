@@ -1,0 +1,14 @@
+location /api/ {
+    proxy_pass http://server:5000/api/;
+    proxy_redirect off;
+}
+
+location /hub {
+    proxy_pass http://server:5000/hub/;
+    proxy_redirect off;
+
+    # WebSocket specific settings
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+}
