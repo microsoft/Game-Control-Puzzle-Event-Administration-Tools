@@ -186,6 +186,10 @@ function main() {
                         appSettings.GameControl.MsaClientId = answers.msaClientId;
                     }
 
+                    if (process.platform === 'linux') {
+                        env.push(`REACT_USER=${process.getuid()}:${process.getgid()}`);
+                    }
+
                     const origin = "http://" + answers.serverFqdn;
                     serverEnv.push("GameControl__CorsOrigin=" + origin);
                     appSettings.GameControl.CorsOrigin = origin;
