@@ -1,18 +1,12 @@
-import { combineReducers } from 'redux';
 import moment from 'moment';
 import 'moment-timezone';
 
-import { gridReducer } from './grid/staffGridModule';
 import { StaffCluesState } from './clues/staffCluesModule';
 import { Answer, StaffClue } from './clues';
 import { Achievement, Content } from 'modules/types';
 
 export * from './grid';
 export * from './teams';
-
-export default combineReducers({
-    grid: gridReducer,
-});
 
 export const getCluesModule = (state: any) => {
     return state.staffClues;

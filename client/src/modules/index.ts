@@ -3,7 +3,6 @@ import { routerReducer } from 'react-router-redux';
 
 import { staffCluesReducer } from './staff/clues/staffCluesModule';
 import admin from './admin';
-import staff from './staff';
 import player from './player';
 import { userReducer } from './user';
 import { getEventInstanceId } from './user/selectors';
@@ -16,7 +15,6 @@ export default combineReducers({
     user: userReducer,
     staffClues: staffCluesReducer,
     player,
-    staff,
     admin,
 });
 

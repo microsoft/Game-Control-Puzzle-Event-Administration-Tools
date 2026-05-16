@@ -157,14 +157,134 @@ Only once components and tests pass:
 
 Repeat the Phase 1 pattern for each of the following modules, in this recommended order (simpler → more complex):
 
-| Order | Module | Notes |
-|-------|--------|-------|
-| 2.1 | `staff/feed` | Read-only, no mutations. Good confidence builder. |
-| 2.2 | `staff/grid` | Read + `getStaffGrid` refresh. Heavily SignalR-triggered. |
-| 2.3 | `staff/achievements` | Two hooks (`useStaffAchievements`, `useAchievementUnlocks`). Parameterized by `teamId`. |
-| 2.4 | `staff/challenges` | Two hooks, one parameterized by `challengeId`. |
-| 2.5 | `staff/clues` | Complex: `staffCluesModule` is registered at root, not under `staff`. Requires care. |
-| 2.6 | `staff/messages` | Review `messagesModule.ts` for any cross-module dependencies. |
+| Order | Module | Status | Notes |
+|-------|--------|--------|-------|
+| 2.1 | `staff/feed` | ✅ Done | Read-only, no mutations. Good confidence builder. |
+| 2.2 | `staff/grid` | ✅ Done | Read + `getStaffGrid` refresh. Heavily SignalR-triggered. See notes below. |
+| 2.3 | `staff/achievements` | | Two hooks (`useStaffAchievements`, `useAchievementUnlocks`). Parameterized by `teamId`. |
+| 2.4 | `staff/challenges` | ✅ Done | Two hooks, one parameterized by `challengeId`. See detailed breakdown below. |
+| 2.5 | `staff/clues` | | Complex: `staffCluesModule` is registered at root, not under `staff`. Requires care. |
+| 2.6 | `staff/messages` | ✅ Done | Review `messagesModule.ts` for any cross-module dependencies. |
+
+### 2.2 — staff/grid (Migration Notes)
+
+**Completed:** TanStack Query hook + component migration + SignalR bridge + integration tests.
+
+**Key observations:**
+
+1. **Two separate consumers with different polling needs:**
+   - `StaffGrid.tsx` uses a simple 30s polling interval via `useStaffGridQuery({ refetchInterval: 30000 })`
+   - `StaffActionCenter.tsx` uses `gridDataHooks.ts` which wraps `useStaffGridQuery` with derived/memoized data (ExtendedGridTeam, ExtendedGridClue) and supports a 5s "fast refresh" mode
+
+2. **`gridDataHooks.ts` (`actions/staff/gridDataHooks.ts`) was migrated in-place** rather than deleted, because `StaffActionCenter` depends on the derived `ExtendedGridTeam`/`ExtendedGridCellData`/`ExtendedGridClue` types and memoized computations. It now imports from `useStaffGridQuery` instead of using `useSelector`/`useDispatch`.
+
+3. **No mutations exist** — the grid is purely read-only. All data changes arrive either via polling (`refetchInterval`) or SignalR invalidation (`admin_submission`, `admin_call` callbacks).
+
+4. **SignalR dual-dispatch:** Both `admin_submission` and `admin_call` now invalidate `queryKeys.staff.grid(eventInstanceId)` alongside the existing Redux `dispatch(getStaffGrid())`. The Redux dispatch is kept until all consumers are fully migrated.
+
+5. **Redux artifacts fully deleted:** `staffGridModule.ts`, `service.ts`, `actions.ts`, `selectors.ts`, `hooks.ts` are all removed. The `gridReducer` was removed from `combineReducers` in `modules/staff/index.ts`, and the `staff` slice (which only contained `grid`) was removed from the root reducer in `modules/index.ts`. The `dispatch(getStaffGrid())` calls in the SignalR middleware were also removed — only TanStack invalidation remains.
+
+6. **`useMemo` dependencies fixed:** The old `gridDataHooks.ts` had `[gridModule, hidePlot]` and `[gridModule]` as memo dependencies (entire Redux module reference). Updated to `[teams, clues, hidePlot]` and `[clues]` for more precise memoization.
+
+### 2.4 — staff/challenges (Detailed Breakdown)
+
+**Current state:** Two Redux hooks (`useStaffChallenges`, `useStaffChallengeDetails`), one reducer (`challengesReducer`), four service thunks. The reducer handles `USER_LOGGED_OUT` to reset state.
+
+#### 2.4.1 — Write `queries.ts` with TanStack Query hooks
+
+Create `client/src/modules/staff/challenges/queries.ts`. The reducer stores `payload` directly in the `FETCHED` case (`data: payload`), so the API returns a plain `Challenge[]` — no `select` unwrap needed.
+
+Hooks to create:
+
+- **`useStaffChallengesQuery()`** — `useQuery` wrapping `GET /api/staff/challenges/:eventInstanceId`
+  - Returns the full challenge list including nested `submissions` arrays
+  - Used by `Challenges.tsx` and `TeamChallenges.tsx`
+
+- **`useStaffChallengeDetailsQuery(challengeId)`** — Derives a single challenge from `useStaffChallengesQuery()` via `select`
+  - Pattern: `select: (challenges) => challenges.find(c => c.challengeId === challengeId)`
+  - This avoids a separate API call — the existing Redux hooks both call the same `getChallenges()` thunk
+  - Used by `StaffChallengeDetails.tsx`
+
+- **`useAddOrUpdateChallengeMutation()`** — `useMutation` wrapping `PUT /api/staff/challenges/:eventInstanceId`
+  - Request body: `ChallengeTemplate`
+  - On success: invalidate `queryKeys.staff.challenges(eventInstanceId)`
+  - Used by `Challenges.tsx` (add) and `StaffChallengeDetails.tsx` (edit)
+
+- **`useUpdateChallengeSubmissionMutation(challengeId)`** — `useMutation` wrapping `PUT /api/staff/challenges/:eventInstanceId/:challengeId`
+  - Request body: `ChallengeApproval`
+  - On success: invalidate `queryKeys.staff.challenges(eventInstanceId)`
+  - Used by `StaffChallengeDetails.tsx` (approve/reject submissions)
+
+- **`useDeleteChallengeMutation()`** — `useMutation` wrapping `DELETE /api/staff/challenges/:eventInstanceId/:challengeId`
+  - On success: invalidate `queryKeys.staff.challenges(eventInstanceId)`
+  - Note: Not currently used by any component, but the service thunk exists. Include for completeness or omit — decide at implementation time.
+
+#### 2.4.2 — Update consuming components
+
+Three components consume the Redux hooks:
+
+| Component | Current hook | New hook(s) |
+|-----------|-------------|-------------|
+| `components/staff/challenges/Challenges.tsx` | `useStaffChallenges()` → `challengesModule`, `addChallenge` | `useStaffChallengesQuery()` → `{ data, isLoading, error }` + `useAddOrUpdateChallengeMutation()` |
+| `components/staff/StaffChallengeDetails.tsx` | `useStaffChallengeDetails(id)` → `challenge`, `updateApproval`, `updateChallenge` | `useStaffChallengeDetailsQuery(id)` + `useAddOrUpdateChallengeMutation()` + `useUpdateChallengeSubmissionMutation(id)` |
+| `components/staff/teamDetails/TeamChallenges.tsx` | `useStaffChallenges()` → `challengesModule` | `useStaffChallengesQuery()` → `{ data, isLoading }` |
+
+**`Challenges.tsx` changes:**
+- Replace `challengesModule.lastError` with `error` from `useStaffChallengesQuery()`
+- Replace `challengesModule.isLoading` with `isLoading`
+- Replace `challengesModule.data` with `data ?? []`
+- The `ChallengesList` sub-component currently receives `challengesModule: Module<Challenge[]>`. Update its `Props` type to accept the plain data/loading/error props instead of the `Module` wrapper.
+
+**`StaffChallengeDetails.tsx` changes:**
+- Replace `useStaffChallengeDetails(id)` with the three individual hooks
+- `challenge` comes from `useStaffChallengeDetailsQuery(id).data`
+- `updateChallenge` comes from `useAddOrUpdateChallengeMutation().mutate`
+- `updateApproval` comes from `useUpdateChallengeSubmissionMutation(id).mutate`
+
+**`TeamChallenges.tsx` changes:**
+- Replace `challengesModule` with `{ data, isLoading }` from `useStaffChallengesQuery()`
+- Minimal changes — component only reads `isLoading` and `data`
+
+**Dialog forms (`ChallengeForm.tsx`, `ChallengeApprovalForm.tsx`):**
+- No changes needed — these receive callbacks via props (`onSubmit`) and don't import Redux directly
+
+#### 2.4.3 — Update SignalR bridge
+
+The `admin_challenge` callback in `middleware.ts` currently dispatches `getChallenges()`. Add a TanStack invalidation alongside:
+
+```ts
+.add('admin_challenge', (teamId: string) => (dispatch: any, getState: () => any) => {
+    dispatch(getChallenges());
+    // TanStack path
+    const eventInstanceId = getEventInstanceId(getState());
+    queryClient.invalidateQueries({ queryKey: queryKeys.staff.challenges(eventInstanceId) });
+})
+```
+
+#### 2.4.4 — Write integration tests
+
+Create `client/src/modules/staff/challenges/staffChallenges.query.test.tsx`.
+
+Test cases:
+- `useStaffChallengesQuery` fetches challenges on mount and returns data
+- `useStaffChallengeDetailsQuery` returns the correct challenge by `challengeId`
+- `useAddOrUpdateChallengeMutation` invalidates the challenges cache on success
+- `useUpdateChallengeSubmissionMutation` invalidates the challenges cache on success
+- Error states are surfaced via `error`
+
+#### 2.4.5 — Delete Redux artifacts
+
+Once components and tests pass:
+- Delete `client/src/modules/staff/challenges/actions.ts`
+- Delete `client/src/modules/staff/challenges/reducer.ts`
+- Delete `client/src/modules/staff/challenges/service.ts`
+- Delete `client/src/modules/staff/challenges/hooks.ts`
+- Update `client/src/modules/staff/challenges/index.ts` to export from `queries.ts` and `models.ts` only
+- Remove `challengesReducer` from `client/src/modules/staff/index.ts` `combineReducers`
+- Remove the `export * from './challenges/hooks'` re-export from `client/src/modules/staff/index.ts`
+- Remove the `getChallenges` import from `middleware.ts` and the Redux dispatch from `admin_challenge` callback (keep only the TanStack invalidation)
+
+---
 
 For each module, the steps are identical to Phase 1:
 1. Write `queries.ts` with `useQuery` / `useMutation` hooks

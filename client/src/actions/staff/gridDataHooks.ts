@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useMemo } from 'react';
 
-import { getGridModule, GridCellData, GridTeam } from 'modules/staff';
-import { getStaffGrid } from 'modules/staff/grid/service';
+import { GridCellData, GridTeam } from 'modules/staff';
 import { StaffClue } from 'modules/staff/clues';
+import { useStaffGridQuery } from 'modules/staff/grid/queries';
 
 export type ExtendedGridTeam = GridTeam &
     Readonly<{
@@ -22,15 +21,14 @@ export type ExtendedGridClue = Readonly<{
 }>;
 
 export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefresh: boolean; fastRefresh: boolean; hidePlot: boolean }) => {
-    const dispatch = useDispatch();
-    const gridModule = useSelector(getGridModule);
-    const isLoading = gridModule.isLoading;
+    const refetchInterval = noRefresh ? false : (fastRefresh ? 5000 : 15000);
+    const { data: gridViewModel, isLoading, refetch } = useStaffGridQuery({ refetchInterval });
 
-    let teams = gridModule?.data?.teams;
-    let clues = gridModule?.data?.clues;
+    const teams = gridViewModel?.teams;
+    const clues = gridViewModel?.clues;
 
     const teamData = useMemo(() => {
-        const plotSubmittableIds = clues.filter((clue) => clue.submittableType === 'Plot').map((clue) => clue.submittableId);
+        const plotSubmittableIds = (clues ?? []).filter((clue) => clue.submittableType === 'Plot').map((clue) => clue.submittableId);
 
         let teamData: ExtendedGridTeam[] = [];
         if (teams) {
@@ -46,7 +44,6 @@ export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefre
                     const puzzles: ExtendedGridCellData[] = team.teamGridData.map((puzzle) => {
                         return {
                             ...puzzle,
-                            //isSkipped is already part of puzzle so we don't need the shortcut
                             isActive: !!(!puzzle.isSkipped && puzzle.startTime && !puzzle.solveTime),
                             isSolved: !!(!puzzle.isSkipped && puzzle.startTime && puzzle.solveTime),
                             isNotStarted: !!(!puzzle.isSkipped && !puzzle.startTime && !puzzle.solveTime),
@@ -65,7 +62,7 @@ export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefre
         }
 
         return teamData;
-    }, [gridModule, hidePlot]);
+    }, [teams, clues, hidePlot]);
 
     const clueData = useMemo(() => {
         let clueData: ExtendedGridClue = {};
@@ -73,20 +70,7 @@ export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefre
             clueData = Object.assign({}, ...clues.map((clue) => ({ [clue.submittableId]: clue })));
         }
         return clueData;
-    }, [gridModule]);
-
-    const refreshGrid = useCallback(() => {
-        dispatch(getStaffGrid());
-    }, [dispatch]);
-
-    useEffect(() => {
-        refreshGrid();
-
-        if (!noRefresh) {
-            const timer = setInterval(() => refreshGrid(), fastRefresh ? 5000 : 15000);
-            return () => clearInterval(timer);
-        }
-    }, [fastRefresh, noRefresh, refreshGrid]);
+    }, [clues]);
 
     return {
         data: {
@@ -94,6 +78,6 @@ export const useStaffGridData = ({ noRefresh, fastRefresh, hidePlot }: { noRefre
             clues: clueData,
             isLoading,
         },
-        refresh: refreshGrid,
+        refresh: refetch,
     };
 };

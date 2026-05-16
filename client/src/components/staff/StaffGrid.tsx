@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import 'moment-timezone';
 
-import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
-import { useStaffGrid } from 'modules/staff/grid';
-import { useInterval } from 'utils/hooks';
+import { useStaffGridQuery, useUnlockClueForTeamMutation, useRelockClueForTeamMutation } from 'modules/staff/grid/queries';
 
 import { PuzzleColumn, TeamColumn } from './grid/GridColumns';
 import { GridCell } from './grid/GridCell';
@@ -19,22 +16,22 @@ export const StaffGrid = () => {
     const [hideTestTeams, setHideTestTeams] = useState(true);
     const [isVirtual] = useState(true);
 
-    const dispatch = useDispatch();
-    const { gridModule, getGrid } = useStaffGrid();
+    const { data: gridData, isLoading } = useStaffGridQuery({ refetchInterval: 30000 });
+    const unlockClue = useUnlockClueForTeamMutation();
+    const relockClue = useRelockClueForTeamMutation();
 
-    useInterval(() => {
-        getGrid();
-    }, 30000);
-
-    if (!gridModule.lastFetched) {
+    if (!gridData) {
+        if (isLoading) {
+            return <div>Loading grid data...</div>;
+        }
         return <div>No grid data available</div>;
     } else {
-        const visibleClueIds = gridModule.data.clues
+        const visibleClueIds = gridData.clues
             .filter((clue) => {
                 if (hidePlot && clue.submittableType === 'Plot') {
                     return false;
                 }
-                if (hideCompletedClues && gridModule.data.completedClues.includes(clue.tableOfContentId)) {
+                if (hideCompletedClues && gridData.completedClues.includes(clue.tableOfContentId)) {
                     return false;
                 } else {
                     return true;
@@ -46,7 +43,7 @@ export const StaffGrid = () => {
             <div style={{ width: '100%', overflowX: 'visible' }}>
                 {
                     // Hide the big clock during virtual events.
-                    !isVirtual && <div>Big Clock: {moment.utc(gridModule.data.latestEndTime).fromNow()}</div>
+                    !isVirtual && <div>Big Clock: {moment.utc(gridData.latestEndTime).fromNow()}</div>
                 }
 
                 <table className="staffGridTable" style={{ overflowX: 'auto' }}>
@@ -69,21 +66,21 @@ export const StaffGrid = () => {
                                     label="Hide Test Teams"
                                 />
                             </th>
-                            {gridModule.data.clues
+                            {gridData.clues
                                 .filter((c) => visibleClueIds.includes(c.submittableId))
                                 .map((puzzle) => (
                                     <PuzzleColumn key={puzzle.submittableId} puzzle={puzzle} />
                                 ))}
                         </tr>
 
-                        {gridModule.data.teams
+                        {gridData.teams
                             .filter((x) => !x.isTestTeam || !hideTestTeams)
                             .map((team) => (
                                 <tr key={team.teamId}>
                                     <TeamColumn team={team} />
                                     {team.teamGridData.map((teamGrid) => {
-                                        const selectedPuzzle = gridModule.data.clues.find((x) => x.tableOfContentId === teamGrid.tableOfContentId);
-                                        const selectedTeam = gridModule.data.teams.find((x) => x.teamId === teamGrid.teamId);
+                                        const selectedPuzzle = gridData.clues.find((x) => x.tableOfContentId === teamGrid.tableOfContentId);
+                                        const selectedTeam = gridData.teams.find((x) => x.teamId === teamGrid.teamId);
 
                                         if (!visibleClueIds.includes(teamGrid.clueId)) {
                                             return null;
@@ -94,10 +91,10 @@ export const StaffGrid = () => {
                                                     solveData={teamGrid}
                                                     puzzleTitle={selectedPuzzle ? selectedPuzzle.submittableTitle : 'UNKNOWN PUZZLE'}
                                                     teamName={selectedTeam ? selectedTeam.name : 'UNKNOWN TEAM'}
-                                                    clues={gridModule.data.clues}
-                                                    onRelock={() => dispatch(relockClueForTeam(teamGrid.teamId, teamGrid.tableOfContentId))}
-                                                    onUnlock={() => dispatch(unlockClueForTeam(teamGrid.teamId, teamGrid.tableOfContentId, 'GcUnlock'))}
-                                                    onSkip={() => dispatch(unlockClueForTeam(teamGrid.teamId, teamGrid.tableOfContentId, 'Skip'))}
+                                                    clues={gridData.clues}
+                                                    onRelock={() => relockClue.mutate({ teamId: teamGrid.teamId, tableOfContentId: teamGrid.tableOfContentId })}
+                                                    onUnlock={() => unlockClue.mutate({ teamId: teamGrid.teamId, tableOfContentId: teamGrid.tableOfContentId, reason: 'GcUnlock' })}
+                                                    onSkip={() => unlockClue.mutate({ teamId: teamGrid.teamId, tableOfContentId: teamGrid.tableOfContentId, reason: 'Skip' })}
                                                 />
                                             );
                                         }
