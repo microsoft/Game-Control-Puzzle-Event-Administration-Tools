@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import { Content, SkipPlot, SolvedPlot, UnsolvedPlot } from 'modules/types';
-import { getCluesModule, SortOrderOverride } from 'modules/staff';
+import { getCluesModule } from 'modules/staff';
+import { SortOrderOverride } from 'modules/staff/teams';
 import { SolveStatus, StaffClue } from 'modules/staff/clues';
 import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
 import { useStaffTeamQuery, useUpdateTeamDataMutation } from 'modules/staff/teams/queries';

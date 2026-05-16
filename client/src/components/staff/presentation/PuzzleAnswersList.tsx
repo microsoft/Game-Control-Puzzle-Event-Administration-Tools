@@ -3,7 +3,9 @@ import { Button, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
 import { FaEdit, FaPlus, FaRegCopy, FaTrashAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
-import { areAnswersEqual, compareAnswers, getCluesModule, StaffTeam } from 'modules/staff';
+import { areAnswersEqual, compareAnswers } from 'modules/staff/clues/comparators';
+import { getCluesModule } from 'modules/staff';
+import { StaffTeam } from 'modules/staff/teams';
 import { addAnswerToClue, addContentToAnswer, addPuzzleUnlock, deleteClueAnswer, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
 import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
 import { addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from 'modules/staff/clues/service';
