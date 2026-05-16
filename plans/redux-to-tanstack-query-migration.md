@@ -161,9 +161,9 @@ Repeat the Phase 1 pattern for each of the following modules, in this recommende
 |-------|--------|--------|-------|
 | 2.1 | `staff/feed` | ✅ Done | Read-only, no mutations. Good confidence builder. |
 | 2.2 | `staff/grid` | ✅ Done | Read + `getStaffGrid` refresh. Heavily SignalR-triggered. See notes below. |
-| 2.3 | `staff/achievements` | | Two hooks (`useStaffAchievements`, `useAchievementUnlocks`). Parameterized by `teamId`. |
+| 2.3 | `staff/achievements` | ✅ Done | Two hooks (`useStaffAchievements`, `useAchievementUnlocks`). Parameterized by `teamId`. |
 | 2.4 | `staff/challenges` | ✅ Done | Two hooks, one parameterized by `challengeId`. See detailed breakdown below. |
-| 2.5 | `staff/clues` | | Complex: `staffCluesModule` is registered at root, not under `staff`. Requires care. |
+| 2.5 | `staff/clues` | ✅ Done | Complex: was registered at root as `state.staffClues`. See notes below. |
 | 2.6 | `staff/messages` | ✅ Done | Review `messagesModule.ts` for any cross-module dependencies. |
 
 ### 2.2 — staff/grid (Migration Notes)
@@ -185,6 +185,28 @@ Repeat the Phase 1 pattern for each of the following modules, in this recommende
 5. **Redux artifacts fully deleted:** `staffGridModule.ts`, `service.ts`, `actions.ts`, `selectors.ts`, `hooks.ts` are all removed. The `gridReducer` was removed from `combineReducers` in `modules/staff/index.ts`, and the `staff` slice (which only contained `grid`) was removed from the root reducer in `modules/index.ts`. The `dispatch(getStaffGrid())` calls in the SignalR middleware were also removed — only TanStack invalidation remains.
 
 6. **`useMemo` dependencies fixed:** The old `gridDataHooks.ts` had `[gridModule, hidePlot]` and `[gridModule]` as memo dependencies (entire Redux module reference). Updated to `[teams, clues, hidePlot]` and `[clues]` for more precise memoization.
+
+### 2.5 — staff/clues (Migration Notes)
+
+**Completed:** Full migration — queries, 17 mutation hooks, 10 consumer components, SignalR bridge, integration tests, Redux cleanup.
+
+**Key observations:**
+
+1. **Most complex module in the codebase:** 2 query endpoints (list + detail), 17 mutation thunks covering clue CRUD, answers, content, locations, puzzle/achievement unlocks, instances, and team unlock/relock. 10 consumer components needed updating.
+
+2. **Root-level reducer resolved:** `staffCluesReducer` was registered as `state.staffClues` in the root `combineReducers` (not under `state.staff`). Removed the import and registration from `modules/index.ts`. The `getAllStaffPuzzles` and `getStaffPuzzleDetails` selectors that read `state.staffClues` were also removed.
+
+3. **Unlock/relock mutations consolidated:** `useUnlockClueForTeamMutation` and `useRelockClueForTeamMutation` now live in `clues/queries.ts` and invalidate both clues AND grid caches. `grid/queries.ts` re-exports them for backward compatibility with `StaffGrid.tsx`.
+
+4. **`useCluesInvalidation()` helper:** A private helper function in `queries.ts` returns a callback that invalidates both the clues list and (optionally) a specific clue detail query. All mutations use it, avoiding boilerplate.
+
+5. **`PuzzlesList` component updated:** Changed from accepting `StaffCluesState` (Redux module wrapper) to plain `{ clues: StaffClue[]; isLoading: boolean }` props — cleaner API.
+
+6. **SignalR `admin_instance` simplified:** No longer conditionally checks `isOnPage('/staff/clues/' + clueId)` — TanStack Query only refetches when active observers exist, so unconditional invalidation is safe and ensures the cache is always fresh when navigating to the page.
+
+7. **Redux artifacts fully deleted:** `actions.ts`, `hooks.ts`, `selectors.ts`, `service.ts`, `staffCluesModule.ts`, `staffCluesModule.test.ts`. The `getCluesModule`, `shouldRefreshClues` helpers in `modules/staff/index.ts` were also removed.
+
+8. **All staff modules now fully migrated.** Phase 2 is complete. The remaining Redux state is: `user`, `player/*`, `admin/*`, and `router`.
 
 ### 2.4 — staff/challenges (Detailed Breakdown)
 

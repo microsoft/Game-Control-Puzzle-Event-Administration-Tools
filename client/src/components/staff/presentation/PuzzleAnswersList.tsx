@@ -1,14 +1,9 @@
 import { useState } from 'react';
-import { Button, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { FaEdit, FaPlus, FaRegCopy, FaTrashAlt } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
 
 import { areAnswersEqual, compareAnswers } from 'modules/staff/clues/comparators';
-import { getCluesModule } from 'modules/staff';
-import { StaffTeam } from 'modules/staff/teams';
-import { addAnswerToClue, addContentToAnswer, addPuzzleUnlock, deleteClueAnswer, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
 import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
-import { addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from 'modules/staff/clues/service';
 
 import { AdditionalContent } from './AdditionalContent';
 import { AnswerForm, ContentForm } from '../dialogs';
@@ -19,7 +14,18 @@ import DialogRenderProp from '../dialogs/DialogRenderProp';
 
 import { AnswerText } from './answers/AnswerText';
 import { useStaffTeamsQuery } from 'modules/staff/teams/queries';
-import { Answer, StaffClue, useStaffClues } from 'modules/staff/clues';
+import { Answer, StaffClue } from 'modules/staff/clues';
+import {
+    useAddAchievementUnlockMutation,
+    useAddAnswerMutation,
+    useAddContentToAnswerMutation,
+    useAddPuzzleUnlockMutation,
+    useDeleteAchievementUnlockMutation,
+    useDeleteAnswerMutation,
+    useDeleteContentFromAnswerMutation,
+    useDeletePuzzleUnlockMutation,
+    useStaffCluesQuery,
+} from 'modules/staff/clues/queries';
 import { Achievement } from 'modules/types';
 import { PuzzleUnlocks } from './answers/PuzzleUnlocks';
 
@@ -37,18 +43,23 @@ const PuzzleAnswersList = ({ clue }: Props) => {
     const [enableGrouping, setEnableGrouping] = useState(true);
     const { data: achievements = [] } = useStaffAchievementsQuery();
     const { data: teamsData = [] } = useStaffTeamsQuery();
-    const { cluesModule } = useStaffClues();
-    const dispatch = useDispatch();
+    const { data: cluesData = [] } = useStaffCluesQuery();
+    const addAnswerMut = useAddAnswerMutation();
+    const deleteAnswer = useDeleteAnswerMutation();
+    const addPuzzleUnlockMut = useAddPuzzleUnlockMutation();
+    const deletePuzzleUnlockMut = useDeletePuzzleUnlockMutation();
+    const addAchUnlockMut = useAddAchievementUnlockMutation();
+    const deleteAchUnlockMut = useDeleteAchievementUnlockMutation();
+    const addContentToAnswerMut = useAddContentToAnswerMutation();
+    const deleteContentFromAnswerMut = useDeleteContentFromAnswerMutation();
 
     const deletePuzzleAnswer = (answerId: string, tableOfContentId: string) => {
-        dispatch(deleteClueAnswer(tableOfContentId, answerId));
+        deleteAnswer.mutate({ tableOfContentId, answerId });
     };
 
     const renderGroupedAnswerText = (groupedAnswer: GroupedAnswer) => {
-        let teams = GetTeamSet(groupedAnswer.teamIds);
-        teams.sort((teamA, teamB) => {
-            return teamA.name.localeCompare(teamB.name);
-        });
+        const teams = GetTeamSet(groupedAnswer.teamIds);
+        teams.sort((teamA, teamB) => teamA.name.localeCompare(teamB.name));
         return (
             <span>
                 <h4>
@@ -57,21 +68,17 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                 <div>Applies to {groupedAnswer.teamIds.length} teams:</div>
                 <ul>
                     {teams.map((team) => (
-                        <li>{team.name}</li>
+                        <li key={team.teamId}>{team.name}</li>
                     ))}
                 </ul>
             </span>
         );
     };
 
-    const FindTeamName = (teamId: string) => {
-        return teamsData.find((team) => team.teamId === teamId)?.name ?? 'UNKNOWN';
-    };
-
     const GetTeamSet = (teamIds: string[]) => {
         const teamSet = [];
-        for (var i = 0; i < teamIds.length; i++) {
-            const team = teamsData.find((team) => team.teamId === teamIds[i]);
+        for (let i = 0; i < teamIds.length; i++) {
+            const team = teamsData.find((candidate) => candidate.teamId === teamIds[i]);
             if (!!team) {
                 teamSet.push(team);
             }
@@ -83,7 +90,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
     const GetTeamApplyCollection = (teamIds: string[], answerIds: string[]) => {
         const teamsSet = GetTeamSet(teamIds);
         const result = [];
-        for (var i = 0; i < teamsSet.length; i++) {
+        for (let i = 0; i < teamsSet.length; i++) {
             if (teamsSet[i] !== undefined) {
                 result.push({
                     name: teamsSet[i].name,
@@ -96,52 +103,37 @@ const PuzzleAnswersList = ({ clue }: Props) => {
     };
 
     const GetGroupedAnswers = (groupingEnabled: boolean) => {
-        const allAnswers = clue.answers;
-
-        /*        const allAnswers: GroupedAnswer[] = clue.answers.map((answer) => {
-            const team = teams.data.find((team) => team.teamId === allAnswers[a].teamId);
-            if (team) {
-                return {
-                    ...answer,
-                    team: team,
-                };
-            } else {
-                return answer;
-            }
-        });
-*/
+        const allAnswers = [...clue.answers];
 
         allAnswers.sort(compareAnswers);
 
-        let standAloneAnswers = [];
-        let groupedAnswers = [];
+        const standAloneAnswers = [];
+        const groupedAnswers = [];
         if (!groupingEnabled) {
             for (let answerIndex = 0; answerIndex < allAnswers.length; answerIndex++) {
                 standAloneAnswers.push(allAnswers[answerIndex]);
             }
         } else {
-            let isAnswerAllocated = new Array(allAnswers.length);
+            const isAnswerAllocated = new Array(allAnswers.length);
             isAnswerAllocated.fill(false);
-            for (var i = 0; i < allAnswers.length; i++) {
+            for (let i = 0; i < allAnswers.length; i++) {
                 if (!isAnswerAllocated[i]) {
                     isAnswerAllocated[i] = true;
                     if (allAnswers[i].teamId === null) {
                         standAloneAnswers.push(allAnswers[i]);
                     } else {
-                        let answersInGroup = [i];
-                        for (var j = 0; j < allAnswers.length; j++) {
-                            if (!isAnswerAllocated[j] && allAnswers[j].teamId !== null) {
-                                if (areAnswersEqual(allAnswers[i], allAnswers[j])) {
-                                    answersInGroup.push(j);
-                                    isAnswerAllocated[j] = true;
-                                }
+                        const answersInGroup = [i];
+                        for (let j = 0; j < allAnswers.length; j++) {
+                            if (!isAnswerAllocated[j] && allAnswers[j].teamId !== null && areAnswersEqual(allAnswers[i], allAnswers[j])) {
+                                answersInGroup.push(j);
+                                isAnswerAllocated[j] = true;
                             }
                         }
 
                         if (answersInGroup.length === 1) {
                             standAloneAnswers.push(allAnswers[i]);
                         } else {
-                            let groupedAnswer: GroupedAnswer = {
+                            const groupedAnswer: GroupedAnswer = {
                                 additionalContent: allAnswers[i].additionalContent,
                                 answerIds: [],
                                 answerResponse: allAnswers[i].answerResponse,
@@ -153,7 +145,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                 unlockedAchievements: allAnswers[i].unlockedAchievements,
                                 unlockedClues: allAnswers[i].unlockedClues,
                             };
-                            for (var k = 0; k < answersInGroup.length; k++) {
+                            for (let k = 0; k < answersInGroup.length; k++) {
                                 const answerToMerge = allAnswers[answersInGroup[k]];
                                 groupedAnswer.answerIds.push(answerToMerge.answerId);
 
@@ -168,15 +160,16 @@ const PuzzleAnswersList = ({ clue }: Props) => {
             }
         }
         return {
-            standAloneAnswers: standAloneAnswers,
-            groupedAnswers: groupedAnswers,
+            standAloneAnswers,
+            groupedAnswers,
         };
     };
 
     const renderGroupUnlocks = (groupedAnswer: GroupedAnswer) => {
-        const unlockableClues = cluesModule.data.filter(
+        const unlockableClues = cluesData.filter(
             (nextClue) =>
-                nextClue.tableOfContentId !== clue.tableOfContentId && groupedAnswer.unlockedClues.find((unlock) => unlock.tableOfContentId === nextClue.tableOfContentId) === undefined
+                nextClue.tableOfContentId !== clue.tableOfContentId &&
+                groupedAnswer.unlockedClues.find((unlock) => unlock.tableOfContentId === nextClue.tableOfContentId) === undefined,
         );
 
         if (groupedAnswer.unlockedClues !== null) {
@@ -197,7 +190,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                     getItemValue={(puzzle: StaffClue) => puzzle.tableOfContentId}
                                     getItemLabel={(puzzle: StaffClue) => puzzle.submittableTitle}
                                     onSubmit={(tableOfContentId: string, applyToCollection: string[]) => {
-                                        applyToCollection.map((answerId: string) => dispatch(addPuzzleUnlock(answerId, tableOfContentId)));
+                                        applyToCollection.forEach((answerId: string) => addPuzzleUnlockMut.mutate({ answerId, tableOfContentId }));
                                         onComplete();
                                     }}
                                 />
@@ -208,7 +201,9 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                         <UnlockedPuzzle
                             key={unlock.tableOfContentId}
                             unlockedPuzzle={unlock}
-                            deleteUnlock={() => groupedAnswer.answerIds?.map((answerId) => dispatch(deletePuzzleUnlock(answerId, unlock.tableOfContentId)))}
+                            deleteUnlock={() =>
+                                groupedAnswer.answerIds?.forEach((answerId) => deletePuzzleUnlockMut.mutate({ answerId, tableOfContentId: unlock.tableOfContentId }))
+                            }
                         />
                     ))}
                     <div>
@@ -227,7 +222,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                     getItemValue={(achievement: Achievement) => achievement.achievementId}
                                     getItemLabel={(achievement: Achievement) => achievement.name}
                                     onSubmit={(achievementId: string, applyToCollection: string[]) => {
-                                        applyToCollection.map((answerId) => dispatch(addAchievementUnlockToAnswer(answerId, achievementId)));
+                                        applyToCollection.forEach((answerId) => addAchUnlockMut.mutate({ answerId, achievementId }));
                                         onComplete();
                                     }}
                                 />
@@ -237,8 +232,10 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                             <UnlockedAchievement
                                 key={achievement.achievementId}
                                 unlockedAchievement={achievement}
-                                deleteUnlock={(achievementId) =>
-                                    groupedAnswer.answerIds?.map((answerId) => dispatch(deleteAchievementUnlockFromAnswer(answerId, achievement.achievementId)))
+                                deleteUnlock={() =>
+                                    groupedAnswer.answerIds?.forEach((answerId) =>
+                                        deleteAchUnlockMut.mutate({ answerId, achievementId: achievement.achievementId }),
+                                    )
                                 }
                             />
                         ))}
@@ -251,7 +248,9 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                             renderBody={(onComplete) => (
                                 <ContentForm
                                     onSubmit={(content) => {
-                                        groupedAnswer.answerIds?.map((answerId) => dispatch(addContentToAnswer(clue.tableOfContentId, answerId, content)));
+                                        groupedAnswer.answerIds?.forEach((answerId) =>
+                                            addContentToAnswerMut.mutate({ tableOfContentId: clue.tableOfContentId, answerId, contentTemplate: content }),
+                                        );
                                         onComplete();
                                     }}
                                 />
@@ -271,7 +270,13 @@ const PuzzleAnswersList = ({ clue }: Props) => {
             return (
                 <div>
                     <AdditionalContent content={groupedAnswer.additionalContent} />
-                    <Button onClick={() => groupedAnswer.answerIds?.map((answerId: string) => dispatch(deleteContentFromAnswer(clue.tableOfContentId, answerId)))}>
+                    <Button
+                        onClick={() =>
+                            groupedAnswer.answerIds?.forEach((answerId: string) =>
+                                deleteContentFromAnswerMut.mutate({ tableOfContentId: clue.tableOfContentId, answerId }),
+                            )
+                        }
+                    >
                         Remove Content
                     </Button>
                 </div>
@@ -291,11 +296,11 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                 </div>
             );
         }
-        return;
+        return null;
     };
 
     if (clue.answers !== null && clue.answers.length > 0) {
-        let dividedAnswerGroups = GetGroupedAnswers(enableGrouping);
+        const dividedAnswerGroups = GetGroupedAnswers(enableGrouping);
         return (
             <span>
                 {renderFallback(dividedAnswerGroups)}
@@ -323,7 +328,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                             answer={{ ...answer, isTeamSpecific: !!answer.teamId }}
                                             teams={teamsData}
                                             onSubmit={(updatedAnswer) => {
-                                                dispatch(addAnswerToClue(clue.tableOfContentId, updatedAnswer));
+                                                addAnswerMut.mutate({ tableOfContentId: clue.tableOfContentId, answerTemplate: updatedAnswer });
                                                 onComplete();
                                             }}
                                         />
@@ -342,13 +347,13 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                             answer={{ ...answer, answerId: undefined, isTeamSpecific: !!answer.teamId }}
                                             teams={teamsData}
                                             onSubmit={(updatedAnswer) => {
-                                                dispatch(addAnswerToClue(clue.tableOfContentId, updatedAnswer));
+                                                addAnswerMut.mutate({ tableOfContentId: clue.tableOfContentId, answerTemplate: updatedAnswer });
                                                 onComplete();
                                             }}
                                         />
                                     )}
                                 />
-                                <Button variant="danger" onClick={() => dispatch(deletePuzzleAnswer(answer.answerId, clue.tableOfContentId))}>
+                                <Button variant="danger" onClick={() => deletePuzzleAnswer(answer.answerId, clue.tableOfContentId)}>
                                     <FaTrashAlt /> Delete Answer
                                 </Button>
                             </div>
@@ -362,7 +367,7 @@ const PuzzleAnswersList = ({ clue }: Props) => {
                                 {renderGroupUnlocks(groupedAnswer)}
                             </div>
                             <div style={{ display: 'flow', justifyContent: 'center' }}>
-                                <Button onClick={() => groupedAnswer.answerIds.map((answerId) => dispatch(deletePuzzleAnswer(answerId, clue.tableOfContentId)))}>
+                                <Button onClick={() => groupedAnswer.answerIds.forEach((answerId) => deletePuzzleAnswer(answerId, clue.tableOfContentId))}>
                                     Delete Answer
                                 </Button>
                             </div>

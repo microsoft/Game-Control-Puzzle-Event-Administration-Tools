@@ -1,15 +1,20 @@
 import DialogRenderProp from 'components/staff/dialogs/DialogRenderProp';
 import SimpleListForm from 'components/staff/dialogs/SimpleListForm';
-import { getCluesModule } from 'modules/staff';
 import { Answer, StaffClue } from 'modules/staff/clues';
 import { FaPlus } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
 import { UnlockedPuzzle } from '../UnlockedPuzzle';
 import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
-import { addAchievementUnlockToAnswer, deleteAchievementUnlockFromAnswer } from 'modules/staff/clues/service';
 import { AnswerContent } from './AnswerContent';
 import { ContentForm } from 'components/staff/dialogs';
-import { addContentToAnswer, addPuzzleUnlock, deleteContentFromAnswer, deletePuzzleUnlock } from 'modules/staff/clues/service';
+import {
+    useAddAchievementUnlockMutation,
+    useAddContentToAnswerMutation,
+    useAddPuzzleUnlockMutation,
+    useDeleteAchievementUnlockMutation,
+    useDeleteContentFromAnswerMutation,
+    useDeletePuzzleUnlockMutation,
+    useStaffCluesQuery,
+} from 'modules/staff/clues/queries';
 import { UnlockedAchievement } from '../UnlockedAchievement';
 
 type Props = Readonly<{
@@ -18,12 +23,17 @@ type Props = Readonly<{
 }>;
 
 export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
-    const clues = useSelector(getCluesModule);
+    const { data: cluesData = [] } = useStaffCluesQuery();
     const { data: achievements = [] } = useStaffAchievementsQuery();
-    const dispatch = useDispatch();
+    const addPuzzleUnlockMut = useAddPuzzleUnlockMutation();
+    const deletePuzzleUnlockMut = useDeletePuzzleUnlockMutation();
+    const addAchUnlockMut = useAddAchievementUnlockMutation();
+    const deleteAchUnlockMut = useDeleteAchievementUnlockMutation();
+    const addContentToAnswerMut = useAddContentToAnswerMutation();
+    const deleteContentFromAnswerMut = useDeleteContentFromAnswerMutation();
 
-    const unlockableClues = clues.data.filter(
-        (clue: StaffClue) => clue.tableOfContentId !== tableOfContentId && answer.unlockedClues.find((unlock) => unlock.tableOfContentId === clue.tableOfContentId) === undefined
+    const unlockableClues = cluesData.filter(
+        (clue: StaffClue) => clue.tableOfContentId !== tableOfContentId && answer.unlockedClues.find((unlock) => unlock.tableOfContentId === clue.tableOfContentId) === undefined,
     );
 
     if (answer.unlockedClues !== null) {
@@ -43,7 +53,7 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
                                 getItemValue={(puzzle) => puzzle.tableOfContentId}
                                 getItemLabel={(puzzle) => puzzle.submittableTitle}
                                 onSubmit={(tableOfContentId) => {
-                                    dispatch(addPuzzleUnlock(answer.answerId, tableOfContentId));
+                                    addPuzzleUnlockMut.mutate({ answerId: answer.answerId, tableOfContentId });
                                     onComplete();
                                 }}
                             />
@@ -54,7 +64,7 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
                     <UnlockedPuzzle
                         key={unlock.tableOfContentId}
                         unlockedPuzzle={unlock}
-                        deleteUnlock={() => dispatch(deletePuzzleUnlock(answer.answerId, unlock.tableOfContentId))}
+                        deleteUnlock={() => deletePuzzleUnlockMut.mutate({ answerId: answer.answerId, tableOfContentId: unlock.tableOfContentId })}
                     />
                 ))}
                 <div>
@@ -71,7 +81,7 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
                                 getItemValue={(achievement) => achievement.achievementId}
                                 getItemLabel={(achievement) => achievement.name}
                                 onSubmit={(achievementId) => {
-                                    dispatch(addAchievementUnlockToAnswer(answer.answerId, achievementId));
+                                    addAchUnlockMut.mutate({ answerId: answer.answerId, achievementId });
                                     onComplete();
                                 }}
                             />
@@ -81,7 +91,7 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
                         <UnlockedAchievement
                             key={achievement.achievementId}
                             unlockedAchievement={achievement}
-                            deleteUnlock={(achievementId) => dispatch(deleteAchievementUnlockFromAnswer(answer.answerId, achievementId))}
+                            deleteUnlock={(achievementId) => deleteAchUnlockMut.mutate({ answerId: answer.answerId, achievementId })}
                         />
                     ))}
                 </div>
@@ -93,14 +103,17 @@ export const PuzzleUnlocks = ({ tableOfContentId, answer }: Props) => {
                         renderBody={(onComplete) => (
                             <ContentForm
                                 onSubmit={(content) => {
-                                    dispatch(addContentToAnswer(tableOfContentId, answer.answerId, content));
+                                    addContentToAnswerMut.mutate({ tableOfContentId, answerId: answer.answerId, contentTemplate: content });
                                     onComplete();
                                 }}
                             />
                         )}
                     />
                     {!!answer.additionalContent && (
-                        <AnswerContent content={answer.additionalContent} deleteContent={() => dispatch(deleteContentFromAnswer(tableOfContentId, answer.answerId))} />
+                        <AnswerContent
+                            content={answer.additionalContent}
+                            deleteContent={() => deleteContentFromAnswerMut.mutate({ tableOfContentId, answerId: answer.answerId })}
+                        />
                     )}
                 </div>
             </div>

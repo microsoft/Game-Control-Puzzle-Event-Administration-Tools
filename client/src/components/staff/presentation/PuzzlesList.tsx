@@ -1,20 +1,22 @@
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
+import { StaffClue } from 'modules/staff/clues';
+
 import { ClueIcon } from './ClueIcon';
-import { StaffCluesState } from 'modules/staff/clues/staffCluesModule';
 
 type Props = Readonly<{
-    clues: StaffCluesState;
+    clues: StaffClue[];
+    isLoading: boolean;
 }>;
 
-export const PuzzlesList = ({ clues }: Props) => {
-    if (clues.isLoading) {
+export const PuzzlesList = ({ clues, isLoading }: Props) => {
+    if (isLoading) {
         return <div>Loading...</div>;
-    } else if (clues.data.length > 0) {
+    } else if (clues.length > 0) {
         return (
             <ListGroup className="clickable">
-                {clues.data.map((clue) => (
+                {clues.map((clue) => (
                     <LinkContainer to={`/staff/clues/${clue.tableOfContentId}`} key={clue.tableOfContentId}>
                         <ListGroupItem>
                             <ClueIcon clue={clue} /> {clue.submittableTitle} ({clue.sortOrder})

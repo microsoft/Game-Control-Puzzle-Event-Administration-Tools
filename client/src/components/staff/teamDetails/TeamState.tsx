@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Button, Card, Col, Container, Form, ListGroup, ListGroupItem, Row } from 'react-bootstrap';
 import { FaFastForward, FaLock, FaPuzzlePiece, FaSortNumericDown, FaUnlockAlt } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import { Content, SkipPlot, SolvedPlot, UnsolvedPlot } from 'modules/types';
-import { getCluesModule } from 'modules/staff';
 import { SortOrderOverride } from 'modules/staff/teams';
 import { SolveStatus, StaffClue } from 'modules/staff/clues';
-import { relockClueForTeam, unlockClueForTeam } from 'modules/staff/clues/service';
+import { useRelockClueForTeamMutation, useStaffCluesQuery, useUnlockClueForTeamMutation } from 'modules/staff/clues/queries';
 import { useStaffTeamQuery, useUpdateTeamDataMutation } from 'modules/staff/teams/queries';
 import { AdditionalContent } from '../presentation/AdditionalContent';
 import DialogRenderProp from '../dialogs/DialogRenderProp';
@@ -123,15 +121,16 @@ const CluePlotContent = ({ status, contentList }: { status: SolveStatus; content
 };
 
 export const TeamState = ({ teamId }: { teamId: string }) => {
-    const cluesModule = useSelector(getCluesModule);
+    const { data: cluesData = [] } = useStaffCluesQuery();
     const { data: currentTeam } = useStaffTeamQuery(teamId);
     const teamSortOverrides = currentTeam?.additionalData?.sortOverride;
     const updateTeamData = useUpdateTeamDataMutation();
-    const dispatch = useDispatch();
+    const unlockClue = useUnlockClueForTeamMutation();
+    const relockClue = useRelockClueForTeamMutation();
 
     const [hideContent, setHideContent] = useState(true);
 
-    const currentCluesForTeam = cluesModule.data;
+    const currentCluesForTeam = cluesData;
 
     const getVariantForClue = (clue: StaffClue): 'success' | 'warning' | 'danger' | undefined => {
         const teamStatus = clue.teamsStatus.find((status) => teamId === status.teamId);
@@ -147,7 +146,7 @@ export const TeamState = ({ teamId }: { teamId: string }) => {
         return undefined;
     };
 
-    const sortedClues = currentCluesForTeam.sort((a: any, b: any) => {
+    const sortedClues = [...currentCluesForTeam].sort((a: StaffClue, b: StaffClue) => {
         const aSortOrder = teamSortOverrides?.find((x) => x.tableOfContentId === a.tableOfContentId)?.sortOrder ?? a.sortOrder;
         const bSortOrder = teamSortOverrides?.find((x) => x.tableOfContentId === b.tableOfContentId)?.sortOrder ?? b.sortOrder;
         return aSortOrder - bSortOrder;
@@ -201,17 +200,15 @@ export const TeamState = ({ teamId }: { teamId: string }) => {
                                                         status={teamStatus}
                                                         clue={clue}
                                                         sortOrder={override?.sortOrder ?? clue.sortOrder}
-                                                        onRelock={(tableOfContentId) => dispatch(relockClueForTeam(teamId, tableOfContentId))}
-                                                        onUnlock={(tableOfContentId) => dispatch(unlockClueForTeam(teamId, tableOfContentId, 'GcUnlock'))}
-                                                        onSkip={(tableOfContentId) => dispatch(unlockClueForTeam(teamId, tableOfContentId, 'Skip'))}
+                                                        onRelock={(tableOfContentId) => relockClue.mutate({ teamId, tableOfContentId })}
+                                                        onUnlock={(tableOfContentId) => unlockClue.mutate({ teamId, tableOfContentId, reason: 'GcUnlock' })}
+                                                        onSkip={(tableOfContentId) => unlockClue.mutate({ teamId, tableOfContentId, reason: 'Skip' })}
                                                         onChangeSortOrder={(tableOfContentId, sortOrder) => {
                                                             const sortOverride: SortOrderOverride[] = [];
 
                                                             if (currentTeam?.additionalData?.sortOverride?.length ?? -1 > 0) {
                                                                 currentTeam?.additionalData?.sortOverride?.forEach((override) => {
                                                                     if (override.tableOfContentId !== tableOfContentId) {
-                                                                        // Skip existing overrides, we only want to modify the
-                                                                        // changed one.
                                                                         sortOverride.push(override);
                                                                     } else if (sortOrder !== clue.sortOrder) {
                                                                         sortOverride.push({ tableOfContentId, sortOrder });

@@ -6,7 +6,6 @@ import { fetchPlayerCalls } from 'modules/player/calls/service';
 import { fetchPlayerChallenges } from 'modules/player/challenges/service';
 import { fetchPlayerClues } from 'modules/player/clues/service';
 import { fetchPlayerMessages } from 'modules/player/messages/service';
-import { fetchStaffClues, fetchStaffClueDetails } from 'modules/staff/clues/service';
 import { queryClient } from 'lib/queryClient';
 import { queryKeys } from 'lib/queryKeys';
 import { getEventInstanceId } from 'modules/user/selectors';
@@ -26,6 +25,7 @@ export const createSignalMiddleware = (history: any) => {
                 const eventInstanceId = getEventInstanceId(getState());
                 queryClient.invalidateQueries({ queryKey: queryKeys.staff.teams(eventInstanceId) });
                 queryClient.invalidateQueries({ queryKey: queryKeys.staff.grid(eventInstanceId) });
+                queryClient.invalidateQueries({ queryKey: queryKeys.staff.clues(eventInstanceId) });
             }
         })
         .add('admin_pulse', (teamId: string) => (dispatch: any, getState: any) => {})
@@ -34,13 +34,13 @@ export const createSignalMiddleware = (history: any) => {
                 const eventInstanceId = getEventInstanceId(getState());
                 queryClient.invalidateQueries({ queryKey: queryKeys.staff.teams(eventInstanceId) });
                 queryClient.invalidateQueries({ queryKey: queryKeys.staff.grid(eventInstanceId) });
+                queryClient.invalidateQueries({ queryKey: queryKeys.staff.clues(eventInstanceId) });
             }
         })
         .add('admin_instance', (clueId: string) => (dispatch: any, getState: any) => {
-            if (isOnPage('/staff/clues/' + clueId)) {
-                dispatch(fetchStaffClues());
-                dispatch(fetchStaffClueDetails(clueId));
-            }
+            const eventInstanceId = getEventInstanceId(getState());
+            queryClient.invalidateQueries({ queryKey: queryKeys.staff.clues(eventInstanceId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.staff.clueDetails(eventInstanceId, clueId) });
         })
         // Add a feature that allows us to force-reload everyone's page remotely if we want them
         // to pick up a new client build that we've deployed.

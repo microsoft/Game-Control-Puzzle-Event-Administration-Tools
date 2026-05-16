@@ -1,9 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { apiFetch, apiMutate } from 'lib/apiFetch';
+import { apiFetch } from 'lib/apiFetch';
 import { useEventInstanceId } from 'lib/hooks';
 import { queryKeys } from 'lib/queryKeys';
 import { GridViewModel } from './models';
+
+// Re-export unlock/relock mutations from clues — they are clue operations
+// that also invalidate the grid cache.
+export { useUnlockClueForTeamMutation, useRelockClueForTeamMutation } from '../clues/queries';
 
 /**
  * Fetches the staff grid view model for the current event instance.
@@ -23,41 +27,5 @@ export const useStaffGridQuery = (options?: { refetchInterval?: number | false }
         queryFn: () => apiFetch<GridViewModel>(`/api/staff/grid/${eventInstanceId}`),
         enabled: !!eventInstanceId,
         refetchInterval: options?.refetchInterval ?? false,
-    });
-};
-
-// ─── Mutations ────────────────────────────────────────────────────────────────
-
-/**
- * Unlocks a puzzle (clue) for a team. On success the grid query is
- * invalidated so the UI refreshes immediately.
- */
-export const useUnlockClueForTeamMutation = () => {
-    const queryClient = useQueryClient();
-    const eventInstanceId = useEventInstanceId();
-
-    return useMutation({
-        mutationFn: ({ teamId, tableOfContentId, reason }: { teamId: string; tableOfContentId: string; reason: string }) =>
-            apiMutate('put', `/api/staff/puzzles/${eventInstanceId}/teams/${teamId}/tocs/${tableOfContentId}?unlockReason=${reason}`),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.staff.grid(eventInstanceId) });
-        },
-    });
-};
-
-/**
- * Re-locks a previously unlocked puzzle for a team. On success the grid
- * query is invalidated so the UI refreshes immediately.
- */
-export const useRelockClueForTeamMutation = () => {
-    const queryClient = useQueryClient();
-    const eventInstanceId = useEventInstanceId();
-
-    return useMutation({
-        mutationFn: ({ teamId, tableOfContentId }: { teamId: string; tableOfContentId: string }) =>
-            apiMutate('delete', `/api/staff/puzzles/${eventInstanceId}/teams/${teamId}/tocs/${tableOfContentId}`),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.staff.grid(eventInstanceId) });
-        },
     });
 };

@@ -13,11 +13,11 @@ import { CallHistory, TeamAchievements, TeamChallenges, TeamRoster, TeamState } 
 
 import DialogRenderProp from './dialogs/DialogRenderProp';
 import { TeamForm } from './dialogs';
-import { useStaffClues } from 'modules/staff/clues/hooks';
 import { updateUserInfo } from 'modules/admin/users/service';
 import { useDeleteSubmissionMutation } from 'modules/admin/player/queries';
 import { getErrorMessage } from 'lib/apiFetch';
 import { CallTemplate } from 'modules/types';
+import { useStaffCluesQuery } from 'modules/staff/clues/queries';
 import {
     useStaffTeamQuery,
     useAddOrUpdateTeamMutation,
@@ -29,7 +29,7 @@ import {
 export const StaffTeamDetails = () => {
     const { id, tab } = useParams<{ id: string; tab: string }>();
 
-    const { cluesModule } = useStaffClues();
+    const { data: clues = [] } = useStaffCluesQuery();
     const { data: currentTeam, isLoading: teamsLoading } = useStaffTeamQuery(id);
 
     const addOrUpdateTeam = useAddOrUpdateTeamMutation();
@@ -44,8 +44,6 @@ export const StaffTeamDetails = () => {
 
     const dispatch = useDispatch();
     const history = useHistory();
-
-    const clues = cluesModule;
 
     const handleCallUpdate = (updatedCall: CallTemplate) =>
         updateCall.mutate({ teamId: id, callTemplate: updatedCall });
@@ -128,7 +126,7 @@ export const StaffTeamDetails = () => {
                     <Tab eventKey={1} title="Calls">
                         {activeCall ? (
                             <Card>
-                                <TeamCallForm key={activeCall.callId} puzzles={clues.data} currentCall={activeCall} onUpdate={handleCallUpdate} />
+                                <TeamCallForm key={activeCall.callId} puzzles={clues} currentCall={activeCall} onUpdate={handleCallUpdate} />
                             </Card>
                         ) : (
                             <Button onClick={startCall}>Start Call</Button>
