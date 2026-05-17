@@ -4,12 +4,16 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, BrowserRouterProps } from 'react-router-dom';
 
-import { queryClient } from './lib/queryClient';
+import { queryClient, initQueryClientAuth } from './lib/queryClient';
 import store from './store';
 import './index.css';
 import App from './components/App';
 import { unregister as unregisterServiceWorker } from './registerServiceWorker';
 import './theme/theme.scss';
+
+// Wire up the session-expiry handler now that both queryClient and store
+// are initialized. This breaks the circular dependency between the two.
+initQueryClientAuth(store);
 
 const routerProps: BrowserRouterProps = {};
 

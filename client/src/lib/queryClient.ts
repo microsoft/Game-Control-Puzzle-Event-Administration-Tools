@@ -1,8 +1,36 @@
-import { QueryCache, QueryClient } from '@tanstack/react-query';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 
 import { SessionExpiredError } from './apiFetch';
-import store from '../store';
-import { USER_LOGGED_OUT } from '../modules/user/actions';
+
+/**
+ * Lazy reference to the Redux store, set via `setStore()` from index.tsx
+ * after store creation. This breaks the circular dependency:
+ * queryClient → store → signalr/middleware → queryClient.
+ */
+let dispatchLogout: (() => void) | undefined;
+
+/**
+ * Called once from index.tsx after the Redux store is created.
+ * Wires up the session-expiry handler without a direct import cycle.
+ */
+export function initQueryClientAuth(store: { dispatch: (action: any) => void }) {
+    const { USER_LOGGED_OUT } = require('../modules/user/actions');
+    dispatchLogout = () => {
+        queryClient.clear();
+        store.dispatch({ type: USER_LOGGED_OUT });
+    };
+}
+
+/**
+ * Handles SessionExpiredError (401) by clearing all cached data and
+ * dispatching USER_LOGGED_OUT so Redux reducers and the SignalR
+ * middleware reset state properly.
+ */
+function handleSessionExpiry(error: Error) {
+    if (error instanceof SessionExpiredError) {
+        dispatchLogout?.();
+    }
+}
 
 /**
  * Singleton QueryClient shared across the React tree and non-React code
@@ -23,15 +51,9 @@ export const queryClient = new QueryClient({
         },
     },
     queryCache: new QueryCache({
-        onError: (error) => {
-            // Mirror the legacy handleServiceError behaviour: when a 401 is
-            // detected, clear all cached query data first to prevent cross-
-            // session data bleed, then dispatch USER_LOGGED_OUT so all Redux
-            // reducers and the SignalR middleware reset state properly.
-            if (error instanceof SessionExpiredError) {
-                queryClient.clear();
-                store.dispatch({ type: USER_LOGGED_OUT });
-            }
-        },
+        onError: handleSessionExpiry,
+    }),
+    mutationCache: new MutationCache({
+        onError: handleSessionExpiry,
     }),
 });
