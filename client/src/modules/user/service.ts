@@ -1,6 +1,7 @@
 import Axios from "axios";
 
 import * as actions from './actions';
+import { queryClient } from 'lib/queryClient';
 
 const doLoginRequest = async (dispatch: any, request: Promise<any>, errorContext: string) => {
     dispatch({ type: actions.USER_LOGIN_STARTED });
@@ -67,5 +68,6 @@ export const loadUserTokenFromCache = () => (dispatch: any) => {
 export const logout = () => (dispatch: any) => {
     localStorage.removeItem('userToken');
     localStorage.removeItem('userMessages');
+    queryClient.clear();
     dispatch({ type: actions.USER_LOGGED_OUT });
 };

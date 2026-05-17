@@ -25,9 +25,11 @@ export const queryClient = new QueryClient({
     queryCache: new QueryCache({
         onError: (error) => {
             // Mirror the legacy handleServiceError behaviour: when a 401 is
-            // detected, dispatch USER_LOGGED_OUT so all Redux reducers and
-            // the SignalR middleware reset state properly.
+            // detected, clear all cached query data first to prevent cross-
+            // session data bleed, then dispatch USER_LOGGED_OUT so all Redux
+            // reducers and the SignalR middleware reset state properly.
             if (error instanceof SessionExpiredError) {
+                queryClient.clear();
                 store.dispatch({ type: USER_LOGGED_OUT });
             }
         },
