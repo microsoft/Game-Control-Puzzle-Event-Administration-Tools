@@ -14,10 +14,9 @@ let dispatchLogout: (() => void) | undefined;
  * Wires up the session-expiry handler without a direct import cycle.
  */
 export function initQueryClientAuth(store: { dispatch: (action: any) => void }) {
-    const { USER_LOGGED_OUT } = require('../modules/user/actions');
     dispatchLogout = () => {
         queryClient.clear();
-        store.dispatch({ type: USER_LOGGED_OUT });
+        store.dispatch({ type: 'USER_LOGGED_OUT' });
     };
 }
 
