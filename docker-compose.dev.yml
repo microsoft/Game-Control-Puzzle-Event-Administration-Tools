@@ -1,0 +1,41 @@
+services:
+    database:
+        build: ./database
+        ports:
+            - "1433:1433"
+        volumes:
+            - db:/var/opt/mssql
+        env_file:
+            - database.env
+    react:
+        image: "node:20-alpine"
+        ports:
+            - "3000:3000"
+        working_dir: /home/node/app
+        volumes:
+            - "${HOST_DIR:-.}/client:/home/node/app"
+        command: sh -c 'npm ci --legacy-peer-deps && npm run start -- --host 0.0.0.0'
+        user: "${REACT_USER:-}"
+        environment:
+            - VITE_APP_GAMECONTROL_CLIENT_API_URL=/
+    server:
+        build: ./server
+        ports:
+            - "5000:5000"
+        environment:
+            - ASPNETCORE_URLS=http://+:5000
+        env_file:
+            - server.env
+    nginx:
+        image: "nginx:alpine"
+        depends_on:
+            - react
+            - server
+        ports:
+            - "80:80"
+        volumes:
+            - "${HOST_DIR:-.}/Docker/dev/nginx/nginx.conf:/etc/nginx/nginx.conf"
+            - "${HOST_DIR:-.}/Docker/dev/nginx/locations.d/:/etc/nginx/locations.d/"
+            - "${HOST_DIR:-.}/client/public/:/etc/nginx/html"
+volumes:
+    db: {}
