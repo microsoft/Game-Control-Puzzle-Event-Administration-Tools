@@ -1,6 +1,7 @@
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
-import { StaffClue, useStaffClues } from 'modules/staff/clues';
+import { StaffClue } from 'modules/staff/clues';
+import { useStaffCluesQuery } from 'modules/staff/clues/queries';
 
 const ClueDetails = ({ clue }: { clue: StaffClue }) => {
     if (clue.parSolveTime && clue.averageSolveTime) {
@@ -33,7 +34,7 @@ const ClueRatings = ({ clue }: { clue: StaffClue }) => {
 
 export const AdminEventSummary = () => {
     document.title = 'Game Control - Event Summary';
-    const { cluesModule } = useStaffClues();
+    const { data: clues = [] } = useStaffCluesQuery();
 
     const getClueStyle = (clue: StaffClue) => {
         if (!!clue.parSolveTime && !!clue.averageSolveTime) {
@@ -59,7 +60,7 @@ export const AdminEventSummary = () => {
         <div>
             <h4>Current Event Summary</h4>
             <ListGroup>
-                {cluesModule.data
+                {clues
                     .filter((x: StaffClue) => x.submittableType.trim() === 'Puzzle')
                     .map((clue: StaffClue) => (
                         <ListGroupItem key={clue.tableOfContentId} variant={getClueStyle(clue)}>

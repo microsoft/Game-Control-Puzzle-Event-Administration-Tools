@@ -2,7 +2,7 @@ import { FaPlus } from 'react-icons/fa';
 
 import DialogRenderProp from 'components/staff/dialogs/DialogRenderProp';
 import SimpleListForm from 'components/staff/dialogs/SimpleListForm';
-import { useStaffAchievements } from 'modules/staff/achievements';
+import { useStaffAchievementsQuery } from 'modules/staff/achievements/queries';
 import { Achievement } from 'modules/types';
 
 import { updateStringSettingFunction } from '../../types';
@@ -14,7 +14,7 @@ type Props = Readonly<{
 }>;
 
 export const AchievementConfigurationButton = ({ achievementName, settingName, updateStringSetting }: Props) => {
-    const { staffAchievementsModule } = useStaffAchievements();
+    const { data: achievements = [] } = useStaffAchievementsQuery();
 
     return (
         <DialogRenderProp
@@ -28,7 +28,7 @@ export const AchievementConfigurationButton = ({ achievementName, settingName, u
                 <SimpleListForm
                     label={'Select an achievement'}
                     submitText="Configure"
-                    collection={staffAchievementsModule.data}
+                    collection={achievements}
                     getItemKey={(achievement: Achievement) => achievement.achievementId}
                     getItemValue={(achievement: Achievement) => achievement.achievementId}
                     getItemLabel={(achievement: Achievement) => achievement.name}

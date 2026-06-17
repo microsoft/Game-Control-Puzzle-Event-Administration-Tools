@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, FormGroup } from 'react-bootstrap';
 
-import { AchievementTemplate } from 'modules/staff/achievements';
+import { AchievementTemplate } from 'modules/staff/achievements/models';
 import { Achievement } from 'modules/types';
 
 type AchievementFormProps = Readonly<{

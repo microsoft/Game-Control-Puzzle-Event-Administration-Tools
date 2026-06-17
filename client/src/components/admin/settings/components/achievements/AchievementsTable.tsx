@@ -1,6 +1,6 @@
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { EventSetting, getEventSettingsModule } from 'modules/admin';
 import { updateStringSetting } from 'modules/admin/settings/service';
@@ -22,7 +22,10 @@ type AchievementSetting = {
 };
 
 export const AchievementsTable = () => {
+    const dispatch = useDispatch();
     const settingsModule = useSelector(getEventSettingsModule);
+    const handleUpdateStringSetting = (settingType: string, name: string, value: string) =>
+        dispatch(updateStringSetting(settingType, name, value));
 
     const achievementColumns: ColumnDef<AchievementSetting>[] = [
         {
@@ -49,7 +52,7 @@ export const AchievementsTable = () => {
                             <AchievementConfigurationButton
                                 achievementName={cell.getValue().settingLabel}
                                 settingName={cell.getValue().settingName}
-                                updateStringSetting={updateStringSetting}
+                                updateStringSetting={handleUpdateStringSetting}
                             />
                         );
                     },

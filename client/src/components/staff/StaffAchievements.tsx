@@ -1,27 +1,28 @@
 import React from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Alert, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { FaPlus, FaEdit } from 'react-icons/fa';
 
 import DialogRenderProp from './dialogs/DialogRenderProp';
 import { AchievementForm } from './dialogs';
 import { AchievementItem } from '../shared/AchievementItem';
 
-import { useStaffAchievements, AchievementTemplate } from "modules/staff/achievements";
-import { Achievement, Module } from 'modules/types';
+import { useStaffAchievementsQuery, useAddOrUpdateAchievementMutation } from "modules/staff/achievements/queries";
+import { AchievementTemplate } from "modules/staff/achievements/models";
+import { Achievement } from 'modules/types';
+import { getErrorMessage } from 'lib/apiFetch';
 
-type Props = Readonly<{
-    staffAchievementsModule: Module<Achievement[]>;
-    addAchievement: (achievement: AchievementTemplate) => void;
-}>;
+const AchievementsList = ({ addAchievement }: { addAchievement: (achievement: AchievementTemplate) => void }) => {
+    const { data: achievements = [], isLoading, isSuccess, error } = useStaffAchievementsQuery();
 
-const AchievementsList = ({ staffAchievementsModule, addAchievement }: Props) => {
-    if (staffAchievementsModule.isLoading) {
+    if (isLoading && achievements.length === 0) {
         return <div>Loading...</div>;
-    } else if (staffAchievementsModule.lastFetched && staffAchievementsModule.data.length === 0) {
+    } else if (!!error) {
+        return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
+    } else if (isSuccess && achievements.length === 0) {
         return <div>There are no achievements for this event</div>;
-    } else if (staffAchievementsModule.data.length > 0) {
+    } else if (achievements.length > 0) {
         return <ListGroup>
-                {staffAchievementsModule.data.map(achievement => 
+                {achievements.map(achievement => 
                     <ListGroupItem key={achievement.achievementId}>
                         <AchievementItem achievement={achievement} dateText="Created"/>
                         <DialogRenderProp
@@ -44,7 +45,8 @@ const AchievementsList = ({ staffAchievementsModule, addAchievement }: Props) =>
 
 export const StaffAchievements = () => {
     document.title = "Game Control - Achievements";
-    const { staffAchievementsModule, addAchievement } = useStaffAchievements();
+    const addAchievementMutation = useAddOrUpdateAchievementMutation();
+    const addAchievement = (achievement: AchievementTemplate) => addAchievementMutation.mutate(achievement);
 
     return (
         <div>
@@ -61,7 +63,8 @@ export const StaffAchievements = () => {
                     }
                 />
             </h5>
-            <AchievementsList staffAchievementsModule={staffAchievementsModule} addAchievement={addAchievement} />
+            {!!addAchievementMutation.error && <Alert variant="danger">{getErrorMessage(addAchievementMutation.error)}</Alert>}
+            <AchievementsList addAchievement={addAchievement} />
         </div>
     );
 };

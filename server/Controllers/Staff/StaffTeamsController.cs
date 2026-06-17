@@ -121,12 +121,13 @@ namespace GameControl.Server.Controllers
 
             if (participation != null && participation.IsStaff)
             {
-                var team = this.dbContext.Team.FirstOrDefault(p => p.TeamId == teamId && p.EventInstance == eventInstanceId);
+                var team = this.dbContext.Team.AsNoTracking().FirstOrDefault(p => p.TeamId == teamId && p.EventInstance == eventInstanceId);
 
                 if (team != null)
                 {
                     if (GrantPointsForTeam(eventInstanceId, teamId, pointsTemplate.PointValue, pointsTemplate.Reason, participation.ParticipationId))
                     {
+                        cache.Remove("Teams_" + eventInstanceId.ToString());
                         return GetTeams(eventInstanceId);
                     }
                 }

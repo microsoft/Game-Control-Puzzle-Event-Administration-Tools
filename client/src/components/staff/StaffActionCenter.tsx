@@ -1,6 +1,6 @@
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Button, Alert, Card, CardDeck, Spinner, DropdownButton, Dropdown, Badge } from 'react-bootstrap';
 import { FiMessageCircle } from 'react-icons/fi';
 import { FaRegClock, FaPuzzlePiece } from 'react-icons/fa';
@@ -11,8 +11,9 @@ import moment from 'moment';
 
 import { ExtendedGridCellData, ExtendedGridTeam, useStaffGridData } from '../../actions/staff/gridDataHooks';
 import { LiveTimerControl } from '../shared/LiveTimerControl';
-import { unlockClueForTeam } from 'modules/staff/clues/service';
-import { updateCallForTeam } from 'modules/staff/teams/service';
+import { useUnlockClueForTeamMutation } from 'modules/staff/clues/queries';
+import { useUpdateCallMutation } from 'modules/staff/teams/queries';
+import { getErrorMessage } from 'lib/apiFetch';
 import { TanstackTable } from 'components/shared/TanstackTable';
 import { CallTemplate } from 'modules/types';
 import { TeamCall } from 'modules/staff';
@@ -160,48 +161,59 @@ const StaffActionCenter = () => {
     const { fastRefresh } = useParams<{ fastRefresh: string }>();
     const { data, refresh } = useStaffGridData({ noRefresh: false, fastRefresh: !!fastRefresh, hidePlot: true });
     const user = useSelector((state: any) => state.user);
-    const dispatch = useDispatch();
     const history = useHistory();
 
-    const acknowledge = (teamId: string, call: CallTemplate, notes: string) => {
-        let updatedCall = { ...call, publicNotes: notes };
+    const updateCall = useUpdateCallMutation();
+    const unlockClue = useUnlockClueForTeamMutation();
 
-        dispatch(updateCallForTeam(teamId, updatedCall));
-        setTimeout(refresh, 500);
+    const acknowledge = async (teamId: string, call: CallTemplate, notes: string) => {
+        const updatedCall = { ...call, publicNotes: notes };
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+            refresh();
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
-    const switchToGcCall = (team: ExtraExtendedGridTeam, call: CallTemplate) => {
+    const switchToGcCall = async (team: ExtraExtendedGridTeam, call: CallTemplate) => {
         const teamId = team.id;
         const updatedCall = { ...call, callEnd: moment.utc() };
-        dispatch(
-            updateCallForTeam(teamId, updatedCall, () => {
-                dispatch(
-                    updateCallForTeam(teamId, {
-                        callType: 'Hint',
-                        callSubType: 'None',
-                        tableOfContentsEntry: team.currentTocId,
-                        notes: 'Created by ' + user.data.displayName,
-                    })
-                );
-                history.push('/staff/teams/' + teamId);
-            })
-        );
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+            await updateCall.mutateAsync({
+                teamId,
+                callTemplate: {
+                    callType: 'Hint',
+                    callSubType: 'None',
+                    tableOfContentsEntry: team.currentTocId,
+                    notes: 'Created by ' + user.data.displayName,
+                },
+            });
+            history.push('/staff/teams/' + teamId);
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
-    const unlockPuzzleAndEndCall = (teamId: string, tableOfContentId: string, puzzleName: string, call: CallTemplate) => {
-        dispatch(unlockClueForTeam(teamId, tableOfContentId, 'GcUnlock'));
-        endCall(teamId, { ...call, publicNotes: puzzleName + ' unlocked.' });
+    const unlockPuzzleAndEndCall = async (teamId: string, tableOfContentId: string, puzzleName: string, call: CallTemplate) => {
+        try {
+            await unlockClue.mutateAsync({ teamId, tableOfContentId, reason: 'GcUnlock' });
+            await endCall(teamId, { ...call, publicNotes: puzzleName + ' unlocked.' });
+        } catch {
+            /* error is surfaced via unlockClue.error or updateCall.error */
+        }
     };
 
-    const checkInWithTeam = (teamId: string, message: string) => {
-        dispatch(updateCallForTeam(teamId, { callEnd: moment.utc(), callType: 'Checkin' }));
-        setTimeout(refresh, 500);
+    const checkInWithTeam = async (teamId: string, _message: string) => {
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: { callEnd: moment.utc(), callType: 'Checkin' } });
+            refresh();
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
-    const endCall = (teamId: string, call: CallTemplate) => {
+    const endCall = async (teamId: string, call: CallTemplate) => {
         const updatedCall = { ...call, callEnd: moment.utc() };
-        dispatch(updateCallForTeam(teamId, updatedCall));
-        setTimeout(refresh, 500);
+        try {
+            await updateCall.mutateAsync({ teamId, callTemplate: updatedCall });
+            refresh();
+        } catch { /* error is surfaced via updateCall.error */ }
     };
 
     const teams: ExtraExtendedGridTeam[] = useMemo(() => {
@@ -256,6 +268,8 @@ const StaffActionCenter = () => {
     } else {
         return (
             <>
+                {!!updateCall.error && <Alert variant="danger">{getErrorMessage(updateCall.error)}</Alert>}
+                {!!unlockClue.error && <Alert variant="danger">{getErrorMessage(unlockClue.error)}</Alert>}
                 <Card className="text-left">
                     <Card.Header>Open Calls</Card.Header>
                     <Card.Body>

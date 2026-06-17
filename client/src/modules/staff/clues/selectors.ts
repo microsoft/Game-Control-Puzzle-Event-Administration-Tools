@@ -1,1 +1,0 @@
-export const getStaffClues = (state: any) => state.staffClues;

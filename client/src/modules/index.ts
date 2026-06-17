@@ -1,22 +1,17 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import { staffCluesReducer } from './staff/clues/staffCluesModule';
 import admin from './admin';
-import staff from './staff';
 import player from './player';
 import { userReducer } from './user';
 import { getEventInstanceId } from './user/selectors';
-import { StaffClue } from './staff/clues';
 
 export * from './user/selectors';
 
 export default combineReducers({
     router: routerReducer,
     user: userReducer,
-    staffClues: staffCluesReducer,
     player,
-    staff,
     admin,
 });
 
@@ -72,12 +67,4 @@ export const getDerivedTeamId = (state: any, tableOfContentId: string) => {
 
 export const getDerivedPlayerId = (state: any, tableOfContentId: string) => {
     return xorGuids(state.user.data.participantId, tableOfContentId) ?? '';
-};
-
-export const getAllStaffPuzzles = (state: any) => {
-    return state.staffClues;
-};
-
-export const getStaffPuzzleDetails = (state: any, tableOfContentId: string) => {
-    return state.staffClues.data.find((x: StaffClue) => x.tableOfContentId === tableOfContentId);
 };

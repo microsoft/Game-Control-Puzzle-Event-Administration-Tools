@@ -1,6 +1,4 @@
-import { useSelector } from 'react-redux';
-
-import { getStaffTeam } from 'modules/staff';
+import { useStaffTeamQuery } from 'modules/staff/teams/queries';
 import { Answer } from 'modules/staff/clues';
 
 type Props = Readonly<{
@@ -8,7 +6,7 @@ type Props = Readonly<{
 }>;
 
 export const AnswerText = ({ answer }: Props) => {
-    const team = useSelector((state) => getStaffTeam(state, answer.teamId));
+    const { data: team } = useStaffTeamQuery(answer.teamId ?? undefined);
 
     if (team) {
         return (

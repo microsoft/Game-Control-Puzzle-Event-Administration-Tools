@@ -4,16 +4,15 @@ import { useSelector } from 'react-redux';
 
 import { getChallengePluralNameSetting, getChallengeSingularNameSetting } from 'modules';
 import { Challenge } from 'modules/staff/challenges';
-import { Module } from 'modules/types';
 import { Link } from 'react-router-dom';
 import { TanstackTable } from 'components/shared/TanstackTable';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 type Props = Readonly<{
-    challengesModule: Module<Challenge[]>;
+    challenges: Challenge[];
 }>;
 
-const ChallengesListTable = ({ challengesModule }: Props) => {
+const ChallengesListTable = ({ challenges }: Props) => {
     const challengeSingularName = useSelector(getChallengeSingularNameSetting);
 
     const columns: ColumnDef<any>[] = [
@@ -63,7 +62,7 @@ const ChallengesListTable = ({ challengesModule }: Props) => {
 
     const data = useMemo(
         () =>
-            challengesModule.data.map((challenge) => {
+            challenges.map((challenge) => {
                 return {
                     ...challenge,
                     availableAt: challenge.startTime ? moment.utc(challenge.startTime).local().format('MM-DD HH:mm') : 'No Start Time',
@@ -73,7 +72,7 @@ const ChallengesListTable = ({ challengesModule }: Props) => {
                     completedSubmissions: challenge.submissions?.filter((x) => x.state === 1).length ?? 0,
                 };
             }),
-        [challengesModule]
+        [challenges]
     );
 
     const challengesTable = useReactTable({
@@ -87,13 +86,12 @@ const ChallengesListTable = ({ challengesModule }: Props) => {
     return <TanstackTable table={challengesTable} rowFormatter={rowFormatter} />;
 };
 
-export const ChallengesList = ({ challengesModule }: Props) => {
+export const ChallengesList = ({ challenges }: Props) => {
     const challengePluralName = useSelector(getChallengePluralNameSetting);
 
-    // TODO: Move hook into a sub-component?
-    if (!challengesModule.isLoading && challengesModule.data.length === 0) {
+    if (challenges.length === 0) {
         return <div>There are no {challengePluralName} for this event</div>;
     } else {
-        return <ChallengesListTable challengesModule={challengesModule} />;
+        return <ChallengesListTable challenges={challenges} />;
     }
 };

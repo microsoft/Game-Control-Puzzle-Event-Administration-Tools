@@ -1,17 +1,16 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { xorGuids } from 'modules';
-import { getStaffTeams } from 'modules/staff';
+import { useStaffTeamsQuery } from 'modules/staff/teams/queries';
 
 type Props = Readonly<{
     tableOfContentId: string;
 }>
 
 export const PuzzlePlayerManifest = ({ tableOfContentId }: Props) => {
-    const allTeams = useSelector(getStaffTeams);
+    const { data: allTeams = [] } = useStaffTeamsQuery();
 
-    const teams = allTeams.data.map(t => ({
+    const teams = allTeams.map(t => ({
         teamId: xorGuids(t.teamId, tableOfContentId),
         name: t.name.trim(),
         shortName: t.shortName.trim() ?? t.name.trim(),

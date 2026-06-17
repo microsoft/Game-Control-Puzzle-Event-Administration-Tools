@@ -1,12 +1,19 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, BrowserRouterProps } from 'react-router-dom';
 
+import { queryClient, initQueryClientAuth } from './lib/queryClient';
 import store from './store';
 import './index.css';
 import App from './components/App';
 import { unregister as unregisterServiceWorker } from './registerServiceWorker';
 import './theme/theme.scss';
+
+// Wire up the session-expiry handler now that both queryClient and store
+// are initialized. This breaks the circular dependency between the two.
+initQueryClientAuth(store);
 
 const routerProps: BrowserRouterProps = {};
 
@@ -14,11 +21,14 @@ const container = document.getElementById('root');
 const root = createRoot(container!);
 
 root.render(
-    <Provider store={store}>
-        <BrowserRouter {...routerProps}>
-            <App />
-        </BrowserRouter>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+        {import.meta.env.DEV ? <ReactQueryDevtools /> : null}
+        <Provider store={store}>
+            <BrowserRouter {...routerProps}>
+                <App />
+            </BrowserRouter>
+        </Provider>
+    </QueryClientProvider>
 );
 
 unregisterServiceWorker();

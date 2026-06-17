@@ -70,10 +70,8 @@ namespace GameControl.Server.Controllers
 
                 Claim appId = msaToken.Claims.FirstOrDefault(p => p.Type == "aud");
                 Claim oid = msaToken.Claims.FirstOrDefault(p => p.Type == "oid");
-
                 Claim iss = msaToken.Claims.FirstOrDefault(p => p.Type == "iss");
 
-                
                 if (appId != null && oid != null)
                 {
                     // Verify that the app ID matches our expected app ID.

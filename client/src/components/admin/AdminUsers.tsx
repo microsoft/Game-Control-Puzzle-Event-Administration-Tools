@@ -10,14 +10,14 @@ import { AddParticipantForm, EditParticipantForm, EditParticipationForm } from '
 import DialogRenderProp from 'components/staff/dialogs/DialogRenderProp';
 import { getEventInstanceId } from 'modules';
 import { getAllParticipants } from 'modules/admin';
-import { getStaffTeams, useStaffTeams } from 'modules/staff';
+import { useStaffTeamsQuery } from 'modules/staff/teams/queries';
 
 type UserProps = Readonly<{
     user: Participant
 }>;
 
 const AddUserToEventDialog = ({ user }: UserProps) => {
-    const teams = useSelector(getStaffTeams);
+    const { data: teams = [] } = useStaffTeamsQuery();
     const currentUserEventInstanceId = useSelector(getEventInstanceId);
     const participation = user.participation.find(x => x.eventInstanceId === currentUserEventInstanceId);
 
@@ -30,7 +30,7 @@ const AddUserToEventDialog = ({ user }: UserProps) => {
                 </Row>
             );
         } else {
-            const team = teams.data.find(x => x.teamId === participation.teamId);
+            const team = teams.find(x => x.teamId === participation.teamId);
 
             return (
                 <Row style={{textAlign: 'center'}}>
@@ -38,7 +38,7 @@ const AddUserToEventDialog = ({ user }: UserProps) => {
                     <Col xs={8} md={8} style={{textAlign: 'left'}}><em>{team ? team.name : "UNKNOWN"}</em></Col>
                 </Row>
             );
-        }        
+        }
     } else {
         return null;
     }
@@ -46,15 +46,15 @@ const AddUserToEventDialog = ({ user }: UserProps) => {
 
 const UserRow = ({ user }: UserProps) => {
     const currentUserEventInstanceId = useSelector(getEventInstanceId);
-    const teams = useSelector(getStaffTeams);
+    const { data: teams = [] } = useStaffTeamsQuery();
     const dispatch = useDispatch();
     const participationForCurrentEvent = user.participation.find(x => x.eventInstanceId === currentUserEventInstanceId);
 
     return (
-        <ListGroupItem key={user.participantId}>                        
+        <ListGroupItem key={user.participantId}>
             <Container fluid>
                 <Row>
-                    <Col>                    
+                    <Col>
                         <h5>{user.displayName}</h5>
                     </Col>
                     <Col sm="auto">
@@ -74,10 +74,10 @@ const UserRow = ({ user }: UserProps) => {
                         variant="outline-primary"
                         renderTitle={() => `${participationForCurrentEvent ? "Update" : "Add"} participation for ${user.displayName}`}
                         renderButton={() => <>{participationForCurrentEvent ? <FaUserAlt/> : <FaPlus/>} Role</>}
-                        renderBody={(onComplete: any) => 
+                        renderBody={(onComplete: any) =>
                             <EditParticipationForm
                                 participation={participationForCurrentEvent}
-                                teams={teams.data}
+                                teams={teams}
                                 onSubmit={update => dispatch(addUserToEventInstance(currentUserEventInstanceId, user.participantId, update))}
                                 onComplete={onComplete}
                             />
@@ -85,12 +85,12 @@ const UserRow = ({ user }: UserProps) => {
                     />
                     </Col>
                 </Row>
-                { 
-                    !!user.email && 
+                {
+                    !!user.email &&
                     <Row style={{textAlign: 'center'}}>
                         <Col xs={4} md={4} style={{textAlign: 'right'}}>Email:</Col>
                         <Col xs={8} md={8} style={{textAlign: 'left'}}>{user.email}</Col>
-                    </Row>   
+                    </Row>
                 }
                 {
                     !!user.contactNumber &&
@@ -141,7 +141,7 @@ export const AdminUsers = () => {
     const [filterText, setFilterText] = useState('');
 
     const participants = useSelector(getAllParticipants);
-    const { teams } = useStaffTeams();
+    const { data: teams = [], isLoading: teamsLoading } = useStaffTeamsQuery();
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -156,9 +156,9 @@ export const AdminUsers = () => {
                     variant="outline-primary"
                     renderTitle={() => "Add New User"}
                     renderButton={() => <div><FaPlus/> Add User</div>}
-                    renderBody={(onComplete: any) => 
+                    renderBody={(onComplete: any) =>
                         <AddParticipantForm
-                            teams={teams.data}
+                            teams={teams}
                             onSubmit={(newUser: any) => dispatch(addAdminUser(newUser))}
                             onComplete={onComplete}
                         />
@@ -171,7 +171,7 @@ export const AdminUsers = () => {
                     <Alert variant="danger">Error updating users: {participants.lastError}</Alert>
                 }
                 {
-                    !!participants.isLoading &&
+                    (!!participants.isLoading || teamsLoading) &&
                     <div>Loading...</div>
                 }
                 <Form.Control

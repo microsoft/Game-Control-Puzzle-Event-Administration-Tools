@@ -1,9 +1,15 @@
 import React from 'react';
-import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Alert, Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 
-import { useStaffAchievements, useAchievementUnlocks } from "modules/staff/achievements";
-import { Achievement } from "modules/types";
+import {
+    useStaffAchievementsQuery,
+    useTeamAchievementsQuery,
+    useGrantAchievementMutation,
+    useRevokeAchievementMutation,
+} from 'modules/staff/achievements/queries';
+import { Achievement } from 'modules/types';
 import { AchievementItem } from '../../shared/AchievementItem';
+import { getErrorMessage } from 'lib/apiFetch';
 
 type AchievementProps = Readonly<{
     achievement: Achievement;
@@ -36,31 +42,36 @@ type Props = Readonly<{
 }>;
 
 export const TeamAchievements = ({ teamId }: Props) => {
-    const { staffAchievementsModule } = useStaffAchievements();
-    const { unlockedAchievementsModule, grantAchievement, revokeAchievement } = useAchievementUnlocks(teamId);
+    const { data: allAchievements = [] } = useStaffAchievementsQuery();
+    const { data: unlockedAchievements = [], isLoading, isSuccess, error } = useTeamAchievementsQuery(teamId);
+    const grantMutation = useGrantAchievementMutation();
+    const revokeMutation = useRevokeAchievementMutation();
 
-    if (!unlockedAchievementsModule) {
-        return <div>Achievement data unavailable.</div>
-    } else if (unlockedAchievementsModule.isLoading && unlockedAchievementsModule.data.length === 0) {
+    const grantAchievement = (achievementId: string) => grantMutation.mutate({ teamId, achievementId });
+    const revokeAchievement = (achievementId: string) => revokeMutation.mutate({ teamId, achievementId });
+
+    if (isLoading && unlockedAchievements.length === 0) {
         return <div>Loading...</div>;
-    } else if (unlockedAchievementsModule.data && staffAchievementsModule.data) {
+    } else if (!!error) {
+        return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
+    } else if (isSuccess) {
         return (
             <div>
                 <h5>Achievements</h5>
                 <ListGroup>
                     {
-                        staffAchievementsModule.data.map(achievement => 
+                        allAchievements.map(achievement => 
                             <AchievementListItem
                                 key={achievement.achievementId}
                                 achievement={achievement}
                                 grantAchievement={grantAchievement}
                                 revokeAchievement={revokeAchievement}
-                                isAchievementUnlocked={!!unlockedAchievementsModule?.data.find(x => x.achievementId === achievement.achievementId)}/>)
+                                isAchievementUnlocked={!!unlockedAchievements.find(x => x.achievementId === achievement.achievementId)}/>)
                     }
                 </ListGroup>
             </div>
         );
     } else {
-        return <div>An unknown error occured</div>
+        return null;
     }
 }

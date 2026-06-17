@@ -1,0 +1,97 @@
+import Axios, { AxiosRequestConfig } from 'axios';
+
+import { APPLICATION_URL } from '../constants';
+
+Axios.defaults.baseURL = APPLICATION_URL;
+
+/**
+ * Typed Axios wrapper for use as a TanStack Query `queryFn`.
+ *
+ * Handles the same error cases as the legacy `doServiceRequest` helper:
+ *  - HTTP 401 → clears the stored token and throws so the caller can redirect
+ *  - HTTP 403 → throws with a user-friendly access message
+ *  - Other errors → re-throws the original error message
+ *
+ * Returns the unwrapped `response.data` so callers don't need to reach into
+ * the Axios response envelope.
+ *
+ * @example
+ *   useQuery({
+ *     queryKey: queryKeys.staff.teams(eventInstanceId),
+ *     queryFn: () => apiFetch<StaffTeam[]>(`/api/staff/teams/${eventInstanceId}`),
+ *   })
+ */
+export async function apiFetch<T>(
+    url: string,
+    config?: AxiosRequestConfig,
+): Promise<T> {
+    try {
+        const response = await Axios.get<T>(url, config);
+        return response.data;
+    } catch (error: any) {
+        throw normaliseError(error);
+    }
+}
+
+/**
+ * Typed POST/PUT/DELETE wrapper for use as a TanStack Query mutation `mutationFn`.
+ *
+ * @example
+ *   useMutation({
+ *     mutationFn: (template: TeamTemplate) =>
+ *       apiMutate('put', `/api/staff/teams/${eventInstanceId}`, template),
+ *   })
+ */
+export async function apiMutate<TBody, TResponse = void>(
+    method: 'post' | 'put' | 'delete' | 'patch',
+    url: string,
+    body?: TBody,
+    config?: AxiosRequestConfig,
+): Promise<TResponse> {
+    try {
+        const response = method === 'delete'
+            ? await Axios.delete<TResponse>(url, { data: body, ...config })
+            : await Axios[method]<TResponse>(url, body, config);
+        return response.data;
+    } catch (error: any) {
+        throw normaliseError(error);
+    }
+}
+
+/**
+ * Typed error for expired sessions so callers can use `instanceof` checks
+ * instead of fragile string matching.
+ *
+ * The companion USER_LOGGED_OUT Redux dispatch for 401 errors lives in
+ * queryClient.ts (QueryCache.onError) so that all Redux reducers and the
+ * SignalR middleware reset state properly.
+ */
+export class SessionExpiredError extends Error {
+    constructor() {
+        super('Your session has expired. Please sign in again.');
+        this.name = 'SessionExpiredError';
+    }
+}
+
+/**
+ * Converts an Axios error into a plain Error with a consistent message.
+ * Mirrors the behaviour of `handleServiceError` in `modules/types/serviceCommon.ts`.
+ */
+function normaliseError(error: any): Error {
+    if (error?.response?.status === 401) {
+        localStorage.removeItem('userToken');
+        return new SessionExpiredError();
+    }
+
+    if (error?.response?.status === 403) {
+        return new Error('You do not have access to this resource.');
+    }
+
+    return new Error(error?.message ?? 'An unexpected error occurred.');
+}
+
+/** Safely extracts a displayable message from an unknown error value. */
+export function getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    return String(error);
+}
