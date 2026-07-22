@@ -36,7 +36,7 @@ const StaffClueDetails = () => {
 
     useEffect(() => {
         dispatch(fetchStaffClueDetails(id));
-    }, []);
+    }, [dispatch, id]);
 
     const updateCurrentTab = (k: string) => {
         setKey(k);
