@@ -29,7 +29,7 @@ const HtmlContent = ({ content }: ContentProps) => {
 
 const LocationContent = ({ content }: ContentProps) => {
     // Create Bing Maps URL with the location coordinates
-    const bingMapsUrlLatLong = `https://www.bing.com/maps/default.aspx?lvl=18&cp=${content.latitude}~${content.longitude}`;
+    const bingMapsUrlLatLong = `https://www.bing.com/maps?lvl=18&sp=point.${content.latitude}_${content.longitude}_Location`;
     const bingMapsUrlAddress = `https://www.bing.com/maps/default.aspx?&where1=${content.address}`;
 
     return (
